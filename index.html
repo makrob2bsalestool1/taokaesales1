@@ -43,9 +43,15 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .runrate b{display:block;font-size:26px} .runrate span{display:block;font-size:12.5px;line-height:1.4;opacity:.95;margin-top:5px;font-weight:700}
 
 .miniKpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-.miniKpi>div{background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px 10px}
-.miniKpi span{display:block;font-size:10.5px;color:var(--muted);font-weight:700;line-height:1.35}
-.miniKpi b{display:block;font-size:16px;margin-top:6px;line-height:1.2}
+.miniKpi>div{
+  background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px 11px;
+  box-shadow:0 3px 10px rgba(0,0,0,.025)
+}
+.miniKpi>div:nth-child(1){background:linear-gradient(135deg,#FFF7F7,#FFF)}
+.miniKpi>div:nth-child(2){background:linear-gradient(135deg,#FFF2F3,#FFF)}
+.miniKpi>div:nth-child(3){background:linear-gradient(135deg,#EEF9F3,#FFF)}
+.miniKpi span{display:block;font-size:10.8px;color:var(--muted);font-weight:800;line-height:1.4}
+.miniKpi b{display:block;font-size:17px;margin-top:6px;line-height:1.2}
 .badText{color:var(--bad)}.warnText{color:var(--orange)}.goodText{color:var(--green)}
 
 .portfolioStatus{margin-top:10px;border-radius:15px;padding:13px 14px}
@@ -54,16 +60,45 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .portfolioStatus.portfolioWarn{background:var(--softorange);border:1px solid #F0D6A6}
 .portfolioStatus.portfolioBad{background:var(--softred);border:1px solid #F3D1D4}
 
-.achieveWrap{margin-top:12px}
-.achieveLabel{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.achieveLabel span{font-size:11.5px;color:var(--muted);font-weight:700}
-.achieveLabel b{font-size:15px;font-weight:900}
-.achieveTrack{height:14px;background:#EFEFEF;border-radius:999px;overflow:hidden;position:relative}
-.achieveFill{height:100%;border-radius:999px;transition:width .3s ease}
-.achieveFill.badText{background:var(--bad)}
-.achieveFill.warnText{background:var(--orange)}
-.achieveFill.goodText{background:var(--green)}
+.achieveWrap{
+  margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:18px;
+  padding:14px 15px 15px;box-shadow:0 4px 14px rgba(0,0,0,.035)
+}
+.achieveLabel{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.achieveLabel span{font-size:13px;color:#3F3F3F;font-weight:800;line-height:1.45}
+.achieveLabel b{font-size:22px;font-weight:950;line-height:1;white-space:nowrap}
+.achieveTrack{
+  height:22px;background:linear-gradient(90deg,#F1F1F1 0%,#F7F7F7 100%);
+  border-radius:999px;overflow:hidden;position:relative;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.06)
+}
+.achieveFill{
+  height:100%;min-width:0;border-radius:999px;transition:width .35s ease;
+  display:flex;align-items:center;justify-content:flex-end;position:relative;
+  overflow:visible
+}
+.achieveFill:after{
+  content:"";position:absolute;right:-7px;top:50%;width:14px;height:14px;
+  transform:translateY(-50%);border-radius:50%;background:#fff;
+  border:4px solid currentColor;box-shadow:0 2px 7px rgba(0,0,0,.18)
+}
+.achieveFill.badText{
+  color:#D11F32;background:linear-gradient(90deg,#D11F32 0%,#FF4058 62%,#FF7889 100%);
+  box-shadow:0 5px 16px rgba(209,31,50,.30)
+}
+.achieveFill.warnText{
+  color:#B8791F;background:linear-gradient(90deg,#B8791F 0%,#E7A33D 100%);
+  box-shadow:0 5px 16px rgba(184,121,31,.25)
+}
+.achieveFill.goodText{
+  color:#237A57;background:linear-gradient(90deg,#237A57 0%,#49A97E 100%);
+  box-shadow:0 5px 16px rgba(35,122,87,.25)
+}
 .achieveTrack.pending{background:#F2F2F2}
+.achieveTrack.pending .achieveFill:after{display:none}
+.achieveMeta{display:flex;justify-content:space-between;gap:12px;margin-top:9px}
+.achieveMeta span{font-size:11px;color:var(--muted);font-weight:700}
+.achieveMeta b{display:block;font-size:13px;color:#222;margin-top:2px}
 
 .todayCallout{background:var(--softred);border:1px solid #F3D1D4;border-radius:17px;padding:16px;margin-top:12px}
 .todayCallout span{font-size:12.5px;color:#8E3038;font-weight:900}
@@ -167,6 +202,17 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 :focus-visible{outline:3px solid #F3B4B8;outline-offset:2px}
 
 
+
+@media(max-width:520px){
+  .achieveWrap{padding:13px}
+  .achieveLabel span{font-size:12px}
+  .achieveLabel b{font-size:20px}
+  .achieveTrack{height:20px}
+  .achieveMeta span{font-size:10.5px}
+  .miniKpi{gap:7px}
+  .miniKpi>div{padding:11px 9px}
+  .miniKpi b{font-size:15.5px}
+}
 </style>
 <body>
 <div class="app">
@@ -1106,8 +1152,9 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       var fst = forecastStatus(mtd, target);
       portfolioStatusHtml = '<div class="portfolioStatus ' + fst.bgCls + '"><span>สถานะพอร์ต</span><b class="' + fst.cls + '">' + fst.text + '</b></div>';
       var barPct = Math.max(0, Math.min(100, pct * 100));
-      achieveBarHtml = '<div class="achieveWrap"><div class="achieveLabel"><span>ยอดทำได้ ' + fmtMoney(mtd) + ' จากเป้า ' + fmtMoney(target) + '</span><b class="' + st.cls + '">' + fmtPct(pct * 100) + '</b></div>' +
-        '<div class="achieveTrack"><div class="achieveFill ' + st.cls + '" style="width:' + barPct + '%"></div></div></div>';
+      achieveBarHtml = '<div class="achieveWrap"><div class="achieveLabel"><span>ยอดทำได้ <strong>' + fmtMoney(mtd) + '</strong> จากเป้า <strong>' + fmtMoney(target) + '</strong></span><b class="' + st.cls + '">' + fmtPct(pct * 100) + '</b></div>' +
+        '<div class="achieveTrack"><div class="achieveFill ' + st.cls + '" style="width:' + barPct + '%"></div></div>' +
+        '<div class="achieveMeta"><span>ยอดปัจจุบัน<b>' + fmtMoney(mtd) + '</b></span><span style="text-align:right">เป้าหมาย<b>' + fmtMoney(target) + '</b></span></div></div>';
     } else if (seData.perf && seData.perf.mtd) {
       // มียอดขายที่ทำได้ (MTD) แต่ยังไม่มีเป้าตั้งไว้ (เช่น ตำแหน่งว่าง/เซลล์สำรอง)
       var mtdOnly = seData.perf.mtd;
@@ -1116,14 +1163,16 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       gapHtml = '<div><span>ยอดห่างจากเป้า</span><b>\u2013</b></div>';
       portfolioStatusHtml = '<div class="portfolioStatus"><span>สถานะพอร์ต</span><b>ยังไม่ตั้งเป้า</b></div>';
       achieveBarHtml = '<div class="achieveWrap"><div class="achieveLabel"><span>ยอดขายที่ทำได้ (MTD)</span><b>' + fmtMoney(mtdOnly) + '</b></div>' +
-        '<div class="achieveTrack pending"><div class="achieveFill" style="width:0%"></div></div></div>';
+        '<div class="achieveTrack pending"><div class="achieveFill" style="width:0%"></div></div>' +
+        '<div class="achieveMeta"><span>ยอดปัจจุบัน<b>' + fmtMoney(mtdOnly) + '</b></span><span style="text-align:right">เป้าหมาย<b>ยังไม่ตั้งเป้า</b></span></div></div>';
     } else {
       runrateHtml = '<div class="runrate pending"><b>รอข้อมูล</b><span>สัดส่วนยอดขาย<br>เทียบเป้าหมาย</span></div>';
       targetHtml = '<div><span>Target เดือนนี้</span><b>รอข้อมูล</b></div>';
       gapHtml = '<div><span>ยอดห่างจากเป้า</span><b>รอข้อมูล</b></div>';
       portfolioStatusHtml = '<div class="portfolioStatus"><span>สถานะพอร์ต</span><b>รอข้อมูล</b></div>';
       achieveBarHtml = '<div class="achieveWrap"><div class="achieveLabel"><span>ความคืบหน้าเป้าหมาย</span><b>รอข้อมูล</b></div>' +
-        '<div class="achieveTrack pending"><div class="achieveFill" style="width:0%"></div></div></div>';
+        '<div class="achieveTrack pending"><div class="achieveFill" style="width:0%"></div></div>' +
+        '<div class="achieveMeta"><span>ยอดปัจจุบัน<b>รอข้อมูล</b></span><span style="text-align:right">เป้าหมาย<b>รอข้อมูล</b></span></div></div>';
     }
 
     var callout;
