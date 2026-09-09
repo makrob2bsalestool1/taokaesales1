@@ -1,0 +1,1070 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#C51F2D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Taokae Sales">
+<title>Taokae Sales - My Action Today</title>
+<style>
+:root{
+ --bg:#F7F7F7;--card:#fff;--ink:#1E1E1E;--muted:#777;--line:#E9E9E9;
+ --red:#C51F2D;--red2:#E44C58;--softred:#FFF0F1;--bad:#B91C2B;
+ --orange:#B8791F;--softorange:#FFF4E4;--green:#237A57;--softgreen:#EAF5EF;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai",Tahoma,sans-serif;color:var(--ink)}
+.app{max-width:620px;margin:auto;min-height:100vh;padding:18px 16px 44px}
+.header{display:flex;align-items:center;gap:11px;margin:4px 0 18px}
+.logo{width:54px;height:54px;border-radius:17px;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:900;font-size:23px;box-shadow:0 5px 16px rgba(197,31,45,.18)}
+.header h1{font-size:25px;margin:0} .header p{font-size:13px;color:var(--muted);margin:4px 0 0}
+
+.selectorBox{background:#fff;border:1px solid var(--line);border-radius:20px;padding:17px;box-shadow:0 4px 16px rgba(0,0,0,.03)}
+.selectorBox h2{font-size:18px;margin:0 0 12px}
+.pick{border:1px solid var(--line);border-radius:15px;overflow:hidden}
+.pick summary{list-style:none;padding:16px;font-size:16px;font-weight:800;display:flex;justify-content:space-between;cursor:pointer}
+.pick summary::-webkit-details-marker{display:none} .pick summary:after{content:"⌄";color:var(--red);font-size:24px}
+.options{max-height:420px;overflow:auto;border-top:1px solid var(--line)}
+.personOption{display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--ink);padding:15px 16px;border-bottom:1px solid #F0F0F0;transition:background .12s}
+.personOption:active{background:#FAFAFA}
+.personOption span{font-size:15px;font-weight:800} .personOption small{font-size:11px;color:var(--muted)}
+.selectorTip{font-size:12px;color:var(--muted);line-height:1.6;margin:11px 2px 0}
+
+.dashboard{display:block}
+.back{display:inline-block;color:var(--red);text-decoration:none;font-size:14px;font-weight:900;margin-bottom:12px}
+
+.welcome{background:linear-gradient(135deg,#A81220,#D84C57);color:#fff;border-radius:23px;padding:20px;display:flex;justify-content:space-between;align-items:center}
+.welcome span{font-size:11px;font-weight:900;opacity:.75;letter-spacing:.6px}
+.welcome h2{font-size:25px;margin:6px 0 3px} .welcome small{font-size:12px;opacity:.85}
+.runrate{width:98px;border-radius:18px;padding:12px;background:rgba(255,255,255,.16);text-align:center;color:#fff!important}
+.runrate b{display:block;font-size:24px} .runrate span{font-size:10px;opacity:.85}
+
+.miniKpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.miniKpi>div{background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px}
+.miniKpi span{display:block;font-size:10px;color:var(--muted);font-weight:800}
+.miniKpi b{display:block;font-size:16px;margin-top:5px}
+.badText{color:var(--bad)}.warnText{color:var(--orange)}.goodText{color:var(--green)}
+
+.todayCallout{background:var(--softred);border:1px solid #F3D1D4;border-radius:17px;padding:15px;margin-top:12px}
+.todayCallout span{font-size:12px;color:#8E3038;font-weight:900}
+.todayCallout p{font-size:14px;line-height:1.6;margin:6px 0 0;color:#5A3034}
+
+.sectionTitle{display:flex;justify-content:space-between;align-items:end;margin:20px 2px 10px}
+.sectionTitle h3{font-size:18px;margin:0} .sectionTitle span{font-size:11px;color:var(--muted)}
+
+.actionCard{background:#fff;border:1px solid var(--line);border-radius:20px;margin:10px 0;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.025)}
+.topline{display:flex;align-items:center;gap:9px;padding:15px 15px 11px}
+.rank{width:34px;height:34px;border-radius:10px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:900}
+.customerName{flex:1;font-size:16px;font-weight:900;line-height:1.35}
+.tag{font-size:10px;font-weight:900;border-radius:999px;padding:7px 10px}
+.urgent{background:#FBE6E8;color:var(--bad)}.follow{background:var(--softorange);color:var(--orange)}
+
+.lossRow{display:flex;justify-content:space-between;align-items:center;padding:0 15px 13px}
+.lossRow span{font-size:10px;color:var(--muted);font-weight:800;display:block}
+.lossRow strong{font-size:22px;color:var(--bad);display:block;margin-top:3px}
+.why{font-size:11px;color:var(--muted);text-align:right}
+
+.sellBox{background:#FAFAFA;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 15px}
+.sellLabel{font-size:11px;color:var(--muted);font-weight:800;display:block}
+.primaryProduct{display:block;color:#8A251E;font-size:18px;margin-top:5px}
+.secondary{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:9px}
+.secondary span{font-size:10px;color:var(--muted)} .secondary b{font-size:11px;background:#FFF0E3;color:#9C551D;border-radius:999px;padding:6px 9px}
+
+.reason{font-size:12px;line-height:1.6;color:#5F5F5F;padding:12px 15px}
+.custMore{margin:0 15px 15px}
+.custMore summary{list-style:none;background:#F4F4F4;border-radius:12px;padding:11px;text-align:center;font-size:12px;font-weight:800;color:#555;cursor:pointer}
+.custMore summary::-webkit-details-marker{display:none}
+.detailBox{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:9px}
+.detailBox div{background:#FAFAFA;border-radius:11px;padding:9px}
+.detailBox span{display:block;font-size:9px;color:var(--muted)} .detailBox b{display:block;font-size:13px;margin-top:4px}
+.detailBox .red{color:var(--bad)}
+.custMore p{font-size:11px;color:#666;line-height:1.55;margin:9px 2px 0}
+
+.allCustomers{margin-top:12px}
+.allCustomers>summary{list-style:none;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;color:var(--red);font-size:11px;font-weight:900;cursor:pointer}
+.allCustomers>summary::-webkit-details-marker{display:none}
+.restWrap{margin-top:8px} .noMore{text-align:center;color:var(--muted);font-size:10px;padding:15px}
+
+.source{margin-top:12px}
+.source>summary{list-style:none;text-align:center;font-size:12px;color:var(--muted);cursor:pointer;padding:9px}
+.source>summary::-webkit-details-marker{display:none}
+.source>div{background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px}
+.source p{font-size:11px;color:#666;line-height:1.55;margin:6px 0}
+
+.footer{text-align:center;font-size:10px;color:#999;margin-top:22px;line-height:1.6}
+
+.issueReport{margin:0 13px 13px}
+.issueReport summary{
+ list-style:none;background:#FFF0F1;color:#A81220;border:1px solid #F3D1D4;
+ border-radius:13px;padding:13px;text-align:center;font-size:13px;font-weight:900;cursor:pointer
+}
+.issueReport summary::-webkit-details-marker{display:none}
+.issueForm{margin-top:9px;background:#FAFAFA;border:1px solid var(--line);border-radius:14px;padding:13px}
+.issueForm .label{display:block;font-size:12px;font-weight:900;color:#555;margin-bottom:8px}
+.issueGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.issueChoice{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px;font-size:12px;color:#555}
+.issueChoice input{accent-color:var(--red);width:16px;height:16px}
+.issueForm textarea,.issueForm select{
+ width:100%;border:1px solid var(--line);border-radius:11px;background:#fff;padding:12px;
+ font-family:inherit;font-size:13px;color:#444
+}
+.issueForm textarea{min-height:80px;resize:vertical}
+.fieldBlock{margin-top:11px}
+.saveMock{
+ margin-top:12px;background:var(--red);color:#fff;border:none;border-radius:13px;
+ width:100%;padding:14px;font-size:14px;font-weight:900;transition:transform .1s
+}
+.saveMock:active{transform:scale(.97)}
+.mockNote{font-size:10px;color:#888;line-height:1.5;margin-top:8px;text-align:center}
+
+/* Store selector */
+.storeField{margin-bottom:12px}
+.storeField label{display:block;font-size:12px;font-weight:900;color:#555;margin:0 2px 8px}
+.storeSelect{width:100%;border:1px solid var(--line);border-radius:15px;background:#fff;padding:15px 16px;font-family:inherit;font-size:15px;font-weight:800;color:var(--ink);outline:none}
+.storeSelect:focus{border-color:#D9A0A5;box-shadow:0 0 0 3px var(--softred)}
+.repPicker{display:none}
+.storePending{display:none;background:#FAFAFA;border:1px dashed #D8D8D8;border-radius:14px;padding:15px;text-align:center}
+.storePending b{display:block;font-size:14px;color:#555;margin-bottom:5px}
+.storePending span{font-size:11px;color:var(--muted);line-height:1.55}
+
+@media(max-width:560px){.detailBox{grid-template-columns:repeat(2,1fr)}.detailBox div:last-child{grid-column:span 2}}
+</style>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">TS</div>
+    <div><h1>Taokae Sales</h1><p>วันนี้ควรไปหาใคร และควรขายอะไร</p></div>
+  </div>
+
+  <!-- ============================== LOGIN SCREEN ============================== -->
+  <section class="selectorBox" id="loginBox">
+    <h2>เข้าสู่ระบบ</h2>
+    <div class="storeField">
+      <label for="loginStore">สาขา</label>
+      <select id="loginStore" class="storeSelect">
+        <option value="">— เลือกสาขา —</option>
+        <option value="001">สโตร์ 001 - ลาดพร้าว</option>
+        <option value="003">สโตร์ 003 - ศรีนครินทร์</option>
+        <option value="005">สโตร์ 005 - ชลบุรี</option>
+      </select>
+    </div>
+    <div class="storeField" style="margin-top:12px">
+      <label for="loginCode">รหัสความปลอดภัยของสาขา</label>
+      <input id="loginCode" type="password" inputmode="numeric" placeholder="กรอกรหัส"
+        style="width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px;font-family:inherit;font-size:14px;color:#333;box-sizing:border-box;letter-spacing:2px">
+    </div>
+    <button id="loginBtn" type="button" style="margin-top:14px;width:100%;background:var(--red);color:#fff;border:none;border-radius:13px;padding:13px;font-size:13px;font-weight:900">เข้าสู่ระบบ</button>
+    <div id="loginStatus" style="font-size:10px;color:#888;line-height:1.5;margin-top:10px;text-align:center"></div>
+    <div class="selectorTip" style="margin-top:10px">ผู้ดูแล/Regional Sales Manager ใช้รหัสของทีมท่านได้เช่นกัน ระบบจะปลดล็อกข้อมูลทุกสาขาโดยอัตโนมัติ</div>
+  </section>
+
+  <!-- ============================== APP SHELL (hidden until login) ============================== -->
+  <div id="appShell" style="display:none">
+
+    <section class="selectorBox" id="selector">
+      <h2>เลือกชื่อเซลล์</h2>
+      <div id="adminStoreSwitchWrap" style="display:none;margin-bottom:12px">
+        <label for="adminStoreSwitch" style="display:block;font-size:9px;font-weight:900;color:#555;margin-bottom:6px">สาขา (โหมดผู้ดูแล)</label>
+        <select id="adminStoreSwitch" class="storeSelect"></select>
+      </div>
+
+      <div id="repPicker" class="repPicker">
+        <span style="display:block;font-size:9px;font-weight:900;color:#555;margin:0 2px 7px">ชื่อเซลล์</span>
+        <details class="pick" open>
+          <summary>แตะเพื่อเลือกชื่อ</summary>
+          <div class="options" id="repOptions"></div>
+        </details>
+        <div class="selectorTip">ระบบจะแสดงเฉพาะ Action Plan ของคนที่เลือก ไม่โชว์ข้อมูลทีมทั้งหมด</div>
+      </div>
+    </section>
+
+    <section class="selectorBox" id="appSettings" style="margin-top:10px;display:none">
+      <details class="pick">
+        <summary>⚙️ ตั้งค่าระบบ (สำหรับผู้ดูแล)</summary>
+        <div style="padding:13px">
+          <a href="https://docs.google.com/spreadsheets/d/1rGCYdjm99R7eYEIGJsOeUo28Ao0aEksLdhdpf2SRwn8/edit?usp=sharing"
+             target="_blank" rel="noopener"
+             style="display:block;font-size:10px;color:#888;text-decoration:underline;margin-bottom:13px">
+            📊 ดูรายงานทั้งหมด (Google Sheet)
+          </a>
+          <span class="label" style="display:block;font-size:9px;font-weight:900;color:#555;margin-bottom:7px">ที่อยู่ระบบเชื่อมต่อ Google Apps Script</span>
+          <input id="endpointInput" type="text" placeholder="https://script.google.com/macros/s/XXXX/exec"
+            style="width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px;font-family:inherit;font-size:10px;color:#444;box-sizing:border-box">
+          <button id="saveEndpointBtn" type="button" style="margin-top:9px;background:var(--red);color:#fff;border:none;border-radius:11px;width:100%;padding:11px;font-size:10px;font-weight:900">บันทึกการตั้งค่า</button>
+          <button id="testEndpointBtn" type="button" style="margin-top:8px;width:100%;background:#fff;border:1px solid var(--line);color:var(--red);border-radius:11px;padding:10px;font-size:10px;font-weight:900">ทดสอบการเชื่อมต่อ</button>
+          <div id="endpointStatus" style="font-size:8px;color:#888;line-height:1.45;margin-top:8px;text-align:center"></div>
+        </div>
+      </details>
+    </section>
+
+    <div id="dashboardMount"></div>
+
+    <section class="selectorBox" style="margin-top:16px">
+      <h2>📌 ติดตามปัญหา</h2>
+      <div class="selectorTip">
+        เมื่อเชื่อมระบบจริง ข้อมูลที่เซลล์บันทึกจะรวมเป็น Weekly Problem Summary เช่น
+        ราคา / Stock / Delivery / Competitor / Credit และส่งต่อให้ทีมที่เกี่ยวข้องติดตามแก้ไขได้
+      </div>
+    </section>
+
+    <div class="footer">ข้อมูลจริง ณ 31 ส.ค. 2026 &bull; เปรียบเทียบยอด ก.ค. 2026 กับ ส.ค. 2026 &bull; ยอด ก.ค.–ส.ค. 2025 จาก Port Performance.xlsx &bull; ระบบส่งเฉพาะข้อมูลของสาขาที่เข้าสู่ระบบ</div>
+
+    <button id="logoutBtn" type="button" style="display:block;width:100%;max-width:200px;margin:16px auto 0;background:#fff;border:1px solid var(--bad);color:var(--bad);border-radius:11px;padding:10px;font-size:10px;font-weight:900">🔒 ออกจากระบบ</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var DEFAULT_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxj4Mdl-ndbNWP_JrXstJxhe9cZBzF2aA_fY68n6dXhJK2adg7Bx65nrl7CorCjVdTe/exec";
+  var ENDPOINT_KEY = "taokae_endpoint_url_v1";
+  var SESSION_KEY = "taokae_session_v2";
+  var DEVICE_KEY = "taokae_device_id_v1";
+  var QUEUE_KEY = "taokae_pending_issues_v1";
+
+  var STORE_LABELS = { "001": "สโตร์ 001 - ลาดพร้าว", "003": "สโตร์ 003 - ศรีนครินทร์", "005": "สโตร์ 005 - ชลบุรี" };
+
+  var state = {
+    role: null,
+    storesData: null,
+    currentStoreCode: null,
+    currentSE: null
+  };
+
+  function getEndpointUrl(){
+    try {
+      var saved = localStorage.getItem(ENDPOINT_KEY);
+      if (saved && saved.trim()) return saved.trim();
+    } catch(e){}
+    return DEFAULT_ENDPOINT_URL;
+  }
+  function setEndpointUrl(url){
+    try { localStorage.setItem(ENDPOINT_KEY, url); } catch(e){}
+  }
+
+  var jsonpCounter = 0;
+  function jsonpRequest(params, timeoutMs){
+    return new Promise(function(resolve, reject){
+      var cbName = "taokaeCb" + (jsonpCounter++) + "_" + Date.now();
+      var qs = Object.keys(params).map(function(k){
+        return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
+      }).join("&");
+      var base = getEndpointUrl();
+      var url = base + (base.indexOf("?") >= 0 ? "&" : "?") + qs + "&callback=" + cbName;
+
+      var script = document.createElement("script");
+      var done = false;
+      var timer = setTimeout(function(){
+        if (done) return;
+        done = true;
+        cleanup();
+        reject(new Error("timeout"));
+      }, timeoutMs || 15000);
+
+      function cleanup(){
+        clearTimeout(timer);
+        delete window[cbName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[cbName] = function(data){
+        if (done) return;
+        done = true;
+        cleanup();
+        resolve(data);
+      };
+      script.onerror = function(){
+        if (done) return;
+        done = true;
+        cleanup();
+        reject(new Error("network error"));
+      };
+      script.src = url;
+      document.head.appendChild(script);
+    });
+  }
+
+  function getDeviceId(){
+    try {
+      var id = localStorage.getItem(DEVICE_KEY);
+      if (id) return id;
+      id = "dev_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,10);
+      localStorage.setItem(DEVICE_KEY, id);
+      return id;
+    } catch(e){
+      return "dev_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,10);
+    }
+  }
+
+  // Security improvement: never persist the store PIN/code in localStorage.
+  // Keep only the short-lived token returned by the backend in sessionStorage.
+  function saveSession(store, token, role){
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ store: store, token: token, role: role })); } catch(e){}
+  }
+  function loadSession(){
+    try {
+      var raw = sessionStorage.getItem(SESSION_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch(e){ return null; }
+  }
+  function clearSession(){
+    try { sessionStorage.removeItem(SESSION_KEY); } catch(e){}
+  }
+
+  function fmtMoney(n){
+    n = Math.abs(n);
+    if (n >= 1000000) return "฿" + (n/1000000).toFixed(2) + "M";
+    if (n >= 1000) return "฿" + Math.round(n/1000) + "K";
+    return "฿" + Math.round(n);
+  }
+  function fmtPct(n){ return n.toFixed(1) + "%"; }
+
+  // แปลชื่อหมวดสินค้าจากข้อมูลต้นทางให้แสดงเป็นภาษาไทย
+  var CLASS_TH = {
+  "ALMOND (STD)": "อัลมอนด์ (มาตรฐาน)",
+  "AMBIENCE MEAT PROCESS": "เนื้อสัตว์แปรรูปอุณหภูมิปกติ",
+  "APPETIZER": "อาหารเรียกน้ำย่อย",
+  "AVOCADO (STD)": "อะโวคาโด (มาตรฐาน)",
+  "BACON": "เบคอน",
+  "BAKERY IN HOUSE": "เบเกอรี่ผลิตในร้าน",
+  "BAKERY IN HOUSE 2": "เบเกอรี่ผลิตในร้าน 2",
+  "BAKERY INGREDIENTS": "วัตถุดิบเบเกอรี่",
+  "BAKERY PRE PACK": "เบเกอรี่บรรจุสำเร็จ",
+  "BEAN (STD)": "ถั่ว (มาตรฐาน)",
+  "BISCUIT WAFER": "บิสกิตและเวเฟอร์",
+  "BLOCCOLI AND CAULIFLOWER (WEIGHT)": "บรอกโคลีและกะหล่ำดอก ชั่งน้ำหนัก",
+  "BREAD CRUMBS": "เกล็ดขนมปัง",
+  "BREAKFAST CEREALS": "ซีเรียลอาหารเช้า",
+  "CANDY & GUM": "ลูกอมและหมากฝรั่ง",
+  "CASHEW NUT (STD)": "เม็ดมะม่วงหิมพานต์ (มาตรฐาน)",
+  "CEPHALOPOD-WEIGHT": "หมึก ชั่งน้ำหนัก",
+  "CEREAL (STD)": "ซีเรียล (มาตรฐาน)",
+  "CHEESE (STD)": "ชีส (มาตรฐาน)",
+  "CHEESE (WT)": "ชีส ชั่งน้ำหนัก",
+  "CHERRY (STD)": "เชอร์รี (มาตรฐาน)",
+  "CHILI PASTE": "น้ำพริก",
+  "CHILI PASTE (STD)": "น้ำพริก (มาตรฐาน)",
+  "CHILLED BEVERAGE": "เครื่องดื่มแช่เย็น",
+  "CHILLED HAM": "แฮมแช่เย็น",
+  "CHILLED MEAT BALL": "ลูกชิ้นแช่เย็น",
+  "CHILLI (WEIGHT)": "พริก ชั่งน้ำหนัก",
+  "CHOCOLATE": "ช็อกโกแลต",
+  "CHOCOLATE & CONFECTIONERY": "ช็อกโกแลตและขนมหวาน",
+  "CIGARETTES & TOBACCO-LOCAL": "บุหรี่และยาสูบในประเทศ",
+  "CIGARETTS-IMPORT": "บุหรี่นำเข้า",
+  "CLEANING CHEMICAL": "น้ำยาและสารทำความสะอาด",
+  "CLEANING TOOLS": "อุปกรณ์ทำความสะอาด",
+  "COCONUT (STD)": "มะพร้าว (มาตรฐาน)",
+  "COCONUT MILK": "กะทิ",
+  "COLD CHAIN": "สินค้าโซ่ความเย็น",
+  "COMPUTER": "คอมพิวเตอร์",
+  "CONCENTRATED SYRUP & SQUASH": "ไซรัปและน้ำหวานเข้มข้น",
+  "COOKIES & BISCUITS": "คุกกี้และบิสกิต",
+  "COOKING WINE": "ไวน์สำหรับประกอบอาหาร",
+  "CRAB MEAT": "เนื้อปู",
+  "CRAB-WEIGHT": "ปู ชั่งน้ำหนัก",
+  "CREAM": "ครีม",
+  "CREAM CHEESE": "ครีมชีส",
+  "CREAMER": "ครีมเทียม",
+  "Canned Seafood": "อาหารทะเลกระป๋อง",
+  "Cereal Milk": "นมธัญพืช",
+  "Chicken Egg": "ไข่ไก่",
+  "Chilled Processed Cephalopod (Weight)": "หมึกแปรรูปแช่เย็น ชั่งน้ำหนัก",
+  "DAMAGE GOODS ARTICLES": "สินค้าชำรุด",
+  "DEODORANT": "ผลิตภัณฑ์ระงับกลิ่นกาย",
+  "DETERGENT": "ผลิตภัณฑ์ซักล้าง",
+  "DIAPER/NAPKIN": "ผ้าอ้อม / ผ้าอนามัย",
+  "DIMSUM": "ติ่มซำ",
+  "DIP & SAUCE": "ดิปและซอส",
+  "DIPPING SAUCE": "น้ำจิ้ม",
+  "DISHWASH": "น้ำยาล้างจาน",
+  "DISPOSABLE BAG": "ถุงใช้แล้วทิ้ง",
+  "DISPOSABLE BEVERAGE PACKAGING": "บรรจุภัณฑ์เครื่องดื่มใช้แล้วทิ้ง",
+  "DISPOSABLE CULTERY": "ช้อนส้อมใช้แล้วทิ้ง",
+  "DISPOSABLE FOOD PACKAGING": "บรรจุภัณฑ์อาหารใช้แล้วทิ้ง",
+  "DISPOSABLE STRAW": "หลอดใช้แล้วทิ้ง",
+  "DRAGON FRUIT (STD)": "แก้วมังกร (มาตรฐาน)",
+  "DRIED BAKING PRODUCTS (TH)": "ผลิตภัณฑ์เบเกอรี่อบแห้ง (ไทย)",
+  "DRIED CHILI (STD)": "พริกแห้ง (มาตรฐาน)",
+  "DRIED MUSHROOM (STD)": "เห็ดแห้ง (มาตรฐาน)",
+  "DRIED SPICE (STD)": "เครื่องเทศแห้ง (มาตรฐาน)",
+  "DRINKWARE": "ภาชนะเครื่องดื่ม",
+  "DRUG W/O PHARMACIST LICENSE": "ยาที่จำหน่ายได้โดยไม่ต้องมีเภสัชกร",
+  "DUCK EGGS": "ไข่เป็ด",
+  "DURIAN (WEIGHT)": "ทุเรียน ชั่งน้ำหนัก",
+  "ENERGY DRINK": "เครื่องดื่มชูกำลัง",
+  "EXTRUDED": "ขนมขึ้นรูป",
+  "FACIAL CARE": "ผลิตภัณฑ์ดูแลผิวหน้า",
+  "FANS": "พัดลม",
+  "FARM SHRIMP (WEIGHT)": "กุ้งเลี้ยง ชั่งน้ำหนัก",
+  "FAT": "ไขมัน",
+  "FAT OIL": "น้ำมันและไขมัน",
+  "FISH SAUCE": "น้ำปลา",
+  "FISH SNACK & CUTTLE FISH": "ขนมปลาและปลาหมึก",
+  "FLOUR": "แป้ง",
+  "FOREIGN RICE": "ข้าวต่างประเทศ",
+  "FRAGRANT RICE": "ข้าวหอม",
+  "FRENCHFRIES": "เฟรนช์ฟรายส์",
+  "FRESH BEEF (STD)": "เนื้อวัวสด (มาตรฐาน)",
+  "FRESH BEEF (WEIGHT)": "เนื้อวัวสด ชั่งน้ำหนัก",
+  "FRESH IMPORTED BEEF (WEIGHT)": "เนื้อวัวนำเข้าสด ชั่งน้ำหนัก",
+  "FRESH MILK": "นมสด",
+  "FRESH PORK (STD)": "หมูสด (มาตรฐาน)",
+  "FRESH PORK (WEIGHT)": "หมูสด ชั่งน้ำหนัก",
+  "FRESH POULTRY (STD)": "สัตว์ปีกสด (มาตรฐาน)",
+  "FRESH POULTRY (WEIGHT)": "สัตว์ปีกสด ชั่งน้ำหนัก",
+  "FRESH WATER FISH (WEIGHT)": "ปลาน้ำจืดสด ชั่งน้ำหนัก",
+  "FROZEN BEEF (STD)": "เนื้อวัวแช่แข็ง (มาตรฐาน)",
+  "FROZEN BEEF (WEIGHT)": "เนื้อวัวแช่แข็ง ชั่งน้ำหนัก",
+  "FROZEN CEPALOPOD (STD)": "หมึกแช่แข็ง (มาตรฐาน)",
+  "FROZEN CEPALOPOD (WEIGHT)": "หมึกแช่แข็ง ชั่งน้ำหนัก",
+  "FROZEN CHICKEN (STD)": "ไก่แช่แข็ง (มาตรฐาน)",
+  "FROZEN CRAB (STD)": "ปูแช่แข็ง (มาตรฐาน)",
+  "FROZEN CRAB (WEIGHT)": "ปูแช่แข็ง ชั่งน้ำหนัก",
+  "FROZEN DUCK (STD)": "เป็ดแช่แข็ง (มาตรฐาน)",
+  "FROZEN DUCK (WEIGHT)": "เป็ดแช่แข็ง ชั่งน้ำหนัก",
+  "FROZEN FISH (STD)": "ปลาแช่แข็ง (มาตรฐาน)",
+  "FROZEN FISH (WEIGHT)": "ปลาแช่แข็ง ชั่งน้ำหนัก",
+  "FROZEN FRESH WATER FISH (STD)": "ปลาน้ำจืดแช่แข็ง (มาตรฐาน)",
+  "FROZEN FRUIT": "ผลไม้แช่แข็ง",
+  "FROZEN LAMB (WEIGHT)": "เนื้อแกะแช่แข็ง ชั่งน้ำหนัก",
+  "FROZEN MEAT PROCESS": "เนื้อสัตว์แปรรูปแช่แข็ง",
+  "FROZEN PORK (STD)": "หมูแช่แข็ง (มาตรฐาน)",
+  "FROZEN PORK (WEIGHT)": "หมูแช่แข็ง ชั่งน้ำหนัก",
+  "FROZEN PROCESSED MEAT": "เนื้อสัตว์แปรรูปแช่แข็ง",
+  "FROZEN SHELL (STD)": "หอยแช่แข็ง (มาตรฐาน)",
+  "FROZEN SHRIMP (STD)": "กุ้งแช่แข็ง (มาตรฐาน)",
+  "FROZEN VEGETABLE": "ผักแช่แข็ง",
+  "FUNCTIONAL DRINK": "เครื่องดื่มฟังก์ชันนัล",
+  "FURNITURE": "เฟอร์นิเจอร์",
+  "Farm Shrimp (STD)": "กุ้งเลี้ยง (มาตรฐาน)",
+  "Fresh Coffee": "กาแฟสด",
+  "Frozen Salmon (STD)": "แซลมอนแช่แข็ง (มาตรฐาน)",
+  "Frozen Salmon (Weight)": "แซลมอนแช่แข็ง ชั่งน้ำหนัก",
+  "GARLIC (STD)": "กระเทียม (มาตรฐาน)",
+  "GARLIC (WEIGHT)": "กระเทียม ชั่งน้ำหนัก",
+  "GAS/INDUCTION": "เตาแก๊ส / เตาแม่เหล็กไฟฟ้า",
+  "GUMMY & JELLY": "กัมมี่และเยลลี่",
+  "HAIR CARE": "ผลิตภัณฑ์ดูแลเส้นผม",
+  "HAMPER": "กระเช้าของขวัญ",
+  "HARDWARE & ACCESSORIES": "ฮาร์ดแวร์และอุปกรณ์เสริม",
+  "HEAD VEGETABLE & ROOT (STD)": "ผักหัวและราก (มาตรฐาน)",
+  "HOME SANITATION SUPPLIES": "อุปกรณ์สุขอนามัยภายในบ้าน",
+  "Home & Living": "ของใช้ภายในบ้าน",
+  "ICE CREAM": "ไอศกรีม",
+  "IMITATION FOOD": "อาหารเลียนแบบ",
+  "IMPORTED MUSHROOM (STD)": "เห็ดนำเข้า (มาตรฐาน)",
+  "IMPORTED MUSHROOM (WEIGHT)": "เห็ดนำเข้า ชั่งน้ำหนัก",
+  "INSTANT_NOODLES": "บะหมี่กึ่งสำเร็จรูป",
+  "Import Beer": "เบียร์นำเข้า",
+  "Import Canned Food": "อาหารกระป๋องนำเข้า",
+  "Import Sauces": "ซอสนำเข้า",
+  "Import Seaweed": "สาหร่ายนำเข้า",
+  "Instant Coffee": "กาแฟสำเร็จรูป",
+  "JAPANESE KOREAN FOOD": "อาหารญี่ปุ่นและเกาหลี",
+  "JASMINE RICE": "ข้าวหอมมะลิ",
+  "JUICE": "น้ำผลไม้",
+  "LEAF (STD)": "ผักใบ (มาตรฐาน)",
+  "LEMON (STD)": "เลมอน (มาตรฐาน)",
+  "LIME & TAMARIND": "มะนาวและมะขาม",
+  "LIQUID SOAP": "สบู่เหลว",
+  "LIQUID SWEETENER": "สารให้ความหวานชนิดเหลว",
+  "LOCAL BEER": "เบียร์ในประเทศ",
+  "Lime (STD)": "มะนาว (มาตรฐาน)",
+  "MEAL": "อาหารพร้อมรับประทาน",
+  "MEAL MAKER": "ผลิตภัณฑ์ช่วยปรุงอาหาร",
+  "MIXED SPICE&OTHER (STD)": "เครื่องเทศผสมและอื่น ๆ (มาตรฐาน)",
+  "MIXER": "เครื่องดื่มมิกเซอร์",
+  "MOZZARELLA (STD)": "มอสซาเรลลาชีส (มาตรฐาน)",
+  "MSG": "ผงชูรส",
+  "MUSHROOM (STD)": "เห็ด (มาตรฐาน)",
+  "Mayonnaise & Dressing": "มายองเนสและน้ำสลัด",
+  "Milked based": "เครื่องดื่มผสมนม",
+  "NOODLE": "เส้นก๋วยเตี๋ยว",
+  "NUT": "ถั่วและเมล็ด",
+  "Non Milk Based": "เครื่องดื่มไม่ผสมนม",
+  "OFFICE EQUIPMENT": "อุปกรณ์สำนักงาน",
+  "OFFICE PAPER": "กระดาษสำนักงาน",
+  "OFFICE SUPPLIES": "เครื่องเขียนและของใช้สำนักงาน",
+  "ONION (WEIGHT)": "หัวหอม ชั่งน้ำหนัก",
+  "OTHER DISPOSABLES": "ของใช้สิ้นเปลืองอื่น ๆ",
+  "OTHER FISH&SEAFOOD (STD)": "ปลาและอาหารทะเลอื่น ๆ (มาตรฐาน)",
+  "OTHER FRESH SPICE (STD)": "เครื่องเทศสดอื่น ๆ (มาตรฐาน)",
+  "OVEN/MICROWAVE": "เตาอบ / ไมโครเวฟ",
+  "OYSTER SAUCE": "ซอสหอยนางรม",
+  "PALM & COCONUT SUGAR": "น้ำตาลมะพร้าวและน้ำตาลปาล์ม",
+  "PAPER/WOOL": "กระดาษ / ใย",
+  "PASTA": "พาสต้า",
+  "PEAR (STD)": "ลูกแพร์ (มาตรฐาน)",
+  "PEPPER (STD)": "พริกไทย (มาตรฐาน)",
+  "PEST CONTROL": "ผลิตภัณฑ์กำจัดแมลง",
+  "PIZZA TOPPING": "ท็อปปิงพิซซ่า",
+  "PLASTIC STORAGE": "ภาชนะพลาสติกจัดเก็บ",
+  "POTATO (WEIGHT)": "มันฝรั่ง ชั่งน้ำหนัก",
+  "POTATO CHIPS": "มันฝรั่งทอดกรอบ",
+  "PRAWN CRACKER": "ข้าวเกรียบกุ้ง",
+  "PROCESSED EGGS": "ผลิตภัณฑ์ไข่แปรรูป",
+  "PROCESSED EGGS (CHILLED)": "ผลิตภัณฑ์ไข่แปรรูปแช่เย็น",
+  "PROFESSIONAL WEAR": "เครื่องแต่งกายสำหรับงานอาชีพ",
+  "RAW & NATURAL SUGAR": "น้ำตาลดิบและน้ำตาลธรรมชาติ",
+  "READY TO COOK": "อาหารพร้อมปรุง",
+  "REFRIGERATORS": "ตู้เย็น",
+  "RICE COOKER": "หม้อหุงข้าว",
+  "ROOT/HEAD VEGETABLE (STD)": "ผักรากและผักหัว (มาตรฐาน)",
+  "ROTISSERIE CORNER": "อาหารย่างโรทิสเซอรี",
+  "RTD COFFEE": "กาแฟพร้อมดื่ม",
+  "RTD TEA": "ชาพร้อมดื่ม",
+  "SALAD VEGETABLE (STD)": "ผักสลัด (มาตรฐาน)",
+  "SALMON (STD)": "แซลมอน (มาตรฐาน)",
+  "SALMON (WEIGHT)": "แซลมอน ชั่งน้ำหนัก",
+  "SAUSAGE & BALOGNA": "ไส้กรอกและโบโลน่า",
+  "SEASONING": "เครื่องปรุงรส",
+  "SEAWEED SNACK": "ขนมสาหร่าย",
+  "SEED & NUTS OIL": "น้ำมันจากเมล็ดและถั่ว",
+  "SHALLOT (WEIGHT)": "หอมแดง ชั่งน้ำหนัก",
+  "SLICE CHEESE": "ชีสแผ่น",
+  "SOFT DRINK": "น้ำอัดลม",
+  "SOFTENER": "น้ำยาปรับผ้านุ่ม",
+  "SOY BEAN MILK": "นมถั่วเหลือง",
+  "SOY BEAN SAUCE": "ซีอิ๊ว",
+  "SPECIALTY OIL": "น้ำมันเฉพาะทาง",
+  "SPIRIT & HARD LIQUOR (IMPORT)": "สุราและเครื่องดื่มแอลกอฮอล์นำเข้า",
+  "SPIRIT & HARD LIQUOR (LOCAL)": "สุราและเครื่องดื่มแอลกอฮอล์ในประเทศ",
+  "STICKY RICE": "ข้าวเหนียว",
+  "STRAWBERRY & RASPBERRY (STD)": "สตรอว์เบอร์รีและราสป์เบอร์รี (มาตรฐาน)",
+  "Spread & Preserves": "ผลิตภัณฑ์ทาขนมปังและแยม",
+  "TABLET": "แท็บเล็ต",
+  "TEA": "ชา",
+  "THAI SAUSAGE": "ไส้กรอกไทย",
+  "TOMATO (STD)": "มะเขือเทศ (มาตรฐาน)",
+  "TOMATO SAUCE": "ซอสมะเขือเทศ",
+  "TONIC FOOD DRINK & COCOA": "เครื่องดื่มบำรุงและโกโก้",
+  "TOOTHBRUSH": "แปรงสีฟัน",
+  "TV HIGH": "โทรทัศน์ระดับพรีเมียม",
+  "TV MASS": "โทรทัศน์ตลาดทั่วไป",
+  "Thai Herbs & Aromatics(STD)": "สมุนไพรและเครื่องหอมไทย (มาตรฐาน)",
+  "UHT": "นมยูเอชที",
+  "UTENSIL": "อุปกรณ์ครัวและภาชนะ",
+  "VERMICELLI": "วุ้นเส้น",
+  "VINEGAR": "น้ำส้มสายชู",
+  "Vegetable oil": "น้ำมันพืช",
+  "WASHING MACHINES": "เครื่องซักผ้า",
+  "WATER": "น้ำดื่ม",
+  "WATERMELON (WEIGHT)": "แตงโม ชั่งน้ำหนัก",
+  "WHITE RICE": "ข้าวขาว",
+  "WHITE SUGAR": "น้ำตาลทรายขาว",
+  "WINE": "ไวน์",
+  "WINTER&CABBAGE (STD)": "ผักฤดูหนาวและกะหล่ำ (มาตรฐาน)",
+  "WRAP MATERIAL": "วัสดุห่อบรรจุ",
+  "YELLOW SWEET POTATO (WEIGHT)": "มันหวานเหลือง ชั่งน้ำหนัก",
+  "YOGHURT": "โยเกิร์ต",
+  "APPLE (STD)": "แอปเปิล (มาตรฐาน)"
+};
+  function thaiClass(name){ return CLASS_TH[String(name || "")] || String(name || ""); }
+
+  function statusFor(pct){
+    if (pct >= 1.0) return { text: "เกินเป้า", cls: "goodText" };
+    if (pct >= 0.8) return { text: "ตามเป้า", cls: "warnText" };
+    return { text: "ต้องเร่ง", cls: "badText" };
+  }
+
+  function esc(s){
+    var d = document.createElement("div");
+    d.textContent = String(s == null ? "" : s);
+    return d.innerHTML;
+  }
+
+  function displaySalesmanName(se){
+    var raw = String(se == null ? "" : se).trim();
+    var code = raw.split(/\s+/)[0] || raw;
+    if (/^DUMMY/i.test(code)) return "เซลล์สำรอง — " + code;
+    if (/^VACAN/i.test(code)) return "ตำแหน่งว่าง — " + code;
+    return raw;
+  }
+
+  var loginBox = document.getElementById("loginBox");
+  var appShell = document.getElementById("appShell");
+  var loginBtn = document.getElementById("loginBtn");
+  var loginStatus = document.getElementById("loginStatus");
+
+  function doLogin(store, code){
+    loginStatus.textContent = "กำลังตรวจสอบ...";
+    return jsonpRequest({ action: "login", store: store, code: code }).then(function(res){
+      if (!res || !res.ok) {
+        loginStatus.textContent = res && res.message ? res.message : "เข้าสู่ระบบไม่สำเร็จ";
+        return null;
+      }
+      if (!res.token) {
+        loginStatus.textContent = "เซิร์ฟเวอร์ยังไม่รองรับ session token";
+        return null;
+      }
+      saveSession(store, res.token, res.role);
+      return res;
+    }).catch(function(){
+      loginStatus.textContent = "เชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เนตแล้วลองใหม่";
+      return null;
+    });
+  }
+
+  function fetchData(store, token){
+    return jsonpRequest({ action: "data", store: store, token: token }, 20000).then(function(res){
+      if (!res || !res.ok) throw new Error(res && res.message ? res.message : "โหลดข้อมูลไม่สำเร็จ");
+      return res;
+    });
+  }
+
+  loginBtn.addEventListener("click", function(){
+    var store = document.getElementById("loginStore").value;
+    var code = document.getElementById("loginCode").value.trim();
+    if (!store) { loginStatus.textContent = "กรุณาเลือกสาขา"; return; }
+    if (!code) { loginStatus.textContent = "กรุณากรอกรหัส"; return; }
+    doLogin(store, code).then(function(res){
+      if (!res) return;
+      loginStatus.textContent = "";
+      bootApp(store, res.token, res.role);
+    });
+  });
+
+  function bootApp(store, token, role){
+    loginStatus.textContent = "กำลังโหลดข้อมูล...";
+    fetchData(store, token).then(function(res){
+      state.role = res.role;
+      state.storesData = res.stores;
+      loginBox.style.display = "none";
+      appShell.style.display = "block";
+      initAppShell();
+    }).catch(function(err){
+      loginStatus.textContent = "โหลดข้อมูลไม่สำเร็จ: " + err.message;
+    });
+  }
+
+  var savedSession = loadSession();
+  if (savedSession && savedSession.store && savedSession.token) {
+    document.getElementById("loginStore").value = savedSession.store;
+    bootApp(savedSession.store, savedSession.token, savedSession.role);
+  }
+
+  function initAppShell(){
+    document.getElementById("repPicker").style.display = "block";
+    var storeCodes = Object.keys(state.storesData);
+    var adminWrap = document.getElementById("adminStoreSwitchWrap");
+    var adminSelect = document.getElementById("adminStoreSwitch");
+
+    var settingsSection = document.getElementById("appSettings");
+    if (settingsSection) settingsSection.style.display = (state.role === "admin") ? "block" : "none";
+
+    if (state.role === "admin" && storeCodes.length > 1) {
+      adminWrap.style.display = "block";
+      adminSelect.innerHTML = storeCodes.map(function(c){
+        return '<option value="' + c + '">' + esc(STORE_LABELS[c] || c) + '</option>';
+      }).join("");
+      adminSelect.addEventListener("change", function(){
+        state.currentStoreCode = adminSelect.value;
+        renderRepPicker();
+      });
+      state.currentStoreCode = storeCodes[0];
+    } else {
+      state.currentStoreCode = storeCodes[0];
+    }
+    renderRepPicker();
+  }
+
+  function renderRepPicker(){
+    var storeData = state.storesData[state.currentStoreCode] || {};
+    var seNames = Object.keys(storeData);
+    var optionsEl = document.getElementById("repOptions");
+    optionsEl.innerHTML = seNames.map(function(se){
+      return '<a class="personOption" href="javascript:void(0)" data-se="' + esc(se) + '">' +
+             '<span>' + esc(displaySalesmanName(se)) + '</span><small>' + esc(STORE_LABELS[state.currentStoreCode] || "") + '</small></a>';
+    }).join("");
+
+    Array.prototype.forEach.call(optionsEl.querySelectorAll(".personOption"), function(a){
+      a.addEventListener("click", function(){
+        state.currentSE = a.getAttribute("data-se");
+        renderDashboard();
+        var details = document.querySelector("#repPicker details.pick");
+        if (details) details.open = false;
+        document.getElementById("dashboardMount").scrollIntoView({ behavior: "smooth" });
+      });
+    });
+  }
+
+  function buildCard(rank, cust){
+    if (!cust) {
+      return '<article class="actionCard">' +
+        '<div class="topline"><div class="rank">#' + rank + '</div>' +
+        '<div class="customerName" style="color:#999">ไม่มีลูกค้าติดลบเพิ่มเติมในลำดับนี้</div></div>' +
+        '<div class="reason" style="padding-top:0">เซลคนนี้มีลูกค้าที่ยอดขายลดลงไม่ถึง ' + rank + ' ราย ในช่วง ก.ค.–ส.ค. 2026 — ถือเป็นสัญญาณที่ดี</div>' +
+        '</article>';
+    }
+
+    var jul = cust.jul || 0, aug = cust.aug || 0, diff = cust.diff || 0;
+    var loss = Math.abs(diff);
+    var dropPct = jul ? (loss / jul * 100) : 0;
+    var classes = cust.classes || [];
+
+    var tagCls, tagLabel, why, reason;
+    var isZero = (aug === 0);
+    if (isZero) {
+      tagCls = "urgent"; tagLabel = "เร่งด่วน"; why = "ยอดหาย 100%";
+      reason = "ยอดเดือนล่าสุดหายเป็นศูนย์ ควรรีบเข้าไปเช็กสาเหตุและกู้ยอดกลับ";
+    } else if (dropPct >= 50) {
+      tagCls = "urgent"; tagLabel = "เร่งด่วน"; why = "ยอดลดเกิน 50%";
+      reason = "ควรเข้าพบอย่างเร่งด่วน";
+    } else {
+      tagCls = "follow"; tagLabel = "ติดตาม"; why = "ยอดตกต่อเนื่อง";
+      reason = "ควรเข้าพบอย่างเร่งด่วน";
+    }
+
+    var primary = classes.length ? esc(thaiClass(classes[0])) : "รอข้อมูล";
+    var secondaryHtml = "";
+    if (classes.length > 1) {
+      var tags = classes.slice(1, 3).map(function(c){ return "<b>" + esc(thaiClass(c)) + "</b>"; }).join("");
+      secondaryHtml = '<div class="secondary"><span>สินค้าเสริม</span>' + tags + '</div>';
+    }
+
+    var custMoreHtml = "";
+    {
+      var chain = classes.length ? classes.map(function(c){ return esc(thaiClass(c)); }).join(" \u2192 ") : "รอข้อมูล";
+      custMoreHtml =
+        '<details class="custMore"><summary>ดูรายละเอียดลูกค้า</summary>' +
+        '<div class="detailBox">' +
+        '<div><span>ยอด ก.ค. 2025</span><b>' + fmtMoney(cust.jul2025 || 0) + '</b></div>' +
+        '<div><span>ยอด ส.ค. 2025</span><b>' + fmtMoney(cust.aug2025 || 0) + '</b></div>' +
+        '<div><span>ยอด ก.ค. 2026</span><b>' + fmtMoney(jul) + '</b></div>' +
+        '<div><span>ยอด ส.ค. 2026</span><b>' + fmtMoney(aug) + '</b></div>' +
+        '<div><span>ยอดที่หาย ก.ค.→ส.ค. 2026</span><b class="red">' + fmtMoney(loss) + '</b></div>' +
+        '</div>' +
+        '<p><strong>เหตุผล:</strong> ' + reason + '</p>' +
+        '<p><strong>ลำดับหมวดที่ควรกู้ยอด:</strong> ' + chain + '</p>' +
+        '</details>';
+    }
+
+    return '' +
+      '<article class="actionCard">' +
+      '<div class="topline">' +
+      '<div class="rank">#' + rank + '</div>' +
+      '<div class="customerName">' + esc(cust.name) + '</div>' +
+      '<div class="tag ' + tagCls + '">' + tagLabel + '</div>' +
+      '</div>' +
+      '<div class="lossRow"><div><span>ยอดหาย</span><strong>' + fmtMoney(loss) + '</strong></div>' +
+      '<div class="why">' + why + '</div></div>' +
+      '<div class="sellBox"><span class="sellLabel">สินค้าแรกที่ควรเสนอ</span>' +
+      '<strong class="primaryProduct">' + primary + '</strong>' + secondaryHtml + '</div>' +
+      '<div class="reason">' + reason + '</div>' +
+      custMoreHtml +
+      issueReportHtml() +
+      '</article>';
+  }
+
+  function issueReportHtml(){
+    return '' +
+      '<details class="issueReport"><summary>📝 บันทึกปัญหาที่พบในร้าน</summary>' +
+      '<div class="issueForm">' +
+      '<span class="label">เลือกปัญหาที่พบ</span>' +
+      '<div class="issueGrid">' +
+      '<label class="issueChoice"><input type="checkbox"> ราคา</label>' +
+      '<label class="issueChoice"><input type="checkbox"> สินค้าขาด / ไม่มีของ</label>' +
+      '<label class="issueChoice"><input type="checkbox"> การจัดส่ง</label>' +
+      '<label class="issueChoice"><input type="checkbox"> คุณภาพสินค้า</label>' +
+      '<label class="issueChoice"><input type="checkbox"> คู่แข่ง / ราคาคู่แข่ง</label>' +
+      '<label class="issueChoice"><input type="checkbox"> เครดิต / เงื่อนไข</label>' +
+      '<label class="issueChoice"><input type="checkbox"> ลูกค้าไม่สนใจ</label>' +
+      '<label class="issueChoice"><input type="checkbox"> เมนู / ความต้องการเปลี่ยน</label>' +
+      '<label class="issueChoice"><input type="checkbox"> การจัดสินค้าผิดพลาด</label>' +
+      '<label class="issueChoice"><input type="checkbox"> ปิดกิจการ</label>' +
+      '<label class="issueChoice"><input type="checkbox"> ลูกค้าเปลี่ยนบัตรสมาชิก</label>' +
+      '</div>' +
+      '<div class="fieldBlock"><span class="label">ผลการเข้าพบ</span>' +
+            '<select><option>— เลือกผลการเข้าพบ —</option><option>ปิดการขาย</option><option>ลูกค้าสนใจ</option><option>ขอใบเสนอราคา</option>' +
+      '<option>ขอทดลองสินค้า</option><option>ติดตามอีกครั้ง</option><option>ยังไม่สนใจ</option></select></div>' +
+      '<div class="fieldBlock"><span class="label">การดำเนินการถัดไป</span>' +
+      '<select><option>— เลือกสิ่งที่ต้องทำต่อ —</option><option>ติดตามราคา</option><option>เช็กสต็อก</option>' +
+      '<option>ประสานจัดส่ง</option><option>ส่งตัวอย่างสินค้า</option><option>ส่งใบเสนอราคา</option>' +
+      '<option>แจ้งหัวหน้า / ทีมที่เกี่ยวข้อง</option><option>นัดเข้าพบครั้งถัดไป</option></select></div>' +
+      '<div class="fieldBlock"><span class="label">หมายเหตุเพิ่มเติม</span>' +
+      '<textarea placeholder="เช่น ลูกค้าแจ้งว่าราคาหมูสูงกว่าคู่แข่งประมาณ 5 บาท/กก."></textarea></div>' +
+      '<button class="saveMock" type="button">บันทึกปัญหา</button>' +
+      '<div class="mockNote">ข้อมูลจะถูกส่งไปยังระบบกลางอัตโนมัติเมื่อกดบันทึก</div>' +
+      '</div></details>';
+  }
+
+  function renderDashboard(){
+    var storeData = state.storesData[state.currentStoreCode] || {};
+    var seData = storeData[state.currentSE];
+    if (!seData) return;
+
+    var customers = seData.customers || [];
+    var real = customers.filter(function(c){ return c; });
+    var top10Lost = real.slice(0, 10).reduce(function(s, c){ return s + Math.abs(c.diff || 0); }, 0);
+
+    var runrateHtml, gapHtml, statusHtml;
+    if (seData.perf) {
+      var target = seData.perf.target, mtd = seData.perf.mtd, pct = seData.perf.pctRunRate;
+      var gap = target - mtd;
+      var st = statusFor(pct);
+      runrateHtml = '<div class="runrate"><b class="' + st.cls + '" style="color:#fff">' + fmtPct(pct * 100) + '</b><span>อัตราทำยอด</span></div>';
+      var gapCls = gap > 0 ? "badText" : "goodText";
+      var gapTxt = (gap > 0 ? "-" : "+") + fmtMoney(gap);
+      gapHtml = '<div><span>ยอดห่างจากเป้า</span><b class="' + gapCls + '">' + gapTxt + '</b></div>';
+      statusHtml = '<div><span>สถานะ</span><b class="' + st.cls + '">' + st.text + '</b></div>';
+    } else {
+      runrateHtml = '<div class="runrate pending"><b>รอข้อมูล</b><span>อัตราทำยอด</span></div>';
+      gapHtml = '<div><span>ยอดห่างจากเป้า</span><b>รอข้อมูล</b></div>';
+      statusHtml = '<div><span>สถานะ KPI Target</span><b>รอข้อมูล</b></div>';
+    }
+
+    var callout;
+    if (real.length) {
+      var r1 = real[0];
+      var product1 = (r1.classes && r1.classes.length) ? esc(thaiClass(r1.classes[0])) : "รอข้อมูล";
+      callout = "เริ่มจาก <b>" + esc(r1.name) + "</b> ก่อน เพราะยอดหาย " + fmtMoney(Math.abs(r1.diff || 0)) +
+                " และเริ่มคุยจาก <b>" + product1 + "</b>";
+    } else {
+      callout = "ยังไม่มีลูกค้าที่ยอดขายลดลงในช่วงนี้ — ติดตามลูกค้าตามปกติ และรอข้อมูลรอบถัดไป";
+    }
+
+    var cardsHtml = "";
+    for (var i = 0; i < 10; i++) {
+      cardsHtml += '<div class="cardPage" data-idx="' + i + '" style="display:' + (i === 0 ? "block" : "none") + '">' +
+        buildCard(i + 1, customers[i] || null) + '</div>';
+    }
+
+    var pagerHtml = '' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 2px">' +
+      '<button id="prevCardBtn" type="button" style="flex:0 0 auto;background:#fff;border:1px solid var(--line);color:var(--red);border-radius:11px;padding:9px 14px;font-size:12px;font-weight:900">\u2190 ก่อนหน้า</button>' +
+      '<span id="cardPageIndicator" style="font-size:12px;font-weight:900;color:#555">1 / 10</span>' +
+      '<button id="nextCardBtn" type="button" style="flex:0 0 auto;background:var(--red);border:none;color:#fff;border-radius:11px;padding:9px 14px;font-size:12px;font-weight:900">ถัดไป \u2192</button>' +
+      '</div>' +
+      '<div id="cardJumpRow" style="display:flex;flex-wrap:wrap;gap:8px;margin:0 2px 16px"></div>';
+
+    var html = '' +
+      '<section class="dashboard" id="dashCurrent">' +
+      '<a class="back" href="javascript:void(0)" id="backToPicker">\u2190 เปลี่ยนชื่อเซลล์</a>' +
+      '<div class="welcome"><div><span>แผนการขายวันนี้</span><h2>' + esc(displaySalesmanName(seData.se)) + '</h2>' +
+      '<small>' + esc(seData.store) + '</small></div>' + runrateHtml + '</div>' +
+      '<div class="miniKpi">' + gapHtml +
+      '<div><span>ยอดขายที่มีโอกาสกู้คืน (10 อันดับ)</span><b>' + fmtMoney(top10Lost) + '</b></div>' + statusHtml + '</div>' +
+      '<div class="todayCallout"><span>วันนี้ควรเริ่มตรงไหน?</span><p>' + callout + '</p></div>' +
+      '<div class="sectionTitle"><h3>\uD83D\uDD25 10 ร้านที่ "ต้องไป" ในสัปดาห์นี้</h3><span>เรียงตามยอดที่หาย</span></div>' +
+      pagerHtml +
+      cardsHtml +
+      '</section>';
+
+    document.getElementById("dashboardMount").innerHTML = html;
+    var back = document.getElementById("backToPicker");
+    if (back) back.addEventListener("click", function(){
+      document.getElementById("dashboardMount").innerHTML = "";
+      document.getElementById("selector").scrollIntoView({ behavior: "smooth" });
+    });
+    setupCardPager(10);
+  }
+
+  function setupCardPager(total){
+    var idx = 0;
+    var pages = document.querySelectorAll("#dashCurrent .cardPage");
+    var indicator = document.getElementById("cardPageIndicator");
+    var prevBtn = document.getElementById("prevCardBtn");
+    var nextBtn = document.getElementById("nextCardBtn");
+    var jumpRow = document.getElementById("cardJumpRow");
+    if (!pages.length || !indicator || !prevBtn || !nextBtn || !jumpRow) return;
+
+    jumpRow.innerHTML = "";
+    for (var i = 0; i < total; i++) {
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.textContent = String(i + 1);
+      chip.setAttribute("data-idx", String(i));
+      chip.style.cssText = "min-width:40px;padding:11px 0;border-radius:11px;border:1px solid var(--line);background:#fff;color:#555;font-size:14px;font-weight:800;cursor:pointer";
+      jumpRow.appendChild(chip);
+    }
+
+    function show(i){
+      idx = Math.max(0, Math.min(total - 1, i));
+      Array.prototype.forEach.call(pages, function(p){
+        p.style.display = (parseInt(p.getAttribute("data-idx"), 10) === idx) ? "block" : "none";
+      });
+      indicator.textContent = (idx + 1) + " / " + total;
+      prevBtn.disabled = (idx === 0);
+      nextBtn.disabled = (idx === total - 1);
+      prevBtn.style.opacity = prevBtn.disabled ? "0.4" : "1";
+      nextBtn.style.opacity = nextBtn.disabled ? "0.4" : "1";
+      Array.prototype.forEach.call(jumpRow.children, function(chip, ci){
+        var active = (ci === idx);
+        chip.style.background = active ? "var(--red)" : "#fff";
+        chip.style.color = active ? "#fff" : "#555";
+        chip.style.borderColor = active ? "var(--red)" : "var(--line)";
+      });
+    }
+
+    prevBtn.addEventListener("click", function(){ show(idx - 1); });
+    nextBtn.addEventListener("click", function(){ show(idx + 1); });
+    Array.prototype.forEach.call(jumpRow.children, function(chip){
+      chip.addEventListener("click", function(){ show(parseInt(chip.getAttribute("data-idx"), 10)); });
+    });
+
+    show(0);
+  }
+
+  function getQueue(){ try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]"); } catch(e){ return []; } }
+  function setQueue(q){ try { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); } catch(e){} }
+
+  function sleep(ms){ return new Promise(function(resolve){ setTimeout(resolve, ms); }); }
+
+  function confirmIssueSaved(issueId, token, attempts){
+    attempts = attempts || 5;
+    var tryNo = 0;
+    function check(){
+      tryNo++;
+      return jsonpRequest({ action: "checkIssue", token: token, issueId: issueId }, 10000)
+        .then(function(res){
+          if (res && res.ok && res.saved) return res;
+          if (tryNo >= attempts) throw new Error("server confirmation timeout");
+          return sleep(700).then(check);
+        });
+    }
+    return check();
+  }
+
+  function sendPayload(payload){
+    // Send the full report by POST so issue details are not placed in the URL.
+    // Then verify the Issue ID via JSONP before showing "saved" to the user.
+    var savedSession = loadSession() || {};
+    var token = savedSession.token || "";
+    if (!token) return Promise.reject(new Error("session expired"));
+
+    var envelope = { action: "saveIssue", token: token, payload: payload };
+    return fetch(getEndpointUrl(), {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(envelope)
+    }).then(function(){
+      return sleep(500).then(function(){
+        return confirmIssueSaved(payload.issueId, token, 5);
+      });
+    });
+  }
+
+  function flushQueue(){
+    var q = getQueue();
+    if (!q.length) return;
+    var remaining = [];
+    var chain = Promise.resolve();
+    q.forEach(function(item){
+      chain = chain.then(function(){
+        item.submittedAt = new Date().toISOString();
+        return sendPayload(item).catch(function(){ remaining.push(item); return false; });
+      });
+    });
+    chain.then(function(){ setQueue(remaining); });
+  }
+  window.addEventListener("online", flushQueue);
+  document.addEventListener("DOMContentLoaded", flushQueue);
+
+  document.addEventListener("click", function(e){
+    var btn = e.target.closest ? e.target.closest(".saveMock") : null;
+    if (!btn) return;
+    var form = btn.closest(".issueForm");
+    var article = btn.closest(".actionCard");
+    var dash = btn.closest(".dashboard");
+    if (!form) return;
+
+    var issueEls = form.querySelectorAll(".issueChoice input:checked");
+    var issues = Array.prototype.map.call(issueEls, function(cb){ return cb.parentElement.textContent.trim(); });
+    var textarea = form.querySelector("textarea");
+    var detail = textarea ? textarea.value.trim() : "";
+    var selects = form.querySelectorAll("select");
+    var outcomeRaw = selects[0] ? selects[0].value : "";
+    var nextActionRaw = selects[1] ? selects[1].value : "";
+    var outcome = outcomeRaw.indexOf("\u2014") === 0 ? "" : outcomeRaw;
+    var nextAction = nextActionRaw.indexOf("\u2014") === 0 ? "" : nextActionRaw;
+
+    if (!issues.length || !detail || !outcome || !nextAction) {
+      alert("โปรดกรอกข้อมูลให้ครบทั้งหมด");
+      return;
+    }
+
+    var h2 = dash ? dash.querySelector("h2") : null;
+    var storeEl = dash ? dash.querySelector(".welcome small") : null;
+    var custEl = article ? article.querySelector(".customerName") : null;
+    var lossEl = article ? article.querySelector(".lossRow strong") : null;
+
+    var createdAt = new Date().toISOString();
+    var payload = {
+      issueId: "ISS-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2,8).toUpperCase(),
+      deviceId: getDeviceId(),
+      createdAt: createdAt,
+      submittedAt: createdAt,
+      timestamp: createdAt,
+      repId: state.currentSE || "",
+      repName: h2 ? h2.textContent.trim() : "",
+      store: storeEl ? storeEl.textContent.trim() : "",
+      customerName: custEl ? custEl.textContent.trim() : "",
+      lossAmount: lossEl ? lossEl.textContent.trim() : "",
+      issues: issues,
+      detail: detail,
+      outcome: outcome,
+      nextAction: nextAction
+    };
+
+    var note = form.querySelector(".mockNote");
+    var originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "กำลังบันทึก...";
+
+    sendPayload(payload).then(function(res){
+      btn.textContent = "\u2705 บันทึกแล้ว";
+      if (note) note.textContent = "ระบบกลางยืนยันแล้ว • เลขอ้างอิง: " + (res.recordId || payload.issueId) + " • " + new Date().toLocaleString("th-TH");
+      setTimeout(function(){ btn.disabled = false; btn.textContent = originalText; }, 3000);
+    }).catch(function(){
+      var q = getQueue(); q.push(payload); setQueue(q);
+      btn.textContent = "\uD83D\uDCE5 บันทึกไว้ในเครื่อง";
+      if (note) note.textContent = "ยังไม่มีอินเทอร์เน็ต ระบบจะส่งข้อมูลอัตโนมัติเมื่อเชื่อมต่อได้";
+      setTimeout(function(){ btn.disabled = false; btn.textContent = originalText; }, 3000);
+    });
+  });
+
+  function initSettingsPanel(){
+    var input = document.getElementById("endpointInput");
+    var saveBtn = document.getElementById("saveEndpointBtn");
+    var testBtn = document.getElementById("testEndpointBtn");
+    var status = document.getElementById("endpointStatus");
+    var logoutBtn = document.getElementById("logoutBtn");
+    if (!input || !saveBtn || !testBtn) return;
+
+    input.value = getEndpointUrl();
+
+    saveBtn.addEventListener("click", function(){
+      var url = input.value.trim();
+      if (!url || url.indexOf("http") !== 0) {
+        status.textContent = "กรุณาใส่ URL ที่ถูกต้อง (ต้องขึ้นต้นด้วย https://)";
+        return;
+      }
+      setEndpointUrl(url);
+      status.textContent = "บันทึกการตั้งค่าแล้ว \u2705 (มีผลเฉพาะเครื่อง/เบราว์เซอร์นี้)";
+    });
+
+    testBtn.addEventListener("click", function(){
+      status.textContent = "กำลังทดสอบ...";
+      fetch(input.value.trim() || getEndpointUrl(), { method: "GET", mode: "no-cors" })
+        .then(function(){ status.textContent = "ส่งคำขอถึงปลายทางสำเร็จ \u2705"; })
+        .catch(function(){ status.textContent = "ทดสอบไม่สำเร็จจริง \u274c (ตรวจสอบว่า URL ถูกต้องและมีอินเทอร์เน็ต)"; });
+    });
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", function(){
+        clearSession();
+        location.reload();
+      });
+    }
+  }
+  document.addEventListener("DOMContentLoaded", initSettingsPanel);
+
+})();
+</script>
+</body>
+</html>
