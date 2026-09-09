@@ -184,7 +184,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       <details class="pick">
         <summary>⚙️ ตั้งค่าระบบ (สำหรับผู้ดูแล)</summary>
         <div style="padding:13px">
-          <a href="https://docs.google.com/spreadsheets/d/1rGCYdjm99R7eYEIGJsOeUo28Ao0aEksLdhdpf2SRwn8/edit?usp=sharing"
+          <a href="PASTE_NEW_GOOGLE_SHEET_URL_HERE"
              target="_blank" rel="noopener"
              style="display:block;font-size:10px;color:#888;text-decoration:underline;margin-bottom:13px">
             📊 ดูรายงานทั้งหมด (Google Sheet)
@@ -219,7 +219,8 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 (function(){
   "use strict";
 
-  var DEFAULT_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxj4Mdl-ndbNWP_JrXstJxhe9cZBzF2aA_fY68n6dXhJK2adg7Bx65nrl7CorCjVdTe/exec";
+  // MIGRATION CONFIG: replace this ONE value after deploying the new Apps Script Web App.
+  var DEFAULT_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxD4Asizszk93pHMsZAGio04g97IDbUinkZmJhsJA94N3MtukZ_fsbtjsB3jX8WSAe5/exec";
   var ENDPOINT_KEY = "taokae_endpoint_url_v1";
   var SESSION_KEY = "taokae_session_v2";
   var DEVICE_KEY = "taokae_device_id_v1";
@@ -919,9 +920,9 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     var tryNo = 0;
     function check(){
       tryNo++;
-      return jsonpRequest({ action: "checkIssue", token: token, issueId: issueId }, 10000)
+      return jsonpRequest({ action: "verifyIssue", token: token, issueId: issueId }, 10000)
         .then(function(res){
-          if (res && res.ok && res.saved) return res;
+          if (res && res.ok && res.exists) return res;
           if (tryNo >= attempts) throw new Error("server confirmation timeout");
           return sleep(700).then(check);
         });
@@ -936,7 +937,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     var token = savedSession.token || "";
     if (!token) return Promise.reject(new Error("session expired"));
 
-    var envelope = { action: "saveIssue", token: token, payload: payload };
+    var envelope = Object.assign({ action: "submitIssue", token: token }, payload);
     return fetch(getEndpointUrl(), {
       method: "POST",
       mode: "no-cors",
