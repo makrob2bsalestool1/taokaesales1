@@ -213,6 +213,101 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
   .miniKpi>div{padding:11px 9px}
   .miniKpi b{font-size:15.5px}
 }
+
+/* ============================== THEME SELECTOR ============================== */
+body[data-theme="white"]{
+  --bg:#F7F7F7; --card:#FFFFFF; --ink:#1E1E1E; --muted:#5B5B5B; --line:#E9E9E9;
+}
+body[data-theme="gray"]{
+  --bg:#E7E8EA; --card:#F7F7F7; --ink:#1D1D1F; --muted:#5C5C60; --line:#D4D5D8;
+}
+body[data-theme="black"]{
+  --bg:#0F1012; --card:#17181B; --ink:#F4F4F5; --muted:#A6A7AB; --line:#2A2B2F;
+}
+
+body[data-theme="gray"] .selectorBox,
+body[data-theme="gray"] .actionCard,
+body[data-theme="gray"] .miniKpi>div,
+body[data-theme="gray"] .achieveWrap{
+  background:var(--card);
+}
+body[data-theme="black"] .selectorBox,
+body[data-theme="black"] .actionCard,
+body[data-theme="black"] .miniKpi>div,
+body[data-theme="black"] .achieveWrap,
+body[data-theme="black"] .issueForm,
+body[data-theme="black"] .pick,
+body[data-theme="black"] .storeSelect,
+body[data-theme="black"] .issueChoice,
+body[data-theme="black"] .issueForm textarea,
+body[data-theme="black"] .issueForm select{
+  background:var(--card);
+  color:var(--ink);
+  border-color:var(--line);
+}
+body[data-theme="black"] .sellBox,
+body[data-theme="black"] .detailBox div{
+  background:#1D1E22;
+}
+body[data-theme="black"] .todayCallout{
+  background:#2A181B;
+  border-color:#4B282D;
+}
+body[data-theme="black"] .todayCallout p,
+body[data-theme="black"] .reason,
+body[data-theme="black"] .custMore p,
+body[data-theme="black"] .selectorTip,
+body[data-theme="black"] .issueForm .label,
+body[data-theme="black"] .storeField label{
+  color:#C8C9CC;
+}
+body[data-theme="black"] .miniKpi>div:nth-child(1),
+body[data-theme="black"] .miniKpi>div:nth-child(2),
+body[data-theme="black"] .miniKpi>div:nth-child(3){
+  background:#17181B;
+}
+body[data-theme="black"] .achieveTrack{background:#2B2D31}
+body[data-theme="black"] .primaryProduct{color:#FF8B96}
+body[data-theme="black"] .back{color:#FF6D7A}
+body[data-theme="black"] input::placeholder,
+body[data-theme="black"] textarea::placeholder{color:#81838A}
+body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
+
+.themePicker{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:8px;
+}
+.themeChoice{
+  appearance:none;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+  border-radius:12px;
+  min-height:48px;
+  padding:9px 8px;
+  font-family:inherit;
+  font-size:12.5px;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+}
+.themeChoice[aria-pressed="true"]{
+  border-color:var(--red);
+  box-shadow:0 0 0 2px var(--softred);
+  color:var(--red);
+}
+.themeSwatch{
+  width:18px;height:18px;border-radius:50%;border:1px solid #CFCFCF;display:inline-block;flex-shrink:0
+}
+.themeSwatch.white{background:#FFFFFF}
+.themeSwatch.gray{background:#BFC1C5}
+.themeSwatch.black{background:#111214;border-color:#333}
+
 </style>
 <body>
 <div class="app">
@@ -265,6 +360,17 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
         <div class="selectorTip">ระบบจะแสดงเฉพาะ Action Plan ของคนที่เลือก ไม่โชว์ข้อมูลทีมทั้งหมด</div>
       </div>
     </section>
+<div id="dashboardMount"></div>
+
+    <section class="selectorBox" style="margin-top:16px">
+      <h2>📌 ติดตามปัญหา</h2>
+      <div class="selectorTip">
+        เมื่อเชื่อมระบบจริง ข้อมูลที่เซลล์บันทึกจะรวมเป็น Weekly Problem Summary เช่น
+        ราคา / Stock / Delivery / Competitor / Credit และส่งต่อให้ทีมที่เกี่ยวข้องติดตามแก้ไขได้
+      </div>
+    </section>
+
+
 
     <section class="selectorBox" id="appSettings" style="margin-top:10px;display:none">
       <details class="pick">
@@ -275,6 +381,15 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
              style="display:block;font-size:10px;color:#888;text-decoration:underline;margin-bottom:13px">
             📊 ดูรายงานทั้งหมด (Google Sheet)
           </a>
+
+          <div style="margin-bottom:16px">
+            <span class="label" style="display:block;font-size:11px;font-weight:900;color:#555;margin-bottom:7px">ธีมพื้นหลัง UX/UI</span>
+            <div class="themePicker" role="group" aria-label="เลือกธีมพื้นหลัง">
+              <button type="button" class="themeChoice" data-theme-choice="white" aria-pressed="true"><span class="themeSwatch white"></span>ขาว</button>
+              <button type="button" class="themeChoice" data-theme-choice="gray" aria-pressed="false"><span class="themeSwatch gray"></span>เทา</button>
+              <button type="button" class="themeChoice" data-theme-choice="black" aria-pressed="false"><span class="themeSwatch black"></span>ดำ</button>
+            </div>
+          </div>
           <span class="label" style="display:block;font-size:9px;font-weight:900;color:#555;margin-bottom:7px">ที่อยู่ระบบเชื่อมต่อ Google Apps Script</span>
           <input id="endpointInput" type="text" placeholder="https://script.google.com/macros/s/XXXX/exec"
             style="width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px;font-family:inherit;font-size:10px;color:#444;box-sizing:border-box">
@@ -285,16 +400,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       </details>
     </section>
 
-    <div id="dashboardMount"></div>
-
-    <section class="selectorBox" style="margin-top:16px">
-      <h2>📌 ติดตามปัญหา</h2>
-      <div class="selectorTip">
-        เมื่อเชื่อมระบบจริง ข้อมูลที่เซลล์บันทึกจะรวมเป็น Weekly Problem Summary เช่น
-        ราคา / Stock / Delivery / Competitor / Credit และส่งต่อให้ทีมที่เกี่ยวข้องติดตามแก้ไขได้
-      </div>
-    </section>
-
+    
     <div class="footer">ข้อมูลจริง ณ 9 ก.ย. 2026 &bull; เปรียบเทียบยอด ส.ค. 2026 กับ ก.ย. 2026 (MTD) &bull; ยอด ส.ค.–ก.ย. 2025 และหมวดสินค้าจาก Port_Performance.xlsx และ Bottom10_Sales_by_Class.xlsx &bull; ระบบส่งเฉพาะข้อมูลของสาขาที่เข้าสู่ระบบ</div>
 
     <button id="logoutBtn" type="button" style="display:block;width:100%;max-width:200px;margin:16px auto 0;background:#fff;border:1px solid var(--bad);color:var(--bad);border-radius:11px;padding:10px;font-size:10px;font-weight:900">🔒 ออกจากระบบ</button>
@@ -311,6 +417,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
   var SESSION_KEY = "taokae_session_v2";
   var DEVICE_KEY = "taokae_device_id_v1";
   var QUEUE_KEY = "taokae_pending_issues_v1";
+  var THEME_KEY = "taokae_ui_theme_v1";
 
   var STORE_LABELS = { "001": "สโตร์ 001 - ลาดพร้าว", "003": "สโตร์ 003 - ศรีนครินทร์", "005": "สโตร์ 005 - ชลบุรี" };
 
@@ -330,6 +437,27 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
   }
   function setEndpointUrl(url){
     try { localStorage.setItem(ENDPOINT_KEY, url); } catch(e){}
+  }
+
+  function applyTheme(theme){
+    var allowed = { white:1, gray:1, black:1 };
+    if (!allowed[theme]) theme = "white";
+    document.body.setAttribute("data-theme", theme);
+    try { localStorage.setItem(THEME_KEY, theme); } catch(e){}
+    Array.prototype.forEach.call(document.querySelectorAll("[data-theme-choice]"), function(btn){
+      btn.setAttribute("aria-pressed", btn.getAttribute("data-theme-choice") === theme ? "true" : "false");
+    });
+  }
+
+  function initTheme(){
+    var theme = "white";
+    try { theme = localStorage.getItem(THEME_KEY) || "white"; } catch(e){}
+    applyTheme(theme);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-theme-choice]"), function(btn){
+      btn.addEventListener("click", function(){
+        applyTheme(btn.getAttribute("data-theme-choice"));
+      });
+    });
   }
 
   var jsonpCounter = 0;
@@ -974,6 +1102,8 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     appShell.style.display = "block";
     initAppShell();
   }
+
+  initTheme();
 
   var savedSession = loadSession();
   if (SKIP_LOGIN_TEMP) {
