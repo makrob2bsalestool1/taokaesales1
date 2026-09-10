@@ -308,6 +308,7 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
 .themeSwatch.gray{background:#BFC1C5}
 .themeSwatch.black{background:#111214;border-color:#333}
 
+#loginBtn:disabled{opacity:.72;cursor:not-allowed}
 </style>
 <body>
 <div class="app">
@@ -391,7 +392,7 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
             </div>
           </div>
           <span class="label" style="display:block;font-size:9px;font-weight:900;color:#555;margin-bottom:7px">ที่อยู่ระบบเชื่อมต่อ Google Apps Script</span>
-          <input id="endpointInput" type="text" placeholder="https://script.google.com/macros/s/XXXX/exec"
+          <input id="endpointInput" readonly type="text" placeholder="https://script.google.com/macros/s/XXXX/exec"
             style="width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px;font-family:inherit;font-size:10px;color:#444;box-sizing:border-box">
           <button id="saveEndpointBtn" type="button" style="margin-top:9px;background:var(--red);color:#fff;border:none;border-radius:11px;width:100%;padding:11px;font-size:10px;font-weight:900">บันทึกการตั้งค่า</button>
           <button id="testEndpointBtn" type="button" style="margin-top:8px;width:100%;background:#fff;border:1px solid var(--line);color:var(--red);border-radius:11px;padding:10px;font-size:10px;font-weight:900">ทดสอบการเชื่อมต่อ</button>
@@ -1035,29 +1036,50 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
     });
   }
 
+  var pendingLogin = null;
+
+  function setLoginBusy(busy, text){
+    loginBtn.disabled = !!busy;
+    loginBtn.textContent = busy ? (text || "กำลังเชื่อมต่อ...") : "เข้าสู่ระบบ";
+  }
+
   function doLogin(store, code){
-    loginStatus.textContent = "กำลังตรวจสอบ...";
-    return jsonpRequest({ action: "login", store: store, code: code }).then(function(res){
-      if (!res || !res.ok) {
-        loginStatus.textContent = res && res.message ? res.message : "เข้าสู่ระบบไม่สำเร็จ";
-        return null;
-      }
-      if (!res.token) {
-        loginStatus.textContent = "เซิร์ฟเวอร์ยังไม่รองรับ session token";
-        return null;
-      }
+    loginStatus.textContent = "กำลังตรวจสอบรหัส...";
+    setLoginBusy(true, "กำลังตรวจสอบ...");
+    return jsonpRequest({ action: "login", store: store, code: code }, 15000).then(function(res){
+      if (!res || !res.ok) throw new Error(res && res.message ? res.message : "เข้าสู่ระบบไม่สำเร็จ");
+      if (!res.token) throw new Error("เซิร์ฟเวอร์ยังไม่รองรับ session token");
       saveSession(store, res.token, res.role);
+      pendingLogin = {store:store, token:res.token, role:res.role};
+      loginStatus.textContent = "✓ เข้าสู่ระบบแล้ว กำลังโหลดข้อมูล...";
       return res;
-    }).catch(function(){
-      loginStatus.textContent = "เชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เนตแล้วลองใหม่";
+    }).catch(function(err){
+      pendingLogin = null;
+      loginStatus.textContent = /network|timeout|หมดเวลา/i.test(String(err && err.message || err))
+        ? "ระบบตอบสนองช้าชั่วคราว กรุณากดลองอีกครั้ง"
+        : String(err && err.message || "เข้าสู่ระบบไม่สำเร็จ");
       return null;
+    }).finally(function(){
+      if (!pendingLogin) setLoginBusy(false);
     });
   }
 
   function fetchData(store, token){
-    return jsonpRequest({ action: "data", store: store, token: token }, 20000).then(function(res){
+    return jsonpRequest({ action: "data", store: store, token: token }, 16000).then(function(res){
       if (!res || !res.ok) throw new Error(res && res.message ? res.message : "โหลดข้อมูลไม่สำเร็จ");
       return res;
+    });
+  }
+
+  function fetchDataStable(store, token, retry){
+    retry = retry || 0;
+    return fetchData(store, token).catch(function(err){
+      if (retry < 1 && /network|timeout|หมดเวลา/i.test(String(err && err.message || err))) {
+        loginStatus.textContent = "การเชื่อมต่อช้ากว่าปกติ กำลังลองอีกครั้ง...";
+        return new Promise(function(resolve){ setTimeout(resolve, 800); })
+          .then(function(){ return fetchDataStable(store, token, retry + 1); });
+      }
+      throw err;
     });
   }
 
@@ -1066,23 +1088,34 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
     var code = document.getElementById("loginCode").value.trim();
     if (!store) { loginStatus.textContent = "กรุณาเลือกสาขา"; return; }
     if (!code) { loginStatus.textContent = "กรุณากรอกรหัส"; return; }
+    if (loginBtn.disabled) return;
     doLogin(store, code).then(function(res){
       if (!res) return;
-      loginStatus.textContent = "";
       bootApp(store, res.token, res.role);
     });
   });
 
   function bootApp(store, token, role){
-    loginStatus.textContent = "กำลังโหลดข้อมูล...";
-    fetchData(store, token).then(function(res){
+    loginStatus.textContent = "✓ เข้าสู่ระบบแล้ว กำลังโหลดข้อมูลการขาย...";
+    setLoginBusy(true, "กำลังโหลดข้อมูล...");
+    fetchDataStable(store, token).then(function(res){
       state.role = res.role;
       state.storesData = res.stores;
+      pendingLogin = null;
+      loginStatus.textContent = "";
       loginBox.style.display = "none";
       appShell.style.display = "block";
+      setLoginBusy(false);
       initAppShell();
-    }).catch(function(err){
-      loginStatus.textContent = "โหลดข้อมูลไม่สำเร็จ: " + err.message;
+    }).catch(function(){
+      loginStatus.textContent = "เข้าสู่ระบบแล้ว แต่โหลดข้อมูลไม่สำเร็จ — กดปุ่มเพื่อลองโหลดอีกครั้ง";
+      loginBtn.disabled = false;
+      loginBtn.textContent = "ลองโหลดข้อมูลอีกครั้ง";
+      loginBtn.onclick = function(){
+        if (!pendingLogin) return;
+        setLoginBusy(true, "กำลังโหลดข้อมูล...");
+        bootApp(pendingLogin.store, pendingLogin.token, pendingLogin.role);
+      };
     });
   }
 
