@@ -43,15 +43,9 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .runrate b{display:block;font-size:26px} .runrate span{display:block;font-size:12.5px;line-height:1.4;opacity:.95;margin-top:5px;font-weight:700}
 
 .miniKpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-.miniKpi>div{
-  background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px 11px;
-  box-shadow:0 3px 10px rgba(0,0,0,.025)
-}
-.miniKpi>div:nth-child(1){background:linear-gradient(135deg,#FFF7F7,#FFF)}
-.miniKpi>div:nth-child(2){background:linear-gradient(135deg,#FFF2F3,#FFF)}
-.miniKpi>div:nth-child(3){background:linear-gradient(135deg,#EEF9F3,#FFF)}
-.miniKpi span{display:block;font-size:10.8px;color:var(--muted);font-weight:800;line-height:1.4}
-.miniKpi b{display:block;font-size:17px;margin-top:6px;line-height:1.2}
+.miniKpi>div{background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px 10px}
+.miniKpi span{display:block;font-size:10.5px;color:var(--muted);font-weight:700;line-height:1.35}
+.miniKpi b{display:block;font-size:16px;margin-top:6px;line-height:1.2}
 .badText{color:var(--bad)}.warnText{color:var(--orange)}.goodText{color:var(--green)}
 
 .portfolioStatus{margin-top:10px;border-radius:15px;padding:13px 14px}
@@ -60,45 +54,16 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .portfolioStatus.portfolioWarn{background:var(--softorange);border:1px solid #F0D6A6}
 .portfolioStatus.portfolioBad{background:var(--softred);border:1px solid #F3D1D4}
 
-.achieveWrap{
-  margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:18px;
-  padding:14px 15px 15px;box-shadow:0 4px 14px rgba(0,0,0,.035)
-}
-.achieveLabel{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
-.achieveLabel span{font-size:13px;color:#3F3F3F;font-weight:800;line-height:1.45}
-.achieveLabel b{font-size:22px;font-weight:950;line-height:1;white-space:nowrap}
-.achieveTrack{
-  height:22px;background:linear-gradient(90deg,#F1F1F1 0%,#F7F7F7 100%);
-  border-radius:999px;overflow:hidden;position:relative;
-  box-shadow:inset 0 1px 3px rgba(0,0,0,.06)
-}
-.achieveFill{
-  height:100%;min-width:0;border-radius:999px;transition:width .35s ease;
-  display:flex;align-items:center;justify-content:flex-end;position:relative;
-  overflow:visible
-}
-.achieveFill:after{
-  content:"";position:absolute;right:-7px;top:50%;width:14px;height:14px;
-  transform:translateY(-50%);border-radius:50%;background:#fff;
-  border:4px solid currentColor;box-shadow:0 2px 7px rgba(0,0,0,.18)
-}
-.achieveFill.badText{
-  color:#D11F32;background:linear-gradient(90deg,#D11F32 0%,#FF4058 62%,#FF7889 100%);
-  box-shadow:0 5px 16px rgba(209,31,50,.30)
-}
-.achieveFill.warnText{
-  color:#B8791F;background:linear-gradient(90deg,#B8791F 0%,#E7A33D 100%);
-  box-shadow:0 5px 16px rgba(184,121,31,.25)
-}
-.achieveFill.goodText{
-  color:#237A57;background:linear-gradient(90deg,#237A57 0%,#49A97E 100%);
-  box-shadow:0 5px 16px rgba(35,122,87,.25)
-}
+.achieveWrap{margin-top:12px}
+.achieveLabel{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.achieveLabel span{font-size:11.5px;color:var(--muted);font-weight:700}
+.achieveLabel b{font-size:15px;font-weight:900}
+.achieveTrack{height:14px;background:#EFEFEF;border-radius:999px;overflow:hidden;position:relative}
+.achieveFill{height:100%;border-radius:999px;transition:width .3s ease}
+.achieveFill.badText{background:var(--bad)}
+.achieveFill.warnText{background:var(--orange)}
+.achieveFill.goodText{background:var(--green)}
 .achieveTrack.pending{background:#F2F2F2}
-.achieveTrack.pending .achieveFill:after{display:none}
-.achieveMeta{display:flex;justify-content:space-between;gap:12px;margin-top:9px}
-.achieveMeta span{font-size:11px;color:var(--muted);font-weight:700}
-.achieveMeta b{display:block;font-size:13px;color:#222;margin-top:2px}
 
 .todayCallout{background:var(--softred);border:1px solid #F3D1D4;border-radius:17px;padding:16px;margin-top:12px}
 .todayCallout span{font-size:12.5px;color:#8E3038;font-weight:900}
@@ -202,140 +167,6 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 :focus-visible{outline:3px solid #F3B4B8;outline-offset:2px}
 
 
-
-@media(max-width:520px){
-  .achieveWrap{padding:13px}
-  .achieveLabel span{font-size:12px}
-  .achieveLabel b{font-size:20px}
-  .achieveTrack{height:20px}
-  .achieveMeta span{font-size:10.5px}
-  .miniKpi{gap:7px}
-  .miniKpi>div{padding:11px 9px}
-  .miniKpi b{font-size:15.5px}
-}
-
-/* ============================== THEME SELECTOR ============================== */
-body[data-theme="white"]{
-  --bg:#F7F7F7; --card:#FFFFFF; --ink:#1E1E1E; --muted:#5B5B5B; --line:#E9E9E9;
-}
-body[data-theme="gray"]{
-  --bg:#E7E8EA; --card:#F7F7F7; --ink:#1D1D1F; --muted:#5C5C60; --line:#D4D5D8;
-}
-body[data-theme="black"]{
-  --bg:#0F1012; --card:#17181B; --ink:#F4F4F5; --muted:#A6A7AB; --line:#2A2B2F;
-}
-
-body[data-theme="gray"] .selectorBox,
-body[data-theme="gray"] .actionCard,
-body[data-theme="gray"] .miniKpi>div,
-body[data-theme="gray"] .achieveWrap{
-  background:var(--card);
-}
-body[data-theme="black"] .selectorBox,
-body[data-theme="black"] .actionCard,
-body[data-theme="black"] .miniKpi>div,
-body[data-theme="black"] .achieveWrap,
-body[data-theme="black"] .issueForm,
-body[data-theme="black"] .pick,
-body[data-theme="black"] .storeSelect,
-body[data-theme="black"] .issueChoice,
-body[data-theme="black"] .issueForm textarea,
-body[data-theme="black"] .issueForm select{
-  background:var(--card);
-  color:var(--ink);
-  border-color:var(--line);
-}
-body[data-theme="black"] .sellBox,
-body[data-theme="black"] .detailBox div{
-  background:#1D1E22;
-}
-body[data-theme="black"] .todayCallout{
-  background:#2A181B;
-  border-color:#4B282D;
-}
-body[data-theme="black"] .todayCallout p,
-body[data-theme="black"] .reason,
-body[data-theme="black"] .custMore p,
-body[data-theme="black"] .selectorTip,
-body[data-theme="black"] .issueForm .label,
-body[data-theme="black"] .storeField label{
-  color:#C8C9CC;
-}
-body[data-theme="black"] .miniKpi>div:nth-child(1),
-body[data-theme="black"] .miniKpi>div:nth-child(2),
-body[data-theme="black"] .miniKpi>div:nth-child(3){
-  background:#17181B;
-}
-body[data-theme="black"] .achieveTrack{background:#2B2D31}
-body[data-theme="black"] .primaryProduct{color:#FF8B96}
-body[data-theme="black"] .back{color:#FF6D7A}
-body[data-theme="black"] input::placeholder,
-body[data-theme="black"] textarea::placeholder{color:#81838A}
-body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
-
-.themePicker{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-  margin-top:8px;
-}
-.themeChoice{
-  appearance:none;
-  border:1px solid var(--line);
-  background:var(--card);
-  color:var(--ink);
-  border-radius:12px;
-  min-height:48px;
-  padding:9px 8px;
-  font-family:inherit;
-  font-size:12.5px;
-  font-weight:900;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-}
-.themeChoice[aria-pressed="true"]{
-  border-color:var(--red);
-  box-shadow:0 0 0 2px var(--softred);
-  color:var(--red);
-}
-.themeSwatch{
-  width:18px;height:18px;border-radius:50%;border:1px solid #CFCFCF;display:inline-block;flex-shrink:0
-}
-.themeSwatch.white{background:#FFFFFF}
-.themeSwatch.gray{background:#BFC1C5}
-.themeSwatch.black{background:#111214;border-color:#333}
-
-#loginBtn:disabled{opacity:.72;cursor:not-allowed}
-
-/* Photo evidence */
-.evidenceBox{
-  margin-top:14px;padding:13px;border:1px dashed #D9A0A5;border-radius:13px;
-  background:#FFF9F9
-}
-.evidenceActions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.evidencePick{
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  min-height:44px;padding:10px 14px;border-radius:11px;border:1px solid #E5B8BC;
-  background:#fff;color:#A81220;font-size:13px;font-weight:900;cursor:pointer
-}
-.evidenceInput{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
-.evidenceHint{font-size:10.5px;color:#777;line-height:1.5;margin-top:7px}
-.evidencePreview{display:none;margin-top:10px;position:relative}
-.evidencePreview.show{display:block}
-.evidencePreview img{
-  display:block;width:100%;max-height:240px;object-fit:cover;border-radius:12px;
-  border:1px solid var(--line);background:#fff
-}
-.evidenceMeta{font-size:10.5px;color:#666;margin-top:6px;line-height:1.45}
-.evidenceRemove{
-  position:absolute;top:8px;right:8px;border:none;border-radius:999px;
-  width:34px;height:34px;background:rgba(0,0,0,.7);color:#fff;font-weight:900;cursor:pointer
-}
-.evidenceUploading{font-size:11px;font-weight:800;color:#A81220;margin-top:7px}
-
 </style>
 <body>
 <div class="app">
@@ -388,7 +219,27 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
         <div class="selectorTip">ระบบจะแสดงเฉพาะ Action Plan ของคนที่เลือก ไม่โชว์ข้อมูลทีมทั้งหมด</div>
       </div>
     </section>
-<div id="dashboardMount"></div>
+
+    <section class="selectorBox" id="appSettings" style="margin-top:10px;display:none">
+      <details class="pick">
+        <summary>⚙️ ตั้งค่าระบบ (สำหรับผู้ดูแล)</summary>
+        <div style="padding:13px">
+          <a href="https://docs.google.com/spreadsheets/d/1rGCYdjm99R7eYEIGJsOeUo28Ao0aEksLdhdpf2SRwn8/edit?usp=sharing"
+             target="_blank" rel="noopener"
+             style="display:block;font-size:10px;color:#888;text-decoration:underline;margin-bottom:13px">
+            📊 ดูรายงานทั้งหมด (Google Sheet)
+          </a>
+          <span class="label" style="display:block;font-size:9px;font-weight:900;color:#555;margin-bottom:7px">ที่อยู่ระบบเชื่อมต่อ Google Apps Script</span>
+          <input id="endpointInput" type="text" placeholder="https://script.google.com/macros/s/XXXX/exec"
+            style="width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px;font-family:inherit;font-size:10px;color:#444;box-sizing:border-box">
+          <button id="saveEndpointBtn" type="button" style="margin-top:9px;background:var(--red);color:#fff;border:none;border-radius:11px;width:100%;padding:11px;font-size:10px;font-weight:900">บันทึกการตั้งค่า</button>
+          <button id="testEndpointBtn" type="button" style="margin-top:8px;width:100%;background:#fff;border:1px solid var(--line);color:var(--red);border-radius:11px;padding:10px;font-size:10px;font-weight:900">ทดสอบการเชื่อมต่อ</button>
+          <div id="endpointStatus" style="font-size:8px;color:#888;line-height:1.45;margin-top:8px;text-align:center"></div>
+        </div>
+      </details>
+    </section>
+
+    <div id="dashboardMount"></div>
 
     <section class="selectorBox" style="margin-top:16px">
       <h2>📌 ติดตามปัญหา</h2>
@@ -398,37 +249,6 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
       </div>
     </section>
 
-
-
-    <section class="selectorBox" id="appSettings" style="margin-top:10px;display:none">
-      <details class="pick">
-        <summary>⚙️ ตั้งค่าระบบ (สำหรับผู้ดูแล)</summary>
-        <div style="padding:13px">
-          <a href="https://docs.google.com/spreadsheets/d/1GHDPYg6wgFMlO19P6_nW5NMtQtXtoC4TRdgJzsA05mc/edit"
-             target="_blank" rel="noopener"
-             style="display:block;font-size:10px;color:#888;text-decoration:underline;margin-bottom:13px">
-            📊 ดูรายงานทั้งหมด (Google Sheet)
-          </a>
-
-          <div style="margin-bottom:16px">
-            <span class="label" style="display:block;font-size:11px;font-weight:900;color:#555;margin-bottom:7px">ธีมพื้นหลัง UX/UI</span>
-            <div class="themePicker" role="group" aria-label="เลือกธีมพื้นหลัง">
-              <button type="button" class="themeChoice" data-theme-choice="white" aria-pressed="true"><span class="themeSwatch white"></span>ขาว</button>
-              <button type="button" class="themeChoice" data-theme-choice="gray" aria-pressed="false"><span class="themeSwatch gray"></span>เทา</button>
-              <button type="button" class="themeChoice" data-theme-choice="black" aria-pressed="false"><span class="themeSwatch black"></span>ดำ</button>
-            </div>
-          </div>
-          <span class="label" style="display:block;font-size:9px;font-weight:900;color:#555;margin-bottom:7px">ที่อยู่ระบบเชื่อมต่อ Google Apps Script</span>
-          <input id="endpointInput" readonly type="text" placeholder="https://script.google.com/macros/s/XXXX/exec"
-            style="width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px;font-family:inherit;font-size:10px;color:#444;box-sizing:border-box">
-          <button id="saveEndpointBtn" type="button" style="margin-top:9px;background:var(--red);color:#fff;border:none;border-radius:11px;width:100%;padding:11px;font-size:10px;font-weight:900">บันทึกการตั้งค่า</button>
-          <button id="testEndpointBtn" type="button" style="margin-top:8px;width:100%;background:#fff;border:1px solid var(--line);color:var(--red);border-radius:11px;padding:10px;font-size:10px;font-weight:900">ทดสอบการเชื่อมต่อ</button>
-          <div id="endpointStatus" style="font-size:8px;color:#888;line-height:1.45;margin-top:8px;text-align:center"></div>
-        </div>
-      </details>
-    </section>
-
-    
     <div class="footer">ข้อมูลจริง ณ 9 ก.ย. 2026 &bull; เปรียบเทียบยอด ส.ค. 2026 กับ ก.ย. 2026 (MTD) &bull; ยอด ส.ค.–ก.ย. 2025 และหมวดสินค้าจาก Port_Performance.xlsx และ Bottom10_Sales_by_Class.xlsx &bull; ระบบส่งเฉพาะข้อมูลของสาขาที่เข้าสู่ระบบ</div>
 
     <button id="logoutBtn" type="button" style="display:block;width:100%;max-width:200px;margin:16px auto 0;background:#fff;border:1px solid var(--bad);color:var(--bad);border-radius:11px;padding:10px;font-size:10px;font-weight:900">🔒 ออกจากระบบ</button>
@@ -445,7 +265,6 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
   var SESSION_KEY = "taokae_session_v2";
   var DEVICE_KEY = "taokae_device_id_v1";
   var QUEUE_KEY = "taokae_pending_issues_v1";
-  var THEME_KEY = "taokae_ui_theme_v1";
 
   var STORE_LABELS = { "001": "สโตร์ 001 - ลาดพร้าว", "003": "สโตร์ 003 - ศรีนครินทร์", "005": "สโตร์ 005 - ชลบุรี" };
 
@@ -465,27 +284,6 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
   }
   function setEndpointUrl(url){
     try { localStorage.setItem(ENDPOINT_KEY, url); } catch(e){}
-  }
-
-  function applyTheme(theme){
-    var allowed = { white:1, gray:1, black:1 };
-    if (!allowed[theme]) theme = "white";
-    document.body.setAttribute("data-theme", theme);
-    try { localStorage.setItem(THEME_KEY, theme); } catch(e){}
-    Array.prototype.forEach.call(document.querySelectorAll("[data-theme-choice]"), function(btn){
-      btn.setAttribute("aria-pressed", btn.getAttribute("data-theme-choice") === theme ? "true" : "false");
-    });
-  }
-
-  function initTheme(){
-    var theme = "white";
-    try { theme = localStorage.getItem(THEME_KEY) || "white"; } catch(e){}
-    applyTheme(theme);
-    Array.prototype.forEach.call(document.querySelectorAll("[data-theme-choice]"), function(btn){
-      btn.addEventListener("click", function(){
-        applyTheme(btn.getAttribute("data-theme-choice"));
-      });
-    });
   }
 
   var jsonpCounter = 0;
@@ -1063,50 +861,29 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
     });
   }
 
-  var pendingLogin = null;
-
-  function setLoginBusy(busy, text){
-    loginBtn.disabled = !!busy;
-    loginBtn.textContent = busy ? (text || "กำลังเชื่อมต่อ...") : "เข้าสู่ระบบ";
-  }
-
   function doLogin(store, code){
-    loginStatus.textContent = "กำลังตรวจสอบรหัส...";
-    setLoginBusy(true, "กำลังตรวจสอบ...");
-    return jsonpRequest({ action: "login", store: store, code: code }, 15000).then(function(res){
-      if (!res || !res.ok) throw new Error(res && res.message ? res.message : "เข้าสู่ระบบไม่สำเร็จ");
-      if (!res.token) throw new Error("เซิร์ฟเวอร์ยังไม่รองรับ session token");
+    loginStatus.textContent = "กำลังตรวจสอบ...";
+    return jsonpRequest({ action: "login", store: store, code: code }).then(function(res){
+      if (!res || !res.ok) {
+        loginStatus.textContent = res && res.message ? res.message : "เข้าสู่ระบบไม่สำเร็จ";
+        return null;
+      }
+      if (!res.token) {
+        loginStatus.textContent = "เซิร์ฟเวอร์ยังไม่รองรับ session token";
+        return null;
+      }
       saveSession(store, res.token, res.role);
-      pendingLogin = {store:store, token:res.token, role:res.role};
-      loginStatus.textContent = "✓ เข้าสู่ระบบแล้ว กำลังโหลดข้อมูล...";
       return res;
-    }).catch(function(err){
-      pendingLogin = null;
-      loginStatus.textContent = /network|timeout|หมดเวลา/i.test(String(err && err.message || err))
-        ? "ระบบตอบสนองช้าชั่วคราว กรุณากดลองอีกครั้ง"
-        : String(err && err.message || "เข้าสู่ระบบไม่สำเร็จ");
+    }).catch(function(){
+      loginStatus.textContent = "เชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เนตแล้วลองใหม่";
       return null;
-    }).finally(function(){
-      if (!pendingLogin) setLoginBusy(false);
     });
   }
 
   function fetchData(store, token){
-    return jsonpRequest({ action: "data", store: store, token: token }, 16000).then(function(res){
+    return jsonpRequest({ action: "data", store: store, token: token }, 20000).then(function(res){
       if (!res || !res.ok) throw new Error(res && res.message ? res.message : "โหลดข้อมูลไม่สำเร็จ");
       return res;
-    });
-  }
-
-  function fetchDataStable(store, token, retry){
-    retry = retry || 0;
-    return fetchData(store, token).catch(function(err){
-      if (retry < 1 && /network|timeout|หมดเวลา/i.test(String(err && err.message || err))) {
-        loginStatus.textContent = "การเชื่อมต่อช้ากว่าปกติ กำลังลองอีกครั้ง...";
-        return new Promise(function(resolve){ setTimeout(resolve, 800); })
-          .then(function(){ return fetchDataStable(store, token, retry + 1); });
-      }
-      throw err;
     });
   }
 
@@ -1115,34 +892,23 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
     var code = document.getElementById("loginCode").value.trim();
     if (!store) { loginStatus.textContent = "กรุณาเลือกสาขา"; return; }
     if (!code) { loginStatus.textContent = "กรุณากรอกรหัส"; return; }
-    if (loginBtn.disabled) return;
     doLogin(store, code).then(function(res){
       if (!res) return;
+      loginStatus.textContent = "";
       bootApp(store, res.token, res.role);
     });
   });
 
   function bootApp(store, token, role){
-    loginStatus.textContent = "✓ เข้าสู่ระบบแล้ว กำลังโหลดข้อมูลการขาย...";
-    setLoginBusy(true, "กำลังโหลดข้อมูล...");
-    fetchDataStable(store, token).then(function(res){
+    loginStatus.textContent = "กำลังโหลดข้อมูล...";
+    fetchData(store, token).then(function(res){
       state.role = res.role;
       state.storesData = res.stores;
-      pendingLogin = null;
-      loginStatus.textContent = "";
       loginBox.style.display = "none";
       appShell.style.display = "block";
-      setLoginBusy(false);
       initAppShell();
-    }).catch(function(){
-      loginStatus.textContent = "เข้าสู่ระบบแล้ว แต่โหลดข้อมูลไม่สำเร็จ — กดปุ่มเพื่อลองโหลดอีกครั้ง";
-      loginBtn.disabled = false;
-      loginBtn.textContent = "ลองโหลดข้อมูลอีกครั้ง";
-      loginBtn.onclick = function(){
-        if (!pendingLogin) return;
-        setLoginBusy(true, "กำลังโหลดข้อมูล...");
-        bootApp(pendingLogin.store, pendingLogin.token, pendingLogin.role);
-      };
+    }).catch(function(err){
+      loginStatus.textContent = "โหลดข้อมูลไม่สำเร็จ: " + err.message;
     });
   }
 
@@ -1162,8 +928,6 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
     appShell.style.display = "block";
     initAppShell();
   }
-
-  initTheme();
 
   var savedSession = loadSession();
   if (SKIP_LOGIN_TEMP) {
@@ -1315,15 +1079,6 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
       '<option>แจ้งหัวหน้า / ทีมที่เกี่ยวข้อง</option><option>นัดเข้าพบครั้งถัดไป</option></select></div>' +
       '<div class="fieldBlock"><span class="label">หมายเหตุเพิ่มเติม <span class="req">*</span></span>' +
       '<textarea placeholder="เช่น ลูกค้าแจ้งว่าราคาหมูสูงกว่าคู่แข่งประมาณ 5 บาท/กก."></textarea></div>' +
-      '<div class="evidenceBox">' +
-      '<span class="label">📷 รูปหลักฐาน <span style="font-weight:600;color:#888">(ไม่บังคับ)</span></span>' +
-      '<div class="evidenceActions">' +
-      '<label class="evidencePick">📸 ถ่ายรูป / เลือกรูป<input class="evidenceInput" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label>' +
-      '</div>' +
-      '<div class="evidenceHint">รองรับ JPG, PNG, WebP • ระบบจะย่อรูปอัตโนมัติก่อนอัปโหลด • 1 รูปต่อ 1 ปัญหา</div>' +
-      '<div class="evidencePreview"><button class="evidenceRemove" type="button" aria-label="ลบรูป">×</button><img alt="ตัวอย่างรูปหลักฐาน"><div class="evidenceMeta"></div></div>' +
-      '<div class="evidenceUploading"></div>' +
-      '</div>' +
       '<button class="saveMock" type="button">บันทึกปัญหา</button>' +
       '<div class="mockNote">ทุกช่องที่มี <span class="req">*</span> ต้องกรอกก่อนบันทึก — ข้อมูลจะถูกส่งไปยังระบบกลางอัตโนมัติ</div>' +
       '</div></details>';
@@ -1351,9 +1106,8 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
       var fst = forecastStatus(mtd, target);
       portfolioStatusHtml = '<div class="portfolioStatus ' + fst.bgCls + '"><span>สถานะพอร์ต</span><b class="' + fst.cls + '">' + fst.text + '</b></div>';
       var barPct = Math.max(0, Math.min(100, pct * 100));
-      achieveBarHtml = '<div class="achieveWrap"><div class="achieveLabel"><span>ยอดทำได้ <strong>' + fmtMoney(mtd) + '</strong> จากเป้า <strong>' + fmtMoney(target) + '</strong></span><b class="' + st.cls + '">' + fmtPct(pct * 100) + '</b></div>' +
-        '<div class="achieveTrack"><div class="achieveFill ' + st.cls + '" style="width:' + barPct + '%"></div></div>' +
-        '<div class="achieveMeta"><span>ยอดปัจจุบัน<b>' + fmtMoney(mtd) + '</b></span><span style="text-align:right">เป้าหมาย<b>' + fmtMoney(target) + '</b></span></div></div>';
+      achieveBarHtml = '<div class="achieveWrap"><div class="achieveLabel"><span>ยอดทำได้ ' + fmtMoney(mtd) + ' จากเป้า ' + fmtMoney(target) + '</span><b class="' + st.cls + '">' + fmtPct(pct * 100) + '</b></div>' +
+        '<div class="achieveTrack"><div class="achieveFill ' + st.cls + '" style="width:' + barPct + '%"></div></div></div>';
     } else if (seData.perf && seData.perf.mtd) {
       // มียอดขายที่ทำได้ (MTD) แต่ยังไม่มีเป้าตั้งไว้ (เช่น ตำแหน่งว่าง/เซลล์สำรอง)
       var mtdOnly = seData.perf.mtd;
@@ -1362,16 +1116,14 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
       gapHtml = '<div><span>ยอดห่างจากเป้า</span><b>\u2013</b></div>';
       portfolioStatusHtml = '<div class="portfolioStatus"><span>สถานะพอร์ต</span><b>ยังไม่ตั้งเป้า</b></div>';
       achieveBarHtml = '<div class="achieveWrap"><div class="achieveLabel"><span>ยอดขายที่ทำได้ (MTD)</span><b>' + fmtMoney(mtdOnly) + '</b></div>' +
-        '<div class="achieveTrack pending"><div class="achieveFill" style="width:0%"></div></div>' +
-        '<div class="achieveMeta"><span>ยอดปัจจุบัน<b>' + fmtMoney(mtdOnly) + '</b></span><span style="text-align:right">เป้าหมาย<b>ยังไม่ตั้งเป้า</b></span></div></div>';
+        '<div class="achieveTrack pending"><div class="achieveFill" style="width:0%"></div></div></div>';
     } else {
       runrateHtml = '<div class="runrate pending"><b>รอข้อมูล</b><span>สัดส่วนยอดขาย<br>เทียบเป้าหมาย</span></div>';
       targetHtml = '<div><span>Target เดือนนี้</span><b>รอข้อมูล</b></div>';
       gapHtml = '<div><span>ยอดห่างจากเป้า</span><b>รอข้อมูล</b></div>';
       portfolioStatusHtml = '<div class="portfolioStatus"><span>สถานะพอร์ต</span><b>รอข้อมูล</b></div>';
       achieveBarHtml = '<div class="achieveWrap"><div class="achieveLabel"><span>ความคืบหน้าเป้าหมาย</span><b>รอข้อมูล</b></div>' +
-        '<div class="achieveTrack pending"><div class="achieveFill" style="width:0%"></div></div>' +
-        '<div class="achieveMeta"><span>ยอดปัจจุบัน<b>รอข้อมูล</b></span><span style="text-align:right">เป้าหมาย<b>รอข้อมูล</b></span></div></div>';
+        '<div class="achieveTrack pending"><div class="achieveFill" style="width:0%"></div></div></div>';
     }
 
     var callout;
@@ -1470,154 +1222,19 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
     show(0);
   }
 
-
-  function extractStoreCode(value){
-    var m = String(value || "").match(/(?:^|\D)(\d{3})(?:\D|$)/);
-    return m ? m[1] : String(value || "").trim();
-  }
-
-  function makeIssueId(storeValue){
-    var storeCode = extractStoreCode(storeValue) || "000";
-    var d = new Date();
-    var y = d.getFullYear();
-    var mo = String(d.getMonth() + 1).padStart(2, "0");
-    var da = String(d.getDate()).padStart(2, "0");
-    var tail = String(d.getTime()).slice(-6);
-    return "ISS-" + storeCode + "-" + y + mo + da + "-" + tail;
-  }
-
-  function formatBytes(bytes){
-    if (!bytes && bytes !== 0) return "";
-    if (bytes < 1024) return bytes + " B";
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + " KB";
-    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-  }
-
-  function compressEvidenceFile(file){
-    return new Promise(function(resolve, reject){
-      if (!file) return resolve(null);
-      var allowed = ["image/jpeg", "image/png", "image/webp"];
-      if (allowed.indexOf(file.type) < 0) {
-        reject(new Error("รองรับเฉพาะรูป JPG, PNG หรือ WebP"));
-        return;
-      }
-      if (file.size > 15 * 1024 * 1024) {
-        reject(new Error("รูปต้นฉบับใหญ่เกิน 15 MB"));
-        return;
-      }
-
-      var reader = new FileReader();
-      reader.onerror = function(){ reject(new Error("อ่านไฟล์รูปไม่สำเร็จ")); };
-      reader.onload = function(){
-        var img = new Image();
-        img.onerror = function(){ reject(new Error("เปิดรูปไม่สำเร็จ")); };
-        img.onload = function(){
-          var maxSide = 1600;
-          var scale = Math.min(1, maxSide / Math.max(img.width, img.height));
-          var w = Math.max(1, Math.round(img.width * scale));
-          var h = Math.max(1, Math.round(img.height * scale));
-          var canvas = document.createElement("canvas");
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, w, h);
-
-          // Normalize to JPEG to keep payload smaller and backend predictable.
-          var dataUrl = canvas.toDataURL("image/jpeg", 0.78);
-          var comma = dataUrl.indexOf(",");
-          var raw = comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl;
-          var approxBytes = Math.ceil(raw.length * 3 / 4);
-
-          if (approxBytes > 4.8 * 1024 * 1024) {
-            reject(new Error("รูปยังมีขนาดใหญ่เกินไปหลังย่อ กรุณาเลือกรูปอื่น"));
-            return;
-          }
-
-          resolve({
-            base64: raw,
-            mimeType: "image/jpeg",
-            originalName: file.name || "evidence.jpg",
-            size: approxBytes
-          });
-        };
-        img.src = reader.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  document.addEventListener("change", function(e){
-    if (!e.target.classList || !e.target.classList.contains("evidenceInput")) return;
-    var input = e.target;
-    var form = input.closest(".issueForm");
-    if (!form) return;
-    var preview = form.querySelector(".evidencePreview");
-    var img = preview ? preview.querySelector("img") : null;
-    var meta = form.querySelector(".evidenceMeta");
-    var msg = form.querySelector(".evidenceUploading");
-    var file = input.files && input.files[0];
-
-    form._compressedEvidence = null;
-    if (!file) {
-      if (preview) preview.classList.remove("show");
-      if (img) img.removeAttribute("src");
-      if (meta) meta.textContent = "";
-      if (msg) msg.textContent = "";
-      return;
-    }
-
-    if (msg) msg.textContent = "กำลังเตรียมรูป...";
-    compressEvidenceFile(file).then(function(ev){
-      form._compressedEvidence = ev;
-      if (img) img.src = "data:" + ev.mimeType + ";base64," + ev.base64;
-      if (meta) meta.textContent = "พร้อมอัปโหลด • " + formatBytes(ev.size);
-      if (preview) preview.classList.add("show");
-      if (msg) msg.textContent = "";
-    }).catch(function(err){
-      input.value = "";
-      if (preview) preview.classList.remove("show");
-      if (msg) msg.textContent = err.message || "เตรียมรูปไม่สำเร็จ";
-    });
-  });
-
-  document.addEventListener("click", function(e){
-    var removeBtn = e.target.closest ? e.target.closest(".evidenceRemove") : null;
-    if (!removeBtn) return;
-    var form = removeBtn.closest(".issueForm");
-    if (!form) return;
-    var input = form.querySelector(".evidenceInput");
-    var preview = form.querySelector(".evidencePreview");
-    var img = preview ? preview.querySelector("img") : null;
-    var meta = form.querySelector(".evidenceMeta");
-    var msg = form.querySelector(".evidenceUploading");
-    form._compressedEvidence = null;
-    if (input) input.value = "";
-    if (img) img.removeAttribute("src");
-    if (meta) meta.textContent = "";
-    if (msg) msg.textContent = "";
-    if (preview) preview.classList.remove("show");
-  });
-
   function getQueue(){ try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]"); } catch(e){ return []; } }
   function setQueue(q){ try { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); } catch(e){} }
 
   function sleep(ms){ return new Promise(function(resolve){ setTimeout(resolve, ms); }); }
 
-  function confirmIssueSaved(issueId, token, attempts, expectEvidence){
+  function confirmIssueSaved(issueId, token, attempts){
     attempts = attempts || 5;
-    confirmIssueSaved._expectEvidence = !!expectEvidence;
     var tryNo = 0;
     function check(){
       tryNo++;
       return jsonpRequest({ action: "verifyIssue", token: token, issueId: issueId }, 10000)
         .then(function(res){
-          if (res && res.ok && res.exists) {
-            if (confirmIssueSaved._expectEvidence && !(Number(res.evidenceCount || 0) > 0)) {
-              if (tryNo >= attempts) throw new Error("evidence confirmation timeout");
-            } else {
-              return res;
-            }
-          }
+          if (res && res.ok && res.exists) return res;
           if (tryNo >= attempts) throw new Error("server confirmation timeout");
           return sleep(700).then(check);
         });
@@ -1640,7 +1257,7 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
       body: JSON.stringify(envelope)
     }).then(function(){
       return sleep(500).then(function(){
-        return confirmIssueSaved(payload.issueId, token, 6, !!(payload.evidence && payload.evidence.base64));
+        return confirmIssueSaved(payload.issueId, token, 5);
       });
     });
   }
@@ -1706,16 +1323,15 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
     var lossEl = article ? article.querySelector(".lossRow strong") : null;
 
     var createdAt = new Date().toISOString();
-    var normalizedStore = extractStoreCode(storeEl ? storeEl.textContent.trim() : state.currentStoreCode);
     var payload = {
-      issueId: makeIssueId(normalizedStore),
+      issueId: "ISS-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2,8).toUpperCase(),
       deviceId: getDeviceId(),
       createdAt: createdAt,
       submittedAt: createdAt,
       timestamp: createdAt,
       repId: state.currentSE || "",
       repName: h2 ? h2.textContent.trim() : "",
-      store: normalizedStore,
+      store: storeEl ? storeEl.textContent.trim() : "",
       customerName: custEl ? custEl.textContent.trim() : "",
       lossAmount: lossEl ? lossEl.textContent.trim() : "",
       issues: issues,
@@ -1724,42 +1340,19 @@ body[data-theme="black"] #appSettings a{color:#C0C2C8!important}
       nextAction: nextAction
     };
 
-    if (form._compressedEvidence && form._compressedEvidence.base64) {
-      payload.evidence = {
-        base64: form._compressedEvidence.base64,
-        mimeType: form._compressedEvidence.mimeType,
-        originalName: form._compressedEvidence.originalName || "evidence.jpg",
-        customerId: ""
-      };
-    }
-
     if (note) { note.style.color = ""; note.style.fontWeight = ""; }
     var originalText = btn.textContent;
     btn.disabled = true;
-    btn.textContent = payload.evidence ? "กำลังอัปโหลดรูปและบันทึก..." : "กำลังบันทึก...";
+    btn.textContent = "กำลังบันทึก...";
 
     sendPayload(payload).then(function(res){
       btn.textContent = "\u2705 บันทึกแล้ว";
-      var evidenceText = payload.evidence ? " • 📷 รูปหลักฐาน " + (res.evidenceCount || 1) + " รูป" : "";
-      if (note) note.textContent = "ระบบกลางยืนยันแล้ว • เลขอ้างอิง: " + (res.recordId || payload.issueId) + evidenceText + " • " + new Date().toLocaleString("th-TH");
-
-      var evInput = form.querySelector(".evidenceInput");
-      var evPreview = form.querySelector(".evidencePreview");
-      var evImg = evPreview ? evPreview.querySelector("img") : null;
-      var evMeta = form.querySelector(".evidenceMeta");
-      form._compressedEvidence = null;
-      if (evInput) evInput.value = "";
-      if (evImg) evImg.removeAttribute("src");
-      if (evMeta) evMeta.textContent = "";
-      if (evPreview) evPreview.classList.remove("show");
-
+      if (note) note.textContent = "ระบบกลางยืนยันแล้ว • เลขอ้างอิง: " + (res.recordId || payload.issueId) + " • " + new Date().toLocaleString("th-TH");
       setTimeout(function(){ btn.disabled = false; btn.textContent = originalText; }, 3000);
     }).catch(function(){
       var q = getQueue(); q.push(payload); setQueue(q);
       btn.textContent = "\uD83D\uDCE5 บันทึกไว้ในเครื่อง";
-      if (note) note.textContent = payload.evidence
-        ? "ยังส่งไม่ได้ ระบบเก็บข้อมูลและรูปที่ย่อแล้วไว้ในเครื่อง และจะลองส่งเมื่อเชื่อมต่ออีกครั้ง"
-        : "ยังไม่มีอินเทอร์เน็ต ระบบจะส่งข้อมูลอัตโนมัติเมื่อเชื่อมต่อได้";
+      if (note) note.textContent = "ยังไม่มีอินเทอร์เน็ต ระบบจะส่งข้อมูลอัตโนมัติเมื่อเชื่อมต่อได้";
       setTimeout(function(){ btn.disabled = false; btn.textContent = originalText; }, 3000);
     });
   });
