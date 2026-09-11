@@ -167,6 +167,33 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 :focus-visible{outline:3px solid #F3B4B8;outline-offset:2px}
 
 
+
+/* Photo evidence */
+.evidenceBox{
+  margin-top:14px;padding:13px;border:1px dashed #D9A0A5;border-radius:13px;
+  background:#FFF9F9
+}
+.evidenceActions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.evidencePick{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-height:44px;padding:10px 14px;border-radius:11px;border:1px solid #E5B8BC;
+  background:#fff;color:#A81220;font-size:13px;font-weight:900;cursor:pointer
+}
+.evidenceInput{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.evidenceHint{font-size:10.5px;color:#777;line-height:1.5;margin-top:7px}
+.evidencePreview{display:none;margin-top:10px;position:relative}
+.evidencePreview.show{display:block}
+.evidencePreview img{
+  display:block;width:100%;max-height:240px;object-fit:cover;border-radius:12px;
+  border:1px solid var(--line);background:#fff
+}
+.evidenceMeta{font-size:10.5px;color:#666;margin-top:6px;line-height:1.45}
+.evidenceRemove{
+  position:absolute;top:8px;right:8px;border:none;border-radius:999px;
+  width:34px;height:34px;background:rgba(0,0,0,.7);color:#fff;font-weight:900;cursor:pointer
+}
+.evidenceUploading{font-size:11px;font-weight:800;color:#A81220;margin-top:7px}
+
 </style>
 <body>
 <div class="app">
@@ -1079,6 +1106,15 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       '<option>แจ้งหัวหน้า / ทีมที่เกี่ยวข้อง</option><option>นัดเข้าพบครั้งถัดไป</option></select></div>' +
       '<div class="fieldBlock"><span class="label">หมายเหตุเพิ่มเติม <span class="req">*</span></span>' +
       '<textarea placeholder="เช่น ลูกค้าแจ้งว่าราคาหมูสูงกว่าคู่แข่งประมาณ 5 บาท/กก."></textarea></div>' +
+      '<div class="evidenceBox">' +
+      '<span class="label">📷 รูปหลักฐาน <span style="font-weight:600;color:#888">(ไม่บังคับ)</span></span>' +
+      '<div class="evidenceActions">' +
+      '<label class="evidencePick">📸 ถ่ายรูป / เลือกรูป<input class="evidenceInput" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label>' +
+      '</div>' +
+      '<div class="evidenceHint">รองรับ JPG, PNG, WebP • ระบบจะย่อรูปอัตโนมัติก่อนอัปโหลด • 1 รูปต่อ 1 ปัญหา</div>' +
+      '<div class="evidencePreview"><button class="evidenceRemove" type="button" aria-label="ลบรูป">×</button><img alt="ตัวอย่างรูปหลักฐาน"><div class="evidenceMeta"></div></div>' +
+      '<div class="evidenceUploading"></div>' +
+      '</div>' +
       '<button class="saveMock" type="button">บันทึกปัญหา</button>' +
       '<div class="mockNote">ทุกช่องที่มี <span class="req">*</span> ต้องกรอกก่อนบันทึก — ข้อมูลจะถูกส่งไปยังระบบกลางอัตโนมัติ</div>' +
       '</div></details>';
@@ -1222,19 +1258,153 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     show(0);
   }
 
+
+  function extractStoreCode(value){
+    var m = String(value || "").match(/(?:^|\D)(\d{3})(?:\D|$)/);
+    return m ? m[1] : String(value || "").trim();
+  }
+
+  function makeIssueId(storeValue){
+    var storeCode = extractStoreCode(storeValue) || "000";
+    var d = new Date();
+    var y = d.getFullYear();
+    var mo = String(d.getMonth() + 1).padStart(2, "0");
+    var da = String(d.getDate()).padStart(2, "0");
+    var tail = String(d.getTime()).slice(-6);
+    return "ISS-" + storeCode + "-" + y + mo + da + "-" + tail;
+  }
+
+  function formatBytes(bytes){
+    if (!bytes && bytes !== 0) return "";
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  }
+
+  function compressEvidenceFile(file){
+    return new Promise(function(resolve, reject){
+      if (!file) return resolve(null);
+      var allowed = ["image/jpeg", "image/png", "image/webp"];
+      if (allowed.indexOf(file.type) < 0) {
+        reject(new Error("รองรับเฉพาะรูป JPG, PNG หรือ WebP"));
+        return;
+      }
+      if (file.size > 15 * 1024 * 1024) {
+        reject(new Error("รูปต้นฉบับใหญ่เกิน 15 MB"));
+        return;
+      }
+
+      var reader = new FileReader();
+      reader.onerror = function(){ reject(new Error("อ่านไฟล์รูปไม่สำเร็จ")); };
+      reader.onload = function(){
+        var img = new Image();
+        img.onerror = function(){ reject(new Error("เปิดรูปไม่สำเร็จ")); };
+        img.onload = function(){
+          var maxSide = 1600;
+          var scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+          var w = Math.max(1, Math.round(img.width * scale));
+          var h = Math.max(1, Math.round(img.height * scale));
+          var canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+
+          var dataUrl = canvas.toDataURL("image/jpeg", 0.78);
+          var comma = dataUrl.indexOf(",");
+          var raw = comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl;
+          var approxBytes = Math.ceil(raw.length * 3 / 4);
+
+          if (approxBytes > 4.8 * 1024 * 1024) {
+            reject(new Error("รูปยังมีขนาดใหญ่เกินไปหลังย่อ กรุณาเลือกรูปอื่น"));
+            return;
+          }
+
+          resolve({
+            base64: raw,
+            mimeType: "image/jpeg",
+            originalName: file.name || "evidence.jpg",
+            size: approxBytes
+          });
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.addEventListener("change", function(e){
+    if (!e.target.classList || !e.target.classList.contains("evidenceInput")) return;
+    var input = e.target;
+    var form = input.closest(".issueForm");
+    if (!form) return;
+    var preview = form.querySelector(".evidencePreview");
+    var img = preview ? preview.querySelector("img") : null;
+    var meta = form.querySelector(".evidenceMeta");
+    var msg = form.querySelector(".evidenceUploading");
+    var file = input.files && input.files[0];
+
+    form._compressedEvidence = null;
+    if (!file) {
+      if (preview) preview.classList.remove("show");
+      if (img) img.removeAttribute("src");
+      if (meta) meta.textContent = "";
+      if (msg) msg.textContent = "";
+      return;
+    }
+
+    if (msg) msg.textContent = "กำลังเตรียมรูป...";
+    compressEvidenceFile(file).then(function(ev){
+      form._compressedEvidence = ev;
+      if (img) img.src = "data:" + ev.mimeType + ";base64," + ev.base64;
+      if (meta) meta.textContent = "พร้อมอัปโหลด • " + formatBytes(ev.size);
+      if (preview) preview.classList.add("show");
+      if (msg) msg.textContent = "";
+    }).catch(function(err){
+      input.value = "";
+      if (preview) preview.classList.remove("show");
+      if (msg) msg.textContent = err.message || "เตรียมรูปไม่สำเร็จ";
+    });
+  });
+
+  document.addEventListener("click", function(e){
+    var removeBtn = e.target.closest ? e.target.closest(".evidenceRemove") : null;
+    if (!removeBtn) return;
+    var form = removeBtn.closest(".issueForm");
+    if (!form) return;
+    var input = form.querySelector(".evidenceInput");
+    var preview = form.querySelector(".evidencePreview");
+    var img = preview ? preview.querySelector("img") : null;
+    var meta = form.querySelector(".evidenceMeta");
+    var msg = form.querySelector(".evidenceUploading");
+    form._compressedEvidence = null;
+    if (input) input.value = "";
+    if (img) img.removeAttribute("src");
+    if (meta) meta.textContent = "";
+    if (msg) msg.textContent = "";
+    if (preview) preview.classList.remove("show");
+  });
+
   function getQueue(){ try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]"); } catch(e){ return []; } }
   function setQueue(q){ try { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); } catch(e){} }
 
   function sleep(ms){ return new Promise(function(resolve){ setTimeout(resolve, ms); }); }
 
-  function confirmIssueSaved(issueId, token, attempts){
+  function confirmIssueSaved(issueId, token, attempts, expectEvidence){
     attempts = attempts || 5;
+    confirmIssueSaved._expectEvidence = !!expectEvidence;
     var tryNo = 0;
     function check(){
       tryNo++;
       return jsonpRequest({ action: "verifyIssue", token: token, issueId: issueId }, 10000)
         .then(function(res){
-          if (res && res.ok && res.exists) return res;
+          if (res && res.ok && res.exists) {
+            if (confirmIssueSaved._expectEvidence && !(Number(res.evidenceCount || 0) > 0)) {
+              if (tryNo >= attempts) throw new Error("evidence confirmation timeout");
+            } else {
+              return res;
+            }
+          }
           if (tryNo >= attempts) throw new Error("server confirmation timeout");
           return sleep(700).then(check);
         });
@@ -1257,7 +1427,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       body: JSON.stringify(envelope)
     }).then(function(){
       return sleep(500).then(function(){
-        return confirmIssueSaved(payload.issueId, token, 5);
+        return confirmIssueSaved(payload.issueId, token, 6, !!(payload.evidence && payload.evidence.base64));
       });
     });
   }
@@ -1323,15 +1493,16 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     var lossEl = article ? article.querySelector(".lossRow strong") : null;
 
     var createdAt = new Date().toISOString();
+    var normalizedStore = extractStoreCode(storeEl ? storeEl.textContent.trim() : state.currentStoreCode);
     var payload = {
-      issueId: "ISS-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2,8).toUpperCase(),
+      issueId: makeIssueId(normalizedStore),
       deviceId: getDeviceId(),
       createdAt: createdAt,
       submittedAt: createdAt,
       timestamp: createdAt,
       repId: state.currentSE || "",
       repName: h2 ? h2.textContent.trim() : "",
-      store: storeEl ? storeEl.textContent.trim() : "",
+      store: normalizedStore,
       customerName: custEl ? custEl.textContent.trim() : "",
       lossAmount: lossEl ? lossEl.textContent.trim() : "",
       issues: issues,
@@ -1340,19 +1511,42 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       nextAction: nextAction
     };
 
+    if (form._compressedEvidence && form._compressedEvidence.base64) {
+      payload.evidence = {
+        base64: form._compressedEvidence.base64,
+        mimeType: form._compressedEvidence.mimeType,
+        originalName: form._compressedEvidence.originalName || "evidence.jpg",
+        customerId: ""
+      };
+    }
+
     if (note) { note.style.color = ""; note.style.fontWeight = ""; }
     var originalText = btn.textContent;
     btn.disabled = true;
-    btn.textContent = "กำลังบันทึก...";
+    btn.textContent = payload.evidence ? "กำลังอัปโหลดรูปและบันทึก..." : "กำลังบันทึก...";
 
     sendPayload(payload).then(function(res){
-      btn.textContent = "\u2705 บันทึกแล้ว";
-      if (note) note.textContent = "ระบบกลางยืนยันแล้ว • เลขอ้างอิง: " + (res.recordId || payload.issueId) + " • " + new Date().toLocaleString("th-TH");
+      btn.textContent = "✅ บันทึกแล้ว";
+      var evidenceText = payload.evidence ? " • 📷 รูปหลักฐาน " + (res.evidenceCount || 1) + " รูป" : "";
+      if (note) note.textContent = "ระบบกลางยืนยันแล้ว • เลขอ้างอิง: " + (res.recordId || payload.issueId) + evidenceText + " • " + new Date().toLocaleString("th-TH");
+
+      var evInput = form.querySelector(".evidenceInput");
+      var evPreview = form.querySelector(".evidencePreview");
+      var evImg = evPreview ? evPreview.querySelector("img") : null;
+      var evMeta = form.querySelector(".evidenceMeta");
+      form._compressedEvidence = null;
+      if (evInput) evInput.value = "";
+      if (evImg) evImg.removeAttribute("src");
+      if (evMeta) evMeta.textContent = "";
+      if (evPreview) evPreview.classList.remove("show");
+
       setTimeout(function(){ btn.disabled = false; btn.textContent = originalText; }, 3000);
     }).catch(function(){
       var q = getQueue(); q.push(payload); setQueue(q);
-      btn.textContent = "\uD83D\uDCE5 บันทึกไว้ในเครื่อง";
-      if (note) note.textContent = "ยังไม่มีอินเทอร์เน็ต ระบบจะส่งข้อมูลอัตโนมัติเมื่อเชื่อมต่อได้";
+      btn.textContent = "📥 บันทึกไว้ในเครื่อง";
+      if (note) note.textContent = payload.evidence
+        ? "ยังส่งไม่ได้ ระบบเก็บข้อมูลและรูปที่ย่อแล้วไว้ในเครื่อง และจะลองส่งเมื่อเชื่อมต่ออีกครั้ง"
+        : "ยังไม่มีอินเทอร์เน็ต ระบบจะส่งข้อมูลอัตโนมัติเมื่อเชื่อมต่อได้";
       setTimeout(function(){ btn.disabled = false; btn.textContent = originalText; }, 3000);
     });
   });
