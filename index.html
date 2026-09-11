@@ -889,7 +889,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
   }
 
   function doLogin(store, code){
-    loginStatus.textContent = "กำลังตรวจสอบ...";
+    loginStatus.textContent = "กำลังเข้าสู่ระบบและโหลดข้อมูล...";
     return jsonpRequest({ action: "login", store: store, code: code }).then(function(res){
       if (!res || !res.ok) {
         loginStatus.textContent = res && res.message ? res.message : "เข้าสู่ระบบไม่สำเร็จ";
@@ -919,8 +919,22 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     var code = document.getElementById("loginCode").value.trim();
     if (!store) { loginStatus.textContent = "กรุณาเลือกสาขา"; return; }
     if (!code) { loginStatus.textContent = "กรุณากรอกรหัส"; return; }
+
     doLogin(store, code).then(function(res){
       if (!res) return;
+
+      // Fast path: new backend returns token + authorized data in ONE request.
+      if (res.stores && typeof res.stores === "object") {
+        state.role = res.role;
+        state.storesData = res.stores;
+        loginStatus.textContent = "";
+        loginBox.style.display = "none";
+        appShell.style.display = "block";
+        initAppShell();
+        return;
+      }
+
+      // Backward-compatible fallback for an older backend deployment.
       loginStatus.textContent = "";
       bootApp(store, res.token, res.role);
     });
