@@ -76,6 +76,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .topline{display:flex;align-items:center;gap:10px;padding:16px 16px 12px}
 .rank{width:36px;height:36px;flex-shrink:0;border-radius:10px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:13.5px;font-weight:900}
 .customerName{flex:1;font-size:17px;font-weight:900;line-height:1.35}
+.custIdSub{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-top:2px}
 .tag{font-size:11px;font-weight:900;border-radius:999px;padding:8px 11px;flex-shrink:0}
 .urgent{background:#FBE6E8;color:var(--bad)}.follow{background:var(--softorange);color:var(--orange)}
 
@@ -882,9 +883,15 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     });
   }
 
-  function doLogin(code){
-    loginStatus.textContent = "กำลังเข้าสู่ระบบและโหลดข้อมูล...";
-    return jsonpRequest({ action: "login", code: code }).then(function(res){
+  function doLogin(code, isRetry){
+    loginStatus.textContent = isRetry
+      ? "เซิร์ฟเวอร์กำลังเริ่มทำงาน กำลังลองอีกครั้ง..."
+      : "กำลังเข้าสู่ระบบและโหลดข้อมูล...";
+    // Apps Script cold starts (first request after the backend has been idle)
+    // can take longer than a typical request. Give login extra time before
+    // giving up, since a short timeout here reads to the rep as "no internet"
+    // when the backend is actually still starting up.
+    return jsonpRequest({ action: "login", code: code }, 30000).then(function(res){
       if (!res || !res.ok) {
         loginStatus.textContent = res && res.message ? res.message : "เข้าสู่ระบบไม่สำเร็จ";
         return null;
@@ -896,8 +903,17 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       // Always persist the store returned by the backend; never trust a client-side selection.
       saveSession(res.store, res.token, res.role);
       return res;
-    }).catch(function(){
-      loginStatus.textContent = "เชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เนตแล้วลองใหม่";
+    }).catch(function(err){
+      var isTimeout = err && err.message === "timeout";
+      if (isTimeout && !isRetry) {
+        // First attempt likely hit a cold Apps Script container. Retry once
+        // automatically before bothering the rep -- a second attempt against
+        // an already-warm container is usually fast.
+        return doLogin(code, true);
+      }
+      loginStatus.textContent = isTimeout
+        ? "เซิร์ฟเวอร์ตอบสนองช้ากว่าปกติ กรุณาลองใหม่อีกครั้งใน 1 นาที"
+        : "เชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เนตแล้วลองใหม่";
       return null;
     });
   }
@@ -942,8 +958,10 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     });
   });
 
-  function bootApp(store, token, role){
-    loginStatus.textContent = "กำลังโหลดข้อมูล...";
+  function bootApp(store, token, role, isRetry){
+    loginStatus.textContent = isRetry
+      ? "เซิร์ฟเวอร์กำลังเริ่มทำงาน กำลังลองอีกครั้ง..."
+      : "กำลังโหลดข้อมูล...";
     fetchData(store, token).then(function(res){
       state.role = res.role;
       state.storesData = res.stores;
@@ -960,6 +978,13 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       appShell.style.display = "block";
       initAppShell();
     }).catch(function(err){
+      // A cold Apps Script container can make the first request after idle
+      // time out even though the backend is healthy; retry once before
+      // showing an error, since a second attempt is usually fast.
+      if (err && err.message === "timeout" && !isRetry) {
+        bootApp(store, token, role, true);
+        return;
+      }
       loginStatus.textContent = "โหลดข้อมูลไม่สำเร็จ: " + err.message;
     });
   }
@@ -1071,7 +1096,9 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       '<article class="actionCard" data-customer-id="' + esc(cust.customerId || "") + '">' +
       '<div class="topline">' +
       '<div class="rank">#' + rank + '</div>' +
-      '<div class="customerName">' + esc(cust.name) + '</div>' +
+      '<div class="customerName"><span class="custNameText">' + esc(cust.name) + '</span>' +
+      (cust.customerId ? '<small class="custIdSub">รหัสลูกค้า ' + esc(cust.customerId) + '</small>' : '') +
+      '</div>' +
       '<div class="tag ' + tagCls + '">' + tagLabel + '</div>' +
       '</div>' +
       '<div class="lossRow"><div><span>ยอดหาย</span><strong>' + fmtMoney(loss) + '</strong></div>' +
@@ -1197,8 +1224,8 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     var html = '' +
       '<section class="dashboard" id="dashCurrent">' +
       '<a class="back" href="javascript:void(0)" id="backToPicker">\u2190 เปลี่ยนชื่อเซลล์</a>' +
-      '<div class="welcome"><div style="min-width:0;flex:1">' + '<span>แผนการขายวันนี้</span><h2 style="word-break:break-word">' + esc(displaySalesmanName(seData.se)) + '</h2>' +
-      '<small>' + esc(seData.store) + '</small></div>' + runrateHtml + '</div>' +
+      '<div class="welcome"><div style="min-width:0;flex:1">' + '<span>แผนการขายวันนี้</span><h2 style="word-break:break-word">' + esc(displaySalesmanName(state.currentSE)) + '</h2>' +
+      '<small>' + esc(STORE_LABELS[state.currentStoreCode] || state.currentStoreCode || "") + '</small></div>' + runrateHtml + '</div>' +
       achieveBarHtml +
       '<div class="miniKpi">' + targetHtml + gapHtml +
       '<div><span>ยอดขายที่มีโอกาสกู้คืน (10 อันดับ)</span><b>' + fmtMoney(top10Lost) + '</b></div></div>' +
@@ -1493,13 +1520,21 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     }
 
     var h2 = dash ? dash.querySelector("h2") : null;
-    var storeEl = dash ? dash.querySelector(".welcome small") : null;
-    var custEl = article ? article.querySelector(".customerName") : null;
+    var custEl = article ? article.querySelector(".custNameText") : null;
     var lossEl = article ? article.querySelector(".lossRow strong") : null;
     var customerId = article ? (article.getAttribute("data-customer-id") || "") : "";
 
     var createdAt = new Date().toISOString();
-    var normalizedStore = extractStoreCode(storeEl ? storeEl.textContent.trim() : state.currentStoreCode);
+    // Read the store directly from app state (the source of truth for which
+    // store is currently open) rather than scraping it back out of rendered
+    // DOM text -- state.currentStoreCode is always a valid "001"/"003"/"005"
+    // once the dashboard is showing, whereas the old DOM-scrape depended on
+    // a label (seData.store) that was never actually present in Data.gs and
+    // always rendered blank, silently failing admin submissions with
+    // "invalid store" (normal store-PIN reps were unaffected because the
+    // backend ignores the client-supplied store for them and uses the PIN's
+    // own token instead).
+    var normalizedStore = extractStoreCode(state.currentStoreCode || "");
     var payload = {
       issueId: makeIssueId(normalizedStore),
       deviceId: getDeviceId(),
