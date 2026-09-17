@@ -1128,6 +1128,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       '<label class="issueChoice"><input type="checkbox"> การจัดสินค้าผิดพลาด</label>' +
       '<label class="issueChoice"><input type="checkbox"> ปิดกิจการ</label>' +
       '<label class="issueChoice"><input type="checkbox"> ลูกค้าเปลี่ยนบัตรสมาชิก</label>' +
+      '<label class="issueChoice"><input type="checkbox"> ปัจจัยภายนอก</label>' +
       '</div>' +
       '<div class="fieldBlock"><span class="label">ผลการเข้าพบ <span class="req">*</span></span>' +
             '<select><option>— เลือกผลการเข้าพบ —</option><option>ปิดการขาย</option><option>ลูกค้าสนใจ</option><option>ขอใบเสนอราคา</option>' +
@@ -1582,6 +1583,22 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       if (evMeta) evMeta.textContent = "";
       if (evPreview) evPreview.classList.remove("show");
 
+      // Clear the rest of the form too, not just the photo. Leaving the
+      // checkboxes/dropdowns/notes filled in after a successful save meant
+      // the button quietly went back to its normal, clickable state a few
+      // seconds later with the exact same answers still sitting in it --
+      // an easy way for a rep to end up submitting the same report twice
+      // (a new Issue ID each time, so the backend's own duplicate-ID guard
+      // never catches it) just by tapping "บันทึกปัญหา" again later, unsure
+      // whether the first tap had actually gone through. Requiring the form
+      // to be filled in again makes an accidental duplicate much less likely
+      // while still allowing a genuine second report for the same customer.
+      var choiceEls = form.querySelectorAll(".issueChoice input:checked");
+      Array.prototype.forEach.call(choiceEls, function(cb){ cb.checked = false; });
+      var formSelects = form.querySelectorAll("select");
+      Array.prototype.forEach.call(formSelects, function(s){ s.selectedIndex = 0; });
+      if (textarea) textarea.value = "";
+
       setTimeout(function(){ btn.disabled = false; btn.textContent = originalText; }, 3000);
     }).catch(function(){
       var q = getQueue(); q.push(payload); setQueue(q);
@@ -1589,6 +1606,17 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       if (note) note.textContent = payload.evidence
         ? "ยังส่งไม่ได้ ระบบเก็บข้อมูลและรูปที่ย่อแล้วไว้ในเครื่อง และจะลองส่งเมื่อเชื่อมต่ออีกครั้ง"
         : "ยังไม่มีอินเทอร์เน็ต ระบบจะส่งข้อมูลอัตโนมัติเมื่อเชื่อมต่อได้";
+
+      // The report is already safely queued (payload was captured above), so
+      // clear the form here too -- otherwise a rep unsure whether the queued
+      // save "really" worked could tap the re-enabled button again with the
+      // same answers still filled in and queue a second, duplicate report.
+      var choiceEls2 = form.querySelectorAll(".issueChoice input:checked");
+      Array.prototype.forEach.call(choiceEls2, function(cb){ cb.checked = false; });
+      var formSelects2 = form.querySelectorAll("select");
+      Array.prototype.forEach.call(formSelects2, function(s){ s.selectedIndex = 0; });
+      if (textarea) textarea.value = "";
+
       setTimeout(function(){ btn.disabled = false; btn.textContent = originalText; }, 3000);
     });
   });
