@@ -271,7 +271,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       </div>
     </section>
 
-    <div class="footer">ข้อมูลจริง ณ 13 ก.ย. 2026 &bull; เปรียบเทียบยอด ส.ค. 2026 กับ ก.ย. 2026 (MTD) &bull; ยอด ส.ค.–ก.ย. 2025 และหมวดสินค้าจาก Port_Performance.xlsx และ Bottom10_Sales_by_Class.xlsx &bull; ระบบส่งเฉพาะข้อมูลของสาขาที่เข้าสู่ระบบ</div>
+    <div class="footer">ข้อมูลจริง ณ 27 ก.ย. 2026 &bull; เปรียบเทียบยอด ส.ค. 2026 กับ ก.ย. 2026 (MTD) &bull; ยอด ส.ค.–ก.ย. 2025 จาก Port Performance และ raw data &bull; หมวดสินค้าจาก Bottom10 Sales by Class &bull; ระบบส่งเฉพาะข้อมูลของสาขาที่เข้าสู่ระบบ</div>
 
     <button id="logoutBtn" type="button" style="display:block;width:100%;max-width:200px;margin:16px auto 0;background:#fff;border:1px solid var(--bad);color:var(--bad);border-radius:11px;padding:10px;font-size:10px;font-weight:900">🔒 ออกจากระบบ</button>
   </div>
@@ -846,7 +846,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 
   // ประเมินภาพรวมพอร์ตทั้งหมด: ถ้ายอด MTD ปัจจุบัน forecast เต็มเดือนแล้วเทียบกับเป้า
   function forecastStatus(mtd, target){
-    var daysElapsed = 13, daysInMonth = 30; // ข้อมูล ณ 13 ก.ย. 2026 (ก.ย. มี 30 วัน)
+    var daysElapsed = 27, daysInMonth = 30; // ข้อมูล ณ 27 ก.ย. 2026 (refresh 28 ก.ย., ก.ย. มี 30 วัน)
     var forecast = daysElapsed ? (mtd / daysElapsed) * daysInMonth : 0;
     if (forecast >= target) {
       return { cls: "warnText", bgCls: "portfolioWarn", text: "ภาพรวมปานกลาง เร่งแก้ลูกค้ายอดตก" };
