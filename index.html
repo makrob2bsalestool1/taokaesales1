@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#C51F2D">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Taokae Sales">
-<title>Taokae Sales - My Action Today</title>
+<title>Taokae Sales - Store Dashboard</title>
 <style>
 :root{
  --bg:#F7F7F7;--card:#fff;--ink:#1E1E1E;--muted:#5B5B5B;--line:#E9E9E9;
@@ -195,6 +195,78 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 .evidenceUploading{font-size:11px;font-weight:800;color:#A81220;margin-top:7px}
 
+/* ===== Store dashboard (v4) ===== */
+.storeDash{margin-bottom:16px}
+.storeHero{background:linear-gradient(135deg,#A81220,#D84C57);color:#fff;border-radius:23px;padding:20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.storeHero span{font-size:12px;font-weight:900;opacity:.85;letter-spacing:.3px}
+.storeHero h2{font-size:22px;margin:6px 0 3px;line-height:1.25}
+.storeHero small{display:block;font-size:12px;opacity:.92;line-height:1.5}
+.storeHero .coverage{width:132px;flex-shrink:0;border-radius:18px;padding:12px 8px;background:rgba(255,255,255,.18);text-align:center}
+.storeHero .coverage b{display:block;font-size:26px;line-height:1.1}
+.storeHero .coverage span{display:block;font-size:11.5px;line-height:1.35;margin-top:5px;opacity:.95}
+.storeHero select{margin-top:10px;width:100%;border:none;border-radius:11px;padding:9px 10px;font-family:inherit;font-size:14px;font-weight:800;color:var(--ink);background:#fff;min-height:42px}
+.dashToolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 2px 0}
+.dashToolbar small{font-size:11.5px;color:var(--muted)}
+.refreshBtn{background:#fff;border:1px solid var(--line);color:var(--red);border-radius:11px;padding:8px 12px;font-size:12.5px;font-weight:900;min-height:40px;cursor:pointer}
+.refreshBtn:disabled{opacity:.5}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}
+.panelHead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}
+.panelHead h3{font-size:16px;margin:0}
+.panelHead span{font-size:11px;color:var(--muted);text-align:right}
+.kpiGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.kpiTile{background:#FAFAFA;border:1px solid #F0F0F0;border-radius:14px;padding:12px}
+.kpiTile span{display:block;font-size:11.5px;color:var(--muted);font-weight:700;line-height:1.35}
+.kpiTile b{display:block;font-size:24px;line-height:1.15;margin-top:6px;font-variant-numeric:tabular-nums}
+.kpiTile small{display:block;font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
+.kpiTile.alert{background:var(--softred);border-color:#F3D1D4}
+.kpiTile.alert b{color:var(--bad)}
+.todayLine{font-size:12px;color:#555;margin-top:10px;background:#FAFAFA;border-radius:11px;padding:9px 11px}
+.meter{margin-top:12px}
+.meterLabel{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px}
+.meterLabel b{color:var(--ink);font-size:13px}
+.meterTrack{height:12px;background:#EFEFEF;border-radius:999px;overflow:hidden}
+.meterFill{height:100%;border-radius:999px;background:var(--red)}
+.trend{margin-top:14px}
+.trendBars{display:flex;align-items:flex-end;gap:3px;height:86px;border-bottom:1px solid #E3E3E3;padding-top:16px}
+.trendBar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative;cursor:default}
+.trendBar i{display:block;width:100%;max-width:22px;background:#E8A3A9;border-radius:4px 4px 0 0;min-height:0}
+.trendBar.today i{background:var(--red)}
+.trendBar.zero i{height:2px!important;background:#DDD;border-radius:2px}
+.trendBar em{position:absolute;top:-16px;font-style:normal;font-size:10.5px;font-weight:800;color:#444;white-space:nowrap}
+.trendBar:hover i,.trendBar:focus i{outline:2px solid #fff;box-shadow:0 0 0 2px var(--red)}
+.trendAxis{display:flex;gap:3px;margin-top:4px}
+.trendAxis span{flex:1;text-align:center;font-size:9.5px;color:var(--muted);white-space:nowrap;overflow:visible;width:0}
+.trendTip{font-size:11.5px;color:#555;min-height:18px;margin-top:6px;text-align:center}
+.repRow{display:flex;align-items:center;gap:10px;padding:11px 2px;border-top:1px solid #F0F0F0;text-decoration:none;color:var(--ink);min-height:var(--tap)}
+.repRow:first-child{border-top:none}
+.repRow:active{background:#F7F7F7}
+.repRow .who{flex:1;min-width:0}
+.repRow .who b{display:block;font-size:14px;line-height:1.35;word-break:break-word}
+.repRow .who small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.repRow .num{text-align:right;flex-shrink:0;font-size:12px;color:var(--muted);line-height:1.35}
+.repRow .num b{display:block;font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:10.5px;font-weight:900;border-radius:999px;padding:3px 8px;margin-left:4px;vertical-align:middle}
+.pill.zero{background:#FBE6E8;color:var(--bad)}
+.pill.ok{background:var(--softgreen);color:var(--green)}
+.pill.vac{background:#F1F1F1;color:#666}
+.dashDetails{margin-top:12px}
+.dashDetails>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;cursor:pointer;min-height:var(--tap);font-size:15px;font-weight:900}
+.dashDetails>summary::-webkit-details-marker{display:none}
+.dashDetails>summary:after{content:"⌄";color:var(--red);font-size:22px;margin-left:8px}
+.dashDetails[open]>summary:after{content:"⌃"}
+.dashDetails>summary .sumTitle{flex:1;min-width:0;line-height:1.35}
+.dashDetails>summary small{font-size:11px;color:var(--muted);font-weight:700;margin-left:8px;text-align:right;flex-shrink:0;max-width:40%}
+.custGroup{border-top:1px solid #F0F0F0;padding:9px 0}
+.custGroup>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:8px;font-size:13.5px;font-weight:800;min-height:40px;align-items:center}
+.custGroup>summary::-webkit-details-marker{display:none}
+.custGroup>summary small{font-size:11px;color:var(--muted);font-weight:700;flex-shrink:0}
+.custItem{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:6px 4px;border-bottom:1px dashed #F0F0F0}
+.custItem span{min-width:0;word-break:break-word} .custItem b{color:var(--bad);flex-shrink:0;font-variant-numeric:tabular-nums}
+.dashNote{font-size:11.5px;color:var(--muted);line-height:1.55;margin-top:10px}
+.dashError{background:var(--softorange);border:1px solid #F0D6A6;color:#6B4A12;border-radius:13px;padding:11px 12px;font-size:12.5px;line-height:1.55;margin-top:10px}
+.skeleton{color:#AAA}
+.goToRep{display:block;text-align:center;margin-top:12px;color:var(--red);font-weight:900;font-size:13.5px;text-decoration:none}
+
 </style>
 <body>
 <div class="app">
@@ -224,6 +296,9 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 
   <!-- ============================== APP SHELL (hidden until login) ============================== -->
   <div id="appShell" style="display:none">
+
+    <!-- Store dashboard (v4): store-level overview before choosing a salesperson -->
+    <section class="storeDash" id="storeDash"><div id="storeDashMount"></div></section>
 
     <section class="selectorBox" id="selector">
       <h2>เลือกชื่อเซลล์</h2>
@@ -994,6 +1069,267 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     bootApp(savedSession.store, savedSession.token, savedSession.role);
   }
 
+
+  // ===================================================================
+  // STORE DASHBOARD (v4) -- shown after login, before a salesperson is
+  // picked. Activity numbers come live from the backend (action=
+  // storeSummary, scoped to the token's store server-side); the sales
+  // block can be drawn immediately from the data already loaded at login.
+  // ===================================================================
+  var STORE_DASH_REFRESH_MS = 5 * 60 * 1000;
+  var storeDash = { summary: null, store: null, loadedAt: 0, loading: false, error: "", stale: false, reqId: 0 };
+  var TH_MONTHS = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+  var TH_DOW = ["อา","จ","อ","พ","พฤ","ศ","ส"];
+
+  function thDate(key, withYear){
+    if (!key) return "";
+    var p = String(key).slice(0, 10).split("-");
+    if (p.length < 3) return String(key);
+    return Number(p[2]) + " " + TH_MONTHS[Number(p[1]) - 1] + (withYear ? " " + p[0] : "");
+  }
+  function thDow(key){
+    var p = String(key).split("-");
+    return TH_DOW[new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])).getUTCDay()];
+  }
+  function fmtInt(n){ return Number(n || 0).toLocaleString("en-US"); }
+  function fmtSigned(n){ return (n < 0 ? "-" : "+") + fmtMoney(n); }
+  function pctText(x){ return (x === null || x === undefined || isNaN(x)) ? "–" : fmtPct(x * 100); }
+
+  // Sales block from the data already returned at login (no extra request).
+  function localSales(store){
+    var sd = (state.storesData || {})[store] || {};
+    var mtd = 0, target = 0, mtdT = 0, loss = 0, reps = 0, top10 = 0;
+    Object.keys(sd).forEach(function(k){
+      var se = sd[k] || {}, perf = se.perf || {};
+      if (!/^DUMMY/i.test(k)) reps++;
+      mtd += Number(perf.mtd || 0);
+      if (perf.target) { target += Number(perf.target); mtdT += Number(perf.mtd || 0); }
+      (se.customers || []).forEach(function(c){ loss += Math.abs(Number(c.diff || 0)); top10++; });
+    });
+    return { mtd: mtd, target: target, pct: target ? mtdT / target : null, top10Loss: loss, reps: reps, top10: top10 };
+  }
+
+  function loadStoreSummary(force){
+    var store = state.currentStoreCode;
+    var sess = loadSession();
+    if (!store || !sess || !sess.token) return;
+    if (!force && storeDash.summary && storeDash.store === store && !storeDash.stale &&
+        Date.now() - storeDash.loadedAt < STORE_DASH_REFRESH_MS) return;
+    var myReq = ++storeDash.reqId;
+    storeDash.loading = true; storeDash.error = "";
+    if (storeDash.store !== store) storeDash.summary = null;
+    renderStoreDashboard();
+    jsonpRequest({ action: "storeSummary", token: sess.token, store: store }, 25000).then(function(res){
+      if (myReq !== storeDash.reqId) return;            // a newer request (e.g. store switch) won
+      storeDash.loading = false;
+      if (!res || !res.ok) {
+        storeDash.error = res && res.sessionExpired
+          ? "เซสชันหมดอายุ กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่"
+          : (res && res.message ? res.message : "โหลดข้อมูลการเข้าพบไม่สำเร็จ");
+      } else if (res.store !== store) {
+        // The backend decides the store; never show another store's numbers.
+        storeDash.error = "สิทธิ์สาขาไม่ตรงกัน กรุณาเข้าสู่ระบบใหม่";
+      } else {
+        storeDash.summary = res; storeDash.store = store;
+        storeDash.loadedAt = Date.now(); storeDash.stale = false;
+      }
+      renderStoreDashboard();
+    }).catch(function(err){
+      if (myReq !== storeDash.reqId) return;
+      storeDash.loading = false;
+      storeDash.error = (err && err.message === "timeout")
+        ? "ระบบหลังบ้านตอบช้า หรือยังไม่ได้ Deploy เวอร์ชันที่มี Store Dashboard — แตะ \"รีเฟรช\" เพื่อลองใหม่"
+        : "เชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วแตะ \"รีเฟรช\"";
+      renderStoreDashboard();
+    });
+  }
+
+  function openRep(key){
+    var sd = (state.storesData || {})[state.currentStoreCode] || {};
+    if (!sd[key]) return;
+    state.currentSE = key;
+    renderDashboard();
+    document.getElementById("dashboardMount").scrollIntoView({ behavior: "smooth" });
+  }
+
+  function repRowHtml(r, mode){
+    var name = esc(displaySalesmanName(r.key));
+    var tag = "";   // displaySalesmanName() already labels VACANT / DUMMY portfolios
+    var sub, right;
+    if (mode === "notVisited") {
+      sub = r.lastVisit ? "บันทึกล่าสุด " + thDate(r.lastVisit) : "ยังไม่เคยบันทึกการเข้าพบ";
+      right = '<b>' + fmtMoney(r.top10Loss) + '</b>ยอดหาย Top 10';
+    } else {
+      var zero = r.visitsWeek === 0 && r.type !== "dummy";
+      sub = "Top 10 เข้าพบแล้ว " + r.top10VisitedWeek + "/" + r.top10 +
+            (r.pct !== null && r.pct !== undefined ? " • ทำได้ " + pctText(r.pct) + " ของเป้า" : " • ยังไม่ตั้งเป้า");
+      right = '<b' + (zero ? ' class="badText"' : '') + '>' + r.visitsWeek + '</b>เข้าพบ';
+    }
+    return '<a class="repRow" href="javascript:void(0)" data-open-rep="' + esc(r.key) + '">' +
+      '<div class="who"><b>' + name + tag + '</b><small>' + esc(sub) + '</small></div>' +
+      '<div class="num">' + right + '</div></a>';
+  }
+
+  function trendHtml(trend, today){
+    if (!trend || !trend.length) return "";
+    var max = Math.max.apply(null, trend.map(function(d){ return d.visits; }).concat([1]));
+    var bars = trend.map(function(d){
+      var h = Math.round(d.visits / max * 100);
+      var cls = "trendBar" + (d.date === today ? " today" : "") + (d.visits === 0 ? " zero" : "");
+      var tip = thDate(d.date) + " (" + thDow(d.date) + "): เข้าพบ " + d.visits + " • Feedback " + d.feedback;
+      var label = (d.date === today || d.visits === max) && d.visits > 0 ? '<em>' + d.visits + '</em>' : "";
+      return '<div class="' + cls + '" tabindex="0" title="' + esc(tip) + '" data-tip="' + esc(tip) + '">' + label +
+             '<i style="height:' + h + '%"></i></div>';
+    }).join("");
+    var axis = trend.map(function(d, i){
+      var show = i === 0 || i === trend.length - 1 || thDow(d.date) === "จ";
+      return '<span>' + (show ? esc(thDate(d.date)) : "") + '</span>';
+    }).join("");
+    return '<div class="trend"><div class="meterLabel"><span>จำนวนเข้าพบรายวัน (14 วันล่าสุด)</span><b>สูงสุด ' + max + '</b></div>' +
+      '<div class="trendBars" role="img" aria-label="จำนวนเข้าพบรายวัน 14 วันล่าสุด">' + bars + '</div>' +
+      '<div class="trendAxis">' + axis + '</div><div class="trendTip" id="trendTip">แตะแท่งกราฟเพื่อดูตัวเลขรายวัน</div></div>';
+  }
+
+  function renderStoreDashboard(){
+    var mount = document.getElementById("storeDashMount");
+    if (!mount) return;
+    var store = state.currentStoreCode;
+    if (!store) { mount.innerHTML = ""; return; }
+    var s = (storeDash.summary && storeDash.store === store) ? storeDash.summary : null;
+    var local = localSales(store);
+    var sales = s ? s.sales : local;
+    var st = s && s.sales ? s.sales.storeTotal : null;
+    var asOf = s && s.dataAsOf ? s.dataAsOf : null;
+    var isAdmin = state.role === "admin";
+    var storeCodes = Object.keys(state.storesData || {});
+
+    var weekText = s ? "สัปดาห์ " + thDate(s.weekStart) + " – " + thDate(s.weekEnd, true) : "กำลังโหลดข้อมูลการเข้าพบ...";
+    var coverage = s && s.priority.total ? s.priority.visitedWeek / s.priority.total : null;
+
+    var switcher = "";
+    if (isAdmin && storeCodes.length > 1) {
+      switcher = '<select id="storeDashSwitch" aria-label="เลือกสาขา (โหมดผู้ดูแล)">' + storeCodes.map(function(c){
+        return '<option value="' + esc(c) + '"' + (c === store ? " selected" : "") + '>' + esc(STORE_LABELS[c] || c) + '</option>';
+      }).join("") + '</select>';
+    }
+
+    var html = '<div class="storeHero"><div style="min-width:0;flex:1"><span>ภาพรวมสาขา</span>' +
+      '<h2>' + esc(STORE_LABELS[store] || store) + '</h2><small>' + esc(weekText) + '</small>' + switcher + '</div>' +
+      '<div class="coverage"><b>' + (coverage === null ? "–" : pctText(coverage)) + '</b><span>ลูกค้า Top 10<br>ที่เข้าพบแล้วสัปดาห์นี้</span></div></div>';
+
+    html += '<div class="dashToolbar"><small>' +
+      (storeDash.loading ? "กำลังอัปเดต..." : (s ? "อัปเดตการเข้าพบ " + esc(String(s.generatedAt).slice(11, 16)) + " น. • ข้อมูลสด" : "")) +
+      '</small><button type="button" class="refreshBtn" id="storeDashRefresh"' + (storeDash.loading ? " disabled" : "") + '>↻ รีเฟรช</button></div>';
+    if (storeDash.error) html += '<div class="dashError">' + esc(storeDash.error) + '</div>';
+
+    // ---- 1. Sales drop ----
+    var salesTiles = '';
+    if (st) {
+      salesTiles += '<div class="kpiTile alert"><span>ยอดหายสุทธิทั้งสาขา</span><b>' + fmtSigned(st.netChange) + '</b>' +
+        '<small>' + (st.netChangePct !== null && st.netChangePct !== undefined ? pctText(st.netChangePct) + " " : "") +
+        'เทียบยอด' + esc(asOf && asOf.lmLabel ? asOf.lmLabel : "เดือนก่อน") + ' ในจำนวนวันเท่ากัน</small></div>';
+      salesTiles += '<div class="kpiTile"><span>ลูกค้าที่ยอดลด</span><b>' + fmtInt(st.declineCustomers) + '</b>' +
+        '<small>จาก ' + fmtInt(st.customers) + ' ราย • หายรวม ' + fmtMoney(st.grossLoss) + '</small></div>';
+    }
+    salesTiles += '<div class="kpiTile"><span>ยอดขาย MTD เทียบเป้า</span><b>' + pctText(sales.pct) + '</b>' +
+      '<small>' + fmtMoney(sales.mtd) + (sales.target ? ' จากเป้า ' + fmtMoney(sales.target) : '') + '</small></div>';
+    salesTiles += '<div class="kpiTile"><span>ยอดที่หายของลูกค้า Top 10</span><b>' + fmtMoney(sales.top10Loss) + '</b>' +
+      '<small>' + fmtInt(s ? s.priority.total : local.top10) + ' ราย (เกณฑ์เดิมของแอป)</small></div>';
+    html += '<section class="panel"><div class="panelHead"><h3>📉 ยอดขาย</h3><span>' +
+      (asOf ? "ข้อมูลถึง " + esc(thDate(asOf.salesAsOf, true)) + " • อัปเดตรายสัปดาห์" : "อัปเดตรายสัปดาห์") + '</span></div>' +
+      '<div class="kpiGrid">' + salesTiles + '</div></section>';
+
+    // ---- 2. Visits this week ----
+    if (s) {
+      var w = s.activity.week, d = s.activity.today;
+      html += '<section class="panel"><div class="panelHead"><h3>🚶 การเข้าพบสัปดาห์นี้</h3><span>' +
+        esc(thDate(s.weekStart)) + ' – ' + esc(thDate(s.weekEnd)) + '</span></div><div class="kpiGrid">' +
+        '<div class="kpiTile"><span>จำนวนการเข้าพบ</span><b>' + fmtInt(w.visits) + '</b><small>ครั้ง (เซลล์ + ลูกค้า + วัน)</small></div>' +
+        '<div class="kpiTile"><span>ส่ง Feedback</span><b>' + fmtInt(w.feedback) + '</b><small>รายงานที่บันทึกในระบบ</small></div>' +
+        '<div class="kpiTile"><span>ลูกค้าที่เข้าพบ</span><b>' + fmtInt(w.customers) + '</b><small>ราย (ไม่นับซ้ำ)</small></div>' +
+        '<div class="kpiTile' + (s.team.activeWeek === 0 ? ' alert' : '') + '"><span>เซลล์ที่ออกพบแล้ว</span><b>' +
+          s.team.activeWeek + '/' + s.team.total + '</b><small>ยังไม่ออกพบ ' + s.notVisitedReps.length + ' คน</small></div>' +
+        '</div><div class="todayLine"><b>วันนี้ (' + esc(thDate(s.today)) + '):</b> เข้าพบ ' + d.visits + ' • Feedback ' + d.feedback +
+        ' • ลูกค้า ' + d.customers + ' ราย • เซลล์ ' + d.activeReps + ' คน</div>' +
+        '<div class="meter"><div class="meterLabel"><span>ลูกค้า Top 10 ที่เข้าพบแล้ว</span><b>' + fmtInt(s.priority.visitedWeek) + ' / ' +
+          fmtInt(s.priority.total) + ' (' + pctText(coverage) + ')</b></div><div class="meterTrack"><div class="meterFill" style="width:' +
+          Math.min(100, Math.round((coverage || 0) * 1000) / 10) + '%"></div></div></div>' +
+        trendHtml(s.trend, s.today) + '</section>';
+    } else if (storeDash.loading) {
+      html += '<section class="panel skeleton"><div class="panelHead"><h3>🚶 การเข้าพบสัปดาห์นี้</h3></div>กำลังโหลด...</section>';
+    }
+
+    // ---- 3. Who has not visited this week ----
+    if (s) {
+      var byKey = {};
+      s.reps.forEach(function(r){ byKey[r.key] = r; });
+      var nv = s.notVisitedReps.map(function(k){ return byKey[k]; }).filter(Boolean);
+      html += '<section class="panel"><details class="dashDetails"' + (nv.length ? " open" : "") + '><summary><span class="sumTitle">🚩 ยังไม่ออกพบสัปดาห์นี้</span><small>' +
+        nv.length + ' จาก ' + s.team.total + ' คน</small></summary>' +
+        (nv.length ? nv.slice(0, 8).map(function(r){ return repRowHtml(r, "notVisited"); }).join("") +
+            (nv.length > 8 ? '<details class="custGroup"><summary><span>แสดงอีก ' + (nv.length - 8) + ' คน</span><small>⌄</small></summary>' +
+              nv.slice(8).map(function(r){ return repRowHtml(r, "notVisited"); }).join("") + '</details>' : "")
+                   : '<div class="dashNote">ทุกคนออกพบลูกค้าแล้วในสัปดาห์นี้ 👍</div>') +
+        '<div class="dashNote">เรียงตามยอดที่หายของลูกค้า Top 10 • แตะชื่อเพื่อเปิดแผนการขายของเซลล์คนนั้น</div></details></section>';
+
+      // ---- 4. Unvisited Top 10 customers, grouped by salesperson ----
+      var groups = s.unvisitedTop10 || [];
+      html += '<section class="panel"><details class="dashDetails"><summary><span class="sumTitle">📋 ลูกค้า Top 10 ที่ยังไม่มีใครเข้าพบ</span><small>' +
+        fmtInt(s.priority.unvisitedWeek) + ' ราย • ' + fmtMoney(s.priority.unvisitedLossWeek) + '</small></summary>' +
+        groups.map(function(g){
+          var sum = g.customers.reduce(function(a, c){ return a + c.loss; }, 0);
+          return '<details class="custGroup"><summary><span>' + esc(displaySalesmanName(g.rep)) + '</span><small>' +
+            g.customers.length + ' ราย • ' + fmtMoney(sum) + '</small></summary>' +
+            g.customers.map(function(c){
+              return '<div class="custItem"><span>' + esc(c.name) + ' <small style="color:#888">' + esc(c.id) + '</small></span><b>' + fmtMoney(c.loss) + '</b></div>';
+            }).join("") +
+            '<a class="goToRep" href="javascript:void(0)" data-open-rep="' + esc(g.rep) + '">เปิดแผนการขายของเซลล์คนนี้ →</a></details>';
+        }).join("") + '</details></section>';
+
+      // ---- 5. Whole team ----
+      var team = s.reps.slice().sort(function(a, b){
+        if ((a.type === "dummy") !== (b.type === "dummy")) return a.type === "dummy" ? 1 : -1;
+        return (b.visitsWeek - a.visitsWeek) || (b.top10Loss - a.top10Loss);
+      });
+      html += '<section class="panel"><details class="dashDetails"><summary><span class="sumTitle">👥 ทีมขายรายคน</span><small>' + s.reps.length +
+        ' พอร์ต</small></summary>' + team.map(function(r){ return repRowHtml(r, "team"); }).join("") +
+        '<div class="dashNote">เข้าพบ = จำนวนครั้งในสัปดาห์นี้ • Top 10 เข้าพบแล้ว = ลูกค้าในรายชื่อ Top 10 ของคนนั้นที่มีการบันทึกแล้ว</div></details></section>';
+
+      html += '<div class="dashNote">นิยาม: Feedback = รายงานที่บันทึก 1 ครั้ง • การเข้าพบ = เซลล์ + ลูกค้า + วันเดียวกันนับ 1 ครั้ง • ' +
+        'สัปดาห์ = จันทร์–อาทิตย์ • ยอดหายสุทธิเทียบยอดเฉลี่ยต่อวันของเดือนก่อนในจำนวนวันเท่ากัน • ไม่นับรายการทดสอบ</div>';
+    }
+
+    mount.innerHTML = html;
+
+    var refresh = document.getElementById("storeDashRefresh");
+    if (refresh) refresh.addEventListener("click", function(){ loadStoreSummary(true); });
+    var sw = document.getElementById("storeDashSwitch");
+    if (sw) sw.addEventListener("change", function(){ switchStore(sw.value); });
+    Array.prototype.forEach.call(mount.querySelectorAll("[data-open-rep]"), function(a){
+      a.addEventListener("click", function(){ openRep(a.getAttribute("data-open-rep")); });
+    });
+    var tipEl = document.getElementById("trendTip");
+    Array.prototype.forEach.call(mount.querySelectorAll(".trendBar"), function(b){
+      function show(){ if (tipEl) tipEl.textContent = b.getAttribute("data-tip"); }
+      b.addEventListener("mouseenter", show); b.addEventListener("focus", show); b.addEventListener("click", show);
+    });
+  }
+
+  function switchStore(code){
+    if (!state.storesData || !state.storesData[code]) return;
+    state.currentStoreCode = code;
+    state.currentSE = null;
+    var adminSelect = document.getElementById("adminStoreSwitch");
+    if (adminSelect) adminSelect.value = code;
+    document.getElementById("dashboardMount").innerHTML = "";
+    renderRepPicker();
+    loadStoreSummary(true);
+  }
+
+  document.addEventListener("visibilitychange", function(){
+    if (document.visibilityState === "visible" && appShell.style.display !== "none") loadStoreSummary(false);
+  });
+
   function initAppShell(){
     document.getElementById("repPicker").style.display = "block";
     var storeCodes = Object.keys(state.storesData);
@@ -1004,19 +1340,22 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     if (settingsSection) settingsSection.style.display = (state.role === "admin") ? "block" : "none";
 
     if (state.role === "admin" && storeCodes.length > 1) {
-      adminWrap.style.display = "block";
+      // v4: the admin store switch now lives in the store dashboard header;
+      // this original control stays hidden but in sync (see switchStore).
+      adminWrap.style.display = "none";
       adminSelect.innerHTML = storeCodes.map(function(c){
         return '<option value="' + c + '">' + esc(STORE_LABELS[c] || c) + '</option>';
       }).join("");
       adminSelect.addEventListener("change", function(){
-        state.currentStoreCode = adminSelect.value;
-        renderRepPicker();
+        switchStore(adminSelect.value);
       });
       state.currentStoreCode = storeCodes[0];
     } else {
       state.currentStoreCode = storeCodes[0];
     }
     renderRepPicker();
+    renderStoreDashboard();
+    loadStoreSummary(true);
   }
 
   function renderRepPicker(){
@@ -1224,7 +1563,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 
     var html = '' +
       '<section class="dashboard" id="dashCurrent">' +
-      '<a class="back" href="javascript:void(0)" id="backToPicker">\u2190 เปลี่ยนชื่อเซลล์</a>' +
+      '<a class="back" href="javascript:void(0)" id="backToPicker">\u2190 กลับภาพรวมสาขา / เปลี่ยนชื่อเซลล์</a>' +
       '<div class="welcome"><div style="min-width:0;flex:1">' + '<span>แผนการขายวันนี้</span><h2 style="word-break:break-word">' + esc(displaySalesmanName(state.currentSE)) + '</h2>' +
       '<small>' + esc(STORE_LABELS[state.currentStoreCode] || state.currentStoreCode || "") + '</small></div>' + runrateHtml + '</div>' +
       achieveBarHtml +
@@ -1241,7 +1580,8 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     var back = document.getElementById("backToPicker");
     if (back) back.addEventListener("click", function(){
       document.getElementById("dashboardMount").innerHTML = "";
-      document.getElementById("selector").scrollIntoView({ behavior: "smooth" });
+      document.getElementById("storeDash").scrollIntoView({ behavior: "smooth" });
+      loadStoreSummary(false);   // refreshes if a report was saved meanwhile
     });
     setupCardPager(10);
   }
@@ -1569,6 +1909,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     btn.textContent = payload.evidence ? "กำลังอัปโหลดรูปและบันทึก..." : "กำลังบันทึก...";
 
     sendPayload(payload).then(function(res){
+      storeDash.stale = true;   // store dashboard re-reads live numbers next time it is shown
       btn.textContent = "✅ บันทึกแล้ว";
       var evidenceText = payload.evidence ? " • 📷 รูปหลักฐาน " + (res.evidenceCount || 1) + " รูป" : "";
       if (note) note.textContent = "ระบบกลางยืนยันแล้ว • เลขอ้างอิง: " + (res.recordId || payload.issueId) + evidenceText + " • " + new Date().toLocaleString("th-TH");
