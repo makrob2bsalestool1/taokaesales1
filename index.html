@@ -346,7 +346,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       </div>
     </section>
 
-    <div class="footer">ข้อมูลจริง ณ 27 ก.ย. 2026 &bull; เปรียบเทียบยอด ส.ค. 2026 กับ ก.ย. 2026 (MTD) &bull; ยอด ส.ค.–ก.ย. 2025 จาก Port Performance และ raw data &bull; หมวดสินค้าจาก Bottom10 Sales by Class &bull; ระบบส่งเฉพาะข้อมูลของสาขาที่เข้าสู่ระบบ</div>
+    <div class="footer" id="dataFooter">ข้อมูลจริง ณ 27 ก.ย. 2026 &bull; เปรียบเทียบยอด ส.ค. 2026 กับ ก.ย. 2026 (MTD) &bull; ยอด ส.ค.–ก.ย. 2025 จาก Port Performance และ raw data &bull; หมวดสินค้าจาก Bottom10 Sales by Class &bull; ระบบส่งเฉพาะข้อมูลของสาขาที่เข้าสู่ระบบ</div>
 
     <button id="logoutBtn" type="button" style="display:block;width:100%;max-width:200px;margin:16px auto 0;background:#fff;border:1px solid var(--bad);color:var(--bad);border-radius:11px;padding:10px;font-size:10px;font-weight:900">🔒 ออกจากระบบ</button>
   </div>
@@ -367,6 +367,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 
   var state = {
     role: null,
+    dataAsOf: null,     // v5: month labels + days elapsed for the data currently published
     storesData: null,
     currentStoreCode: null,
     currentSE: null
@@ -459,6 +460,29 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     return "฿" + Math.round(n);
   }
   function fmtPct(n){ return n.toFixed(1) + "%"; }
+
+  // v5: month labels and days elapsed follow the published data, so the app
+  // stays correct when the Sheet moves to a new month. Defaults = 27 Sep 2026.
+  var TH_M = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+  function dataLabels(){
+    var d = state.dataAsOf || {};
+    var asOf = d.salesAsOf ? String(d.salesAsOf).split("-") : null;
+    return {
+      lm: d.lmLabel || "ส.ค. 2026",
+      cm: d.cmLabel || "ก.ย. 2026",
+      ly: d.lyLabel || "ก.ย. 2025",
+      lmly: d.lmlyLabel || "ส.ค. 2025",
+      asOf: asOf ? (Number(asOf[2]) + " " + TH_M[Number(asOf[1]) - 1] + " " + asOf[0]) : "27 ก.ย. 2026",
+      daysElapsed: Number(d.daysElapsed) || 27,
+      daysInMonth: Number(d.daysInMonth) || 30
+    };
+  }
+  function renderDataFooter(){
+    var el = document.getElementById("dataFooter"); if (!el) return;
+    var L = dataLabels();
+    el.innerHTML = "ข้อมูลจริง ณ " + esc(L.asOf) + " &bull; เปรียบเทียบยอด " + esc(L.lm) + " กับ " + esc(L.cm) + " (MTD) &bull; ยอด " +
+      esc(L.lmly) + " / " + esc(L.ly) + " จาก Port Performance และ raw data &bull; หมวดสินค้าจาก Bottom10 Sales by Class &bull; ระบบส่งเฉพาะข้อมูลของสาขาที่เข้าสู่ระบบ";
+  }
 
   // แปลชื่อหมวดสินค้าจากข้อมูลต้นทางให้แสดงเป็นภาษาไทย
   var CLASS_TH = {
@@ -921,7 +945,8 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 
   // ประเมินภาพรวมพอร์ตทั้งหมด: ถ้ายอด MTD ปัจจุบัน forecast เต็มเดือนแล้วเทียบกับเป้า
   function forecastStatus(mtd, target){
-    var daysElapsed = 27, daysInMonth = 30; // ข้อมูล ณ 27 ก.ย. 2026 (refresh 28 ก.ย., ก.ย. มี 30 วัน)
+    // v5: days come from the published data (DATA_AS_OF), not hard-coded.
+    var daysElapsed = dataLabels().daysElapsed, daysInMonth = dataLabels().daysInMonth;
     var forecast = daysElapsed ? (mtd / daysElapsed) * daysInMonth : 0;
     if (forecast >= target) {
       return { cls: "warnText", bgCls: "portfolioWarn", text: "ภาพรวมปานกลาง เร่งแก้ลูกค้ายอดตก" };
@@ -1011,6 +1036,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       if (res.stores && typeof res.stores === "object") {
         state.role = res.role;
         state.storesData = res.stores;
+        state.dataAsOf = res.dataAsOf || null;
 
         // SECURITY: normal store PINs must receive exactly one authorized store.
         var authorizedCodes = Object.keys(state.storesData || {});
@@ -1040,6 +1066,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     fetchData(store, token).then(function(res){
       state.role = res.role;
       state.storesData = res.stores;
+      state.dataAsOf = res.dataAsOf || null;
 
       // SECURITY: saved sessions are also locked to the store in the server token.
       var authorizedCodes = Object.keys(state.storesData || {});
@@ -1236,7 +1263,8 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     salesTiles += '<div class="kpiTile"><span>ยอดที่หายของลูกค้า Top 10</span><b>' + fmtMoney(sales.top10Loss) + '</b>' +
       '<small>' + fmtInt(s ? s.priority.total : local.top10) + ' ราย (เกณฑ์เดิมของแอป)</small></div>';
     html += '<section class="panel"><div class="panelHead"><h3>📉 ยอดขาย</h3><span>' +
-      (asOf ? "ข้อมูลถึง " + esc(thDate(asOf.salesAsOf, true)) + " • อัปเดตรายสัปดาห์" : "อัปเดตรายสัปดาห์") + '</span></div>' +
+      (asOf ? "ข้อมูลถึง " + esc(thDate(asOf.salesAsOf, true)) : "") +
+      (s && s.dataSource === "sheet" ? " • อัปเดตอัตโนมัติจาก Google Sheet" : " • อัปเดตรายสัปดาห์") + '</span></div>' +
       '<div class="kpiGrid">' + salesTiles + '</div></section>';
 
     // ---- 2. Visits this week ----
@@ -1354,6 +1382,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       state.currentStoreCode = storeCodes[0];
     }
     renderRepPicker();
+    renderDataFooter();
     renderStoreDashboard();
     loadStoreSummary(true);
   }
@@ -1383,7 +1412,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       return '<article class="actionCard">' +
         '<div class="topline"><div class="rank">#' + rank + '</div>' +
         '<div class="customerName" style="color:#999">ไม่มีลูกค้าติดลบเพิ่มเติมในลำดับนี้</div></div>' +
-        '<div class="reason" style="padding-top:0">เซลคนนี้มีลูกค้าที่ยอดขายลดลงไม่ถึง ' + rank + ' ราย ในช่วง ส.ค.–ก.ย. 2026 — ถือเป็นสัญญาณที่ดี</div>' +
+        '<div class="reason" style="padding-top:0">เซลคนนี้มีลูกค้าที่ยอดขายลดลงไม่ถึง ' + rank + ' ราย ในช่วง ' + esc(dataLabels().lm) + '–' + esc(dataLabels().cm) + ' — ถือเป็นสัญญาณที่ดี</div>' +
         '</article>';
     }
 
@@ -1419,12 +1448,12 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
         '<div class="custMore"><div class="custMoreLabel">รายละเอียดลูกค้า</div>' +
         '<div class="detailRow">' +
         '<div class="detailBox">' +
-        '<div><span>ยอด ส.ค. 2025</span><b>' + fmtMoney(cust.jul2025 || 0) + '</b></div>' +
-        '<div><span>ยอด ก.ย. 2025</span><b>' + fmtMoney(cust.aug2025 || 0) + '</b></div>' +
-        '<div><span>ยอด ส.ค. 2026</span><b>' + fmtMoney(jul) + '</b></div>' +
-        '<div><span>ยอด ก.ย. 2026 (MTD)</span><b>' + fmtMoney(aug) + '</b></div>' +
+        '<div><span>ยอด ' + esc(dataLabels().lmly) + '</span><b>' + fmtMoney(cust.jul2025 || 0) + '</b></div>' +
+        '<div><span>ยอด ' + esc(dataLabels().ly) + '</span><b>' + fmtMoney(cust.aug2025 || 0) + '</b></div>' +
+        '<div><span>ยอด ' + esc(dataLabels().lm) + '</span><b>' + fmtMoney(jul) + '</b></div>' +
+        '<div><span>ยอด ' + esc(dataLabels().cm) + ' (MTD)</span><b>' + fmtMoney(aug) + '</b></div>' +
         '</div>' +
-        '<div class="lossHighlight"><span>ยอดที่หาย<br>ส.ค.→ก.ย. 2026</span><b>' + fmtMoney(loss) + '</b></div>' +
+        '<div class="lossHighlight"><span>ยอดที่หาย<br>' + esc(dataLabels().lm.split(' ')[0]) + '→' + esc(dataLabels().cm) + '</span><b>' + fmtMoney(loss) + '</b></div>' +
         '</div>' +
         '<p><strong>เหตุผล:</strong> ' + reason + '</p>' +
         '<p><strong>ลำดับหมวดที่ควรกู้ยอด:</strong> ' + chain + '</p>' +
