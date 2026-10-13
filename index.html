@@ -207,7 +207,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .storeHero select{margin-top:10px;width:100%;border:none;border-radius:11px;padding:9px 10px;font-family:inherit;font-size:14px;font-weight:800;color:var(--ink);background:#fff;min-height:42px}
 .dashToolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 2px 0}
 .dashToolbar small{font-size:11.5px;color:var(--muted)}
-.refreshBtn{background:#fff;border:1px solid var(--line);color:var(--red);border-radius:11px;padding:8px 12px;font-size:12.5px;font-weight:900;min-height:40px;cursor:pointer}
+.refreshBtn{background:#fff;border:1px solid var(--line);color:var(--red);border-radius:11px;padding:8px 12px;font-size:12.5px;font-weight:900;min-height:40px;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .refreshBtn:disabled{opacity:.5}
 .panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}
 .panelHead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}
@@ -220,6 +220,8 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .kpiTile small{display:block;font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
 .kpiTile.alert{background:var(--softred);border-color:#F3D1D4}
 .kpiTile.alert b{color:var(--bad)}
+.kpiTile.good{background:var(--softgreen);border-color:#CFE6DA}
+.kpiTile.good b{color:var(--green)}
 .todayLine{font-size:12px;color:#555;margin-top:10px;background:#FAFAFA;border-radius:11px;padding:9px 11px}
 .meter{margin-top:12px}
 .meterLabel{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px}
@@ -267,6 +269,57 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .skeleton{color:#AAA}
 .goToRep{display:block;text-align:center;margin-top:12px;color:var(--red);font-weight:900;font-size:13.5px;text-decoration:none}
 
+
+/* ===== Floating bottom navigation with pill-shaped active indicator (v7) ===== */
+:root{
+ --nav-bg:rgba(255,255,255,.92); --nav-ink:#6B5F61; --nav-ink-active:#fff; --nav-pill:var(--red);
+ --nav-shadow:0 10px 30px rgba(120,20,30,.16),0 2px 8px rgba(0,0,0,.06); --nav-h:64px;
+}
+body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inset-bottom,0px))}
+.view[hidden]{display:none!important}
+.view{animation:viewIn .22s ease-out}
+@keyframes viewIn{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tabBar{
+ position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+ width:min(560px,calc(100% - 24px));height:var(--nav-h);padding:6px;z-index:50;
+ display:grid;grid-template-columns:repeat(4,1fr);align-items:stretch;
+ background:var(--nav-bg);border:1px solid rgba(197,31,45,.10);border-radius:999px;box-shadow:var(--nav-shadow);
+ -webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px)
+}
+.tabPill{
+ position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px) / 4);border-radius:999px;
+ background:linear-gradient(135deg,#B3141F,#D8414C);box-shadow:0 6px 14px rgba(197,31,45,.32);
+ transition:transform .32s cubic-bezier(.3,1.25,.4,1);z-index:0;pointer-events:none
+}
+.tabBar[data-active="1"] .tabPill{transform:translateX(100%)}
+.tabBar[data-active="2"] .tabPill{transform:translateX(200%)}
+.tabBar[data-active="3"] .tabPill{transform:translateX(300%)}
+.tabBtn{
+ position:relative;z-index:1;border:none;background:transparent;border-radius:999px;cursor:pointer;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+ color:var(--nav-ink);font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:.2px;
+ transition:color .2s ease;-webkit-tap-highlight-color:transparent;min-width:0
+}
+.tabBtn svg{width:22px;height:22px;flex-shrink:0;transition:transform .25s ease}
+.tabBtn[aria-selected="true"]{color:var(--nav-ink-active)}
+.tabBtn[aria-selected="true"] svg{transform:translateY(-1px) scale(1.06)}
+.tabBtn:active svg{transform:scale(.92)}
+.tabBtn:focus-visible{outline:3px solid #F3B4B8;outline-offset:-3px}
+.tabBtn .lbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tabBadge{
+ position:absolute;top:6px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:999px;
+ background:var(--bad);color:#fff;font-size:10.5px;font-weight:900;line-height:18px;text-align:center;
+ box-shadow:0 0 0 2px #fff;font-variant-numeric:tabular-nums
+}
+.tabBtn[aria-selected="true"] .tabBadge{background:#fff;color:var(--bad);box-shadow:0 0 0 2px rgba(255,255,255,.35)}
+.tabBadge[hidden]{display:none}
+.viewHead{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin:2px 2px 10px}
+.viewHead h2{font-size:20px;margin:0;line-height:1.25}
+.viewHead small{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+@media (prefers-reduced-motion: reduce){
+ .tabPill,.tabBtn svg,.tabBtn{transition:none}
+ .view{animation:none}
+}
 </style>
 <body>
 <div class="app">
@@ -297,9 +350,19 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
   <!-- ============================== APP SHELL (hidden until login) ============================== -->
   <div id="appShell" style="display:none">
 
-    <!-- Store dashboard (v4): store-level overview before choosing a salesperson -->
-    <section class="storeDash" id="storeDash"><div id="storeDashMount"></div></section>
+    <!-- v7: four views switched by the floating bottom navigation -->
+    <!-- View 1: store overview (sales drop + this week's visits) -->
+    <div class="view" id="view-home" role="tabpanel" aria-labelledby="tab-home">
+      <section class="storeDash" id="storeDash"><div id="storeDashMount"></div></section>
+    </div>
 
+    <!-- View 2: team follow-up (who has not visited, unvisited Top 10, whole team) -->
+    <div class="view" id="view-team" role="tabpanel" aria-labelledby="tab-team" hidden>
+      <div id="teamMount"></div>
+    </div>
+
+    <!-- View 3: salesperson plan (picker + Top 10 cards + issue form) -->
+    <div class="view" id="view-sales" role="tabpanel" aria-labelledby="tab-sales" hidden>
     <section class="selectorBox" id="selector">
       <h2>เลือกชื่อเซลล์</h2>
       <div id="adminStoreSwitchWrap" style="display:none;margin-bottom:12px">
@@ -317,7 +380,22 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       </div>
     </section>
 
-    <section class="selectorBox" id="appSettings" style="margin-top:10px;display:none">
+
+    <div id="dashboardMount"></div>
+    </div>
+
+    <!-- View 4: more (problem tracking, admin settings, data note, logout) -->
+    <div class="view" id="view-more" role="tabpanel" aria-labelledby="tab-more" hidden>
+    <div class="viewHead"><div><h2>เพิ่มเติม</h2><small>ข้อมูลระบบและการตั้งค่า</small></div></div>
+    <section class="selectorBox" style="margin-top:0">
+      <h2>📌 ติดตามปัญหา</h2>
+      <div class="selectorTip">
+        เมื่อเชื่อมระบบจริง ข้อมูลที่เซลล์บันทึกจะรวมเป็น Weekly Problem Summary เช่น
+        ราคา / Stock / Delivery / Competitor / Credit และส่งต่อให้ทีมที่เกี่ยวข้องติดตามแก้ไขได้
+      </div>
+    </section>
+
+    <section class="selectorBox" id="appSettings" style="margin-top:12px;display:none">
       <details class="pick">
         <summary>⚙️ ตั้งค่าระบบ (สำหรับผู้ดูแล)</summary>
         <div style="padding:13px">
@@ -336,19 +414,32 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       </details>
     </section>
 
-    <div id="dashboardMount"></div>
-
-    <section class="selectorBox" style="margin-top:16px">
-      <h2>📌 ติดตามปัญหา</h2>
-      <div class="selectorTip">
-        เมื่อเชื่อมระบบจริง ข้อมูลที่เซลล์บันทึกจะรวมเป็น Weekly Problem Summary เช่น
-        ราคา / Stock / Delivery / Competitor / Credit และส่งต่อให้ทีมที่เกี่ยวข้องติดตามแก้ไขได้
-      </div>
-    </section>
-
     <div class="footer" id="dataFooter">ข้อมูลจริง ณ 27 ก.ย. 2026 &bull; เปรียบเทียบยอด ส.ค. 2026 กับ ก.ย. 2026 (MTD) &bull; ยอด ส.ค.–ก.ย. 2025 จาก Port Performance และ raw data &bull; หมวดสินค้าจาก Bottom10 Sales by Class &bull; ระบบส่งเฉพาะข้อมูลของสาขาที่เข้าสู่ระบบ</div>
 
-    <button id="logoutBtn" type="button" style="display:block;width:100%;max-width:200px;margin:16px auto 0;background:#fff;border:1px solid var(--bad);color:var(--bad);border-radius:11px;padding:10px;font-size:10px;font-weight:900">🔒 ออกจากระบบ</button>
+    <button id="logoutBtn" type="button" style="display:block;width:100%;max-width:260px;margin:16px auto 0;background:#fff;border:1px solid var(--bad);color:var(--bad);border-radius:13px;padding:13px;font-size:14px;font-weight:900;min-height:var(--tap)">🔒 ออกจากระบบ</button>
+    </div>
+
+    <!-- Floating bottom navigation: the red pill slides behind the active tab -->
+    <nav class="tabBar" id="tabBar" role="tablist" aria-label="เมนูหลัก" data-active="0">
+      <span class="tabPill" aria-hidden="true"></span>
+      <button class="tabBtn" id="tab-home" role="tab" type="button" data-tab="home" aria-controls="view-home" aria-selected="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="9" rx="2"/><rect x="13.5" y="3" width="7.5" height="5.5" rx="2"/><rect x="13.5" y="11.5" width="7.5" height="9.5" rx="2"/><rect x="3" y="15" width="7.5" height="6" rx="2"/></svg>
+        <span class="lbl">ภาพรวม</span>
+      </button>
+      <button class="tabBtn" id="tab-team" role="tab" type="button" data-tab="team" aria-controls="view-team" aria-selected="false" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20.5c.8-3.7 3.3-5.7 6.5-5.7s5.7 2 6.5 5.7"/><path d="M15.5 4.7a3.5 3.5 0 0 1 0 6.7"/><path d="M17.8 15c2 .7 3.2 2.5 3.7 5.5"/></svg>
+        <span class="lbl">ทีม</span>
+        <span class="tabBadge" id="teamBadge" hidden></span>
+      </button>
+      <button class="tabBtn" id="tab-sales" role="tab" type="button" data-tab="sales" aria-controls="view-sales" aria-selected="false" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></svg>
+        <span class="lbl">แผนขาย</span>
+      </button>
+      <button class="tabBtn" id="tab-more" role="tab" type="button" data-tab="more" aria-controls="view-more" aria-selected="false" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        <span class="lbl">เพิ่มเติม</span>
+      </button>
+    </nav>
   </div>
 </div>
 
@@ -1176,6 +1267,9 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     if (!sd[key]) return;
     state.currentSE = key;
     renderDashboard();
+    var details = document.querySelector("#repPicker details.pick");
+    if (details) details.open = false;
+    setTab("sales", { keepScroll: true });
     document.getElementById("dashboardMount").scrollIntoView({ behavior: "smooth" });
   }
 
@@ -1252,7 +1346,8 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     // ---- 1. Sales drop ----
     var salesTiles = '';
     if (st) {
-      salesTiles += '<div class="kpiTile alert"><span>ยอดหายสุทธิทั้งสาขา</span><b>' + fmtSigned(st.netChange) + '</b>' +
+      var up = st.netChange >= 0;
+      salesTiles += '<div class="kpiTile ' + (up ? 'good' : 'alert') + '"><span>' + (up ? 'ยอดเพิ่มสุทธิทั้งสาขา' : 'ยอดหายสุทธิทั้งสาขา') + '</span><b>' + fmtSigned(st.netChange) + '</b>' +
         '<small>' + (st.netChangePct !== null && st.netChangePct !== undefined ? pctText(st.netChangePct) + " " : "") +
         'เทียบยอด' + esc(asOf && asOf.lmLabel ? asOf.lmLabel : "เดือนก่อน") + ' ในจำนวนวันเท่ากัน</small></div>';
       salesTiles += '<div class="kpiTile"><span>ลูกค้าที่ยอดลด</span><b>' + fmtInt(st.declineCustomers) + '</b>' +
@@ -1287,8 +1382,14 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       html += '<section class="panel skeleton"><div class="panelHead"><h3>🚶 การเข้าพบสัปดาห์นี้</h3></div>กำลังโหลด...</section>';
     }
 
-    // ---- 3. Who has not visited this week ----
+    var teamHtml = "";
+    // ---- 3. Who has not visited this week (v7: rendered into the "ทีม" view) ----
     if (s) {
+      html += '<div class="dashNote">นิยาม: Feedback = รายงานที่บันทึก 1 ครั้ง • การเข้าพบ = เซลล์ + ลูกค้า + วันเดียวกันนับ 1 ครั้ง • ' +
+        'สัปดาห์ = จันทร์–อาทิตย์ • ยอดหายสุทธิเทียบยอดเฉลี่ยต่อวันของเดือนก่อนในจำนวนวันเท่ากัน • ไม่นับรายการทดสอบ</div>';
+      var html_home = html; html = "";
+      html += '<div class="viewHead"><div><h2>ทีมขาย</h2><small>' + esc(STORE_LABELS[store] || store) + ' • ' + esc(weekText) +
+        '</small></div><button type="button" class="refreshBtn" data-refresh="1"' + (storeDash.loading ? " disabled" : "") + '>↻ รีเฟรช</button></div>';
       var byKey = {};
       s.reps.forEach(function(r){ byKey[r.key] = r; });
       var nv = s.notVisitedReps.map(function(k){ return byKey[k]; }).filter(Boolean);
@@ -1323,24 +1424,94 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
         ' พอร์ต</small></summary>' + team.map(function(r){ return repRowHtml(r, "team"); }).join("") +
         '<div class="dashNote">เข้าพบ = จำนวนครั้งในสัปดาห์นี้ • Top 10 เข้าพบแล้ว = ลูกค้าในรายชื่อ Top 10 ของคนนั้นที่มีการบันทึกแล้ว</div></details></section>';
 
-      html += '<div class="dashNote">นิยาม: Feedback = รายงานที่บันทึก 1 ครั้ง • การเข้าพบ = เซลล์ + ลูกค้า + วันเดียวกันนับ 1 ครั้ง • ' +
-        'สัปดาห์ = จันทร์–อาทิตย์ • ยอดหายสุทธิเทียบยอดเฉลี่ยต่อวันของเดือนก่อนในจำนวนวันเท่ากัน • ไม่นับรายการทดสอบ</div>';
+      teamHtml = html; html = html_home;
+    } else {
+      teamHtml = '<div class="viewHead"><div><h2>ทีมขาย</h2><small>' + esc(STORE_LABELS[store] || store) + '</small></div></div>' +
+        '<section class="panel skeleton">' + (storeDash.loading ? "กำลังโหลดข้อมูลทีม..." : esc(storeDash.error || "ยังไม่มีข้อมูลการเข้าพบ")) + '</section>';
     }
 
     mount.innerHTML = html;
+    var teamMount = document.getElementById("teamMount");
+    if (teamMount) teamMount.innerHTML = teamHtml;
+    updateTeamBadge(s ? s.notVisitedReps.length : null);
 
     var refresh = document.getElementById("storeDashRefresh");
     if (refresh) refresh.addEventListener("click", function(){ loadStoreSummary(true); });
     var sw = document.getElementById("storeDashSwitch");
     if (sw) sw.addEventListener("change", function(){ switchStore(sw.value); });
-    Array.prototype.forEach.call(mount.querySelectorAll("[data-open-rep]"), function(a){
-      a.addEventListener("click", function(){ openRep(a.getAttribute("data-open-rep")); });
+    [mount, teamMount].forEach(function(m){
+      if (!m) return;
+      Array.prototype.forEach.call(m.querySelectorAll("[data-open-rep]"), function(a){
+        a.addEventListener("click", function(){ openRep(a.getAttribute("data-open-rep")); });
+      });
+      Array.prototype.forEach.call(m.querySelectorAll("[data-refresh]"), function(b){
+        b.addEventListener("click", function(){ loadStoreSummary(true); });
+      });
     });
     var tipEl = document.getElementById("trendTip");
     Array.prototype.forEach.call(mount.querySelectorAll(".trendBar"), function(b){
       function show(){ if (tipEl) tipEl.textContent = b.getAttribute("data-tip"); }
       b.addEventListener("mouseenter", show); b.addEventListener("focus", show); b.addEventListener("click", show);
     });
+  }
+
+  // ===================================================================
+  // v7: floating bottom navigation. The pill position is pure CSS
+  // (data-active on the nav); this only swaps views and remembers the tab.
+  // ===================================================================
+  var TABS = ["home", "team", "sales", "more"];
+  var TAB_KEY = "taokae_tab_v1";
+  var tabScroll = {};
+  var currentTab = "home";
+
+  function setTab(name, opts){
+    opts = opts || {};
+    if (TABS.indexOf(name) < 0) name = "home";
+    if (name !== currentTab) tabScroll[currentTab] = window.scrollY;
+    currentTab = name;
+    var nav = document.getElementById("tabBar");
+    if (nav) nav.setAttribute("data-active", String(TABS.indexOf(name)));
+    TABS.forEach(function(t){
+      var btn = document.getElementById("tab-" + t), view = document.getElementById("view-" + t);
+      var on = t === name;
+      if (btn) { btn.setAttribute("aria-selected", on ? "true" : "false"); btn.tabIndex = on ? 0 : -1; }
+      if (view) view.hidden = !on;
+    });
+    try { sessionStorage.setItem(TAB_KEY, name); } catch(e){}
+    if (name === "home" || name === "team") loadStoreSummary(false);   // refresh if stale
+    if (!opts.keepScroll) window.scrollTo(0, opts.toTop ? 0 : (tabScroll[name] || 0));
+  }
+
+  function updateTeamBadge(n){
+    var b = document.getElementById("teamBadge");
+    if (!b) return;
+    if (n) { b.textContent = n > 99 ? "99+" : String(n); b.hidden = false; b.setAttribute("aria-label", n + " คนยังไม่ออกพบ"); }
+    else { b.hidden = true; }
+  }
+
+  function initTabBar(){
+    var nav = document.getElementById("tabBar");
+    if (!nav || nav._ready) return;
+    nav._ready = true;
+    document.body.classList.add("hasTabBar");
+    Array.prototype.forEach.call(nav.querySelectorAll(".tabBtn"), function(btn){
+      btn.addEventListener("click", function(){
+        var t = btn.getAttribute("data-tab");
+        // Tapping the active tab again scrolls that view back to the top.
+        setTab(t, { toTop: t === currentTab });
+      });
+    });
+    nav.addEventListener("keydown", function(e){
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      var i = TABS.indexOf(currentTab) + (e.key === "ArrowRight" ? 1 : -1);
+      i = (i + TABS.length) % TABS.length;
+      setTab(TABS[i]);
+      document.getElementById("tab-" + TABS[i]).focus();
+      e.preventDefault();
+    });
+    var saved = null;
+    try { saved = sessionStorage.getItem(TAB_KEY); } catch(e){}
+    setTab(saved || "home", { toTop: true });
   }
 
   function switchStore(code){
@@ -1352,6 +1523,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     document.getElementById("dashboardMount").innerHTML = "";
     renderRepPicker();
     loadStoreSummary(true);
+    if (typeof setTab === "function" && currentTab === "sales") setTab("home", { toTop: true });
   }
 
   document.addEventListener("visibilitychange", function(){
@@ -1385,6 +1557,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     renderDataFooter();
     renderStoreDashboard();
     loadStoreSummary(true);
+    initTabBar();
   }
 
   function renderRepPicker(){
@@ -1400,6 +1573,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
       a.addEventListener("click", function(){
         state.currentSE = a.getAttribute("data-se");
         renderDashboard();
+        if (currentTab !== "sales") setTab("sales", { keepScroll: true });
         var details = document.querySelector("#repPicker details.pick");
         if (details) details.open = false;
         document.getElementById("dashboardMount").scrollIntoView({ behavior: "smooth" });
@@ -1592,7 +1766,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 
     var html = '' +
       '<section class="dashboard" id="dashCurrent">' +
-      '<a class="back" href="javascript:void(0)" id="backToPicker">\u2190 กลับภาพรวมสาขา / เปลี่ยนชื่อเซลล์</a>' +
+      '<a class="back" href="javascript:void(0)" id="backToPicker">\u2190 เลือกเซลล์คนอื่น</a>' +
       '<div class="welcome"><div style="min-width:0;flex:1">' + '<span>แผนการขายวันนี้</span><h2 style="word-break:break-word">' + esc(displaySalesmanName(state.currentSE)) + '</h2>' +
       '<small>' + esc(STORE_LABELS[state.currentStoreCode] || state.currentStoreCode || "") + '</small></div>' + runrateHtml + '</div>' +
       achieveBarHtml +
@@ -1609,8 +1783,10 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     var back = document.getElementById("backToPicker");
     if (back) back.addEventListener("click", function(){
       document.getElementById("dashboardMount").innerHTML = "";
-      document.getElementById("storeDash").scrollIntoView({ behavior: "smooth" });
-      loadStoreSummary(false);   // refreshes if a report was saved meanwhile
+      state.currentSE = null;
+      var details = document.querySelector("#repPicker details.pick");
+      if (details) details.open = true;
+      document.getElementById("selector").scrollIntoView({ behavior: "smooth" });
     });
     setupCardPager(10);
   }
@@ -2021,6 +2197,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
     if (logoutBtn) {
       logoutBtn.addEventListener("click", function(){
         clearSession();
+        try { sessionStorage.removeItem("taokae_tab_v1"); } catch(e){}   // next login starts on ภาพรวม
         location.reload();
       });
     }
