@@ -320,12 +320,27 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
  .tabPill,.tabBtn svg,.tabBtn{transition:none}
  .view{animation:none}
 }
+
+/* ===== v8 design refresh (from the Taokae Sales UI canvas) ===== */
+:root{--bg:#EAECF5;--blue-grad:linear-gradient(180deg,#2368E7,#28211A);--hero-grad:linear-gradient(135deg,#2368E7,#750303)}
+.logo{background:var(--blue-grad);font-size:20px;font-weight:700;box-shadow:0 5px 16px rgba(35,104,231,.22)}
+.header h1,.header p{font-family:Manrope,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai",Tahoma,sans-serif}
+#loginBox{border:none}
+#loginBtn{background:var(--blue-grad)!important}
+.welcome,.storeHero{background:var(--hero-grad)}
+.tabPill{background:var(--blue-grad);box-shadow:0 6px 14px rgba(35,104,231,.30)}
+#view-team .viewHead h2{color:#1A0960}
+.goToRep{color:#09066A}
+.back{color:#371791}
+.todayCallout{background:#DEF2FF}
+.pagerBtn.solid{background:#13096A}
 </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap">
 <body>
 <div class="app">
   <div class="header">
-    <div class="logo">TS</div>
-    <div><h1>Taokae Sales</h1><p>วันนี้ควรไปหาใคร และควรขายอะไร</p></div>
+    <div class="logo">B2B</div>
+    <div><h1>Taokae Sales tools</h1><p id="headerTagline">สวัสดี เถ้าแก่ขาย! วันนี้ขายอะไรดี?</p></div>
   </div>
 
   <!-- ============================== LOGIN SCREEN ============================== -->
@@ -343,7 +358,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
       </div>
     </div>
     <button id="loginBtn" type="button" class="primaryBtn" style="margin-top:16px;width:100%;background:var(--red);color:#fff;border:none;border-radius:13px;padding:14px;font-size:15px;font-weight:900">เข้าสู่ระบบ</button>
-    <div id="loginStatus" style="font-size:12px;color:#8E3038;line-height:1.55;margin-top:10px;text-align:center;font-weight:700"></div>
+    <div id="loginStatus" style="font-size:12px;color:var(--red);line-height:1.55;margin-top:10px;text-align:center;font-weight:700"></div>
     <div class="selectorTip" style="margin-top:12px">รหัสสาขาจะเห็นเฉพาะสาขาที่กำหนดไว้ ส่วนรหัส Admin เท่านั้นที่สามารถเห็นทุกสาขา</div>
   </section>
 
@@ -407,8 +422,8 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
           <span class="label" style="display:block;font-size:9px;font-weight:900;color:#555;margin-bottom:7px">ที่อยู่ระบบเชื่อมต่อ Google Apps Script</span>
           <input id="endpointInput" type="text" placeholder="https://script.google.com/macros/s/XXXX/exec"
             style="width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px;font-family:inherit;font-size:10px;color:#444;box-sizing:border-box">
-          <button id="saveEndpointBtn" type="button" style="margin-top:9px;background:var(--red);color:#fff;border:none;border-radius:11px;width:100%;padding:11px;font-size:10px;font-weight:900">บันทึกการตั้งค่า</button>
-          <button id="testEndpointBtn" type="button" style="margin-top:8px;width:100%;background:#fff;border:1px solid var(--line);color:var(--red);border-radius:11px;padding:10px;font-size:10px;font-weight:900">ทดสอบการเชื่อมต่อ</button>
+          <button id="saveEndpointBtn" type="button" style="margin-top:9px;background:linear-gradient(180deg,#2A2BC1,#28211A);color:#fff;border:none;border-radius:11px;width:100%;padding:11px;font-size:10px;font-weight:900">บันทึกการตั้งค่า</button>
+          <button id="testEndpointBtn" type="button" style="margin-top:8px;width:100%;background:#fff;border:1px solid var(--line);color:#2A1FC5;border-radius:11px;padding:10px;font-size:10px;font-weight:900">ทดสอบการเชื่อมต่อ</button>
           <div id="endpointStatus" style="font-size:8px;color:#888;line-height:1.45;margin-top:8px;text-align:center"></div>
         </div>
       </details>
@@ -1531,6 +1546,8 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   });
 
   function initAppShell(){
+    var tagline = document.getElementById("headerTagline");
+    if (tagline) tagline.textContent = "ภาพรวมยอดขายสาขา";
     document.getElementById("repPicker").style.display = "block";
     var storeCodes = Object.keys(state.storesData);
     var adminWrap = document.getElementById("adminStoreSwitchWrap");
