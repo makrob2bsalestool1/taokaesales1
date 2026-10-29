@@ -2067,7 +2067,8 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
       '<div class="evidenceBox">' +
       '<span class="label">📷 รูปหลักฐาน <span style="font-weight:600;color:#888">(ไม่บังคับ)</span></span>' +
       '<div class="evidenceActions">' +
-      '<label class="evidencePick">📸 ถ่ายรูป / เลือกรูป<input class="evidenceInput" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label>' +
+      '<label class="evidencePick">📸 ถ่ายรูป<input class="evidenceInput" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label>' +
+      '<label class="evidencePick">🖼️ เลือกจากอัลบั้ม<input class="evidenceInput" type="file" accept="image/jpeg,image/png,image/webp"></label>' +
       '</div>' +
       '<div class="evidenceHint">รองรับ JPG, PNG, WebP • ระบบจะย่อรูปอัตโนมัติก่อนอัปโหลด • 1 รูปต่อ 1 ปัญหา</div>' +
       '<div class="evidencePreview"><button class="evidenceRemove" type="button" aria-label="ลบรูป">×</button><img alt="ตัวอย่างรูปหลักฐาน"><div class="evidenceMeta"></div></div>' +
@@ -2308,6 +2309,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     var meta = form.querySelector(".evidenceMeta");
     var msg = form.querySelector(".evidenceUploading");
     var file = input.files && input.files[0];
+    if (file) form.querySelectorAll(".evidenceInput").forEach(function(el){ if (el !== input) el.value = ""; });
 
     form._compressedEvidence = null;
     if (!file) {
@@ -2337,13 +2339,13 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     if (!removeBtn) return;
     var form = removeBtn.closest(".issueForm");
     if (!form) return;
-    var input = form.querySelector(".evidenceInput");
+    var inputs = form.querySelectorAll(".evidenceInput");
     var preview = form.querySelector(".evidencePreview");
     var img = preview ? preview.querySelector("img") : null;
     var meta = form.querySelector(".evidenceMeta");
     var msg = form.querySelector(".evidenceUploading");
     form._compressedEvidence = null;
-    if (input) input.value = "";
+    inputs.forEach(function(el){ el.value = ""; });
     if (img) img.removeAttribute("src");
     if (meta) meta.textContent = "";
     if (msg) msg.textContent = "";
@@ -2502,12 +2504,12 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
       var evidenceText = payload.evidence ? " • 📷 รูปหลักฐาน " + (res.evidenceCount || 1) + " รูป" : "";
       if (note) note.textContent = "ระบบกลางยืนยันแล้ว • เลขอ้างอิง: " + (res.recordId || payload.issueId) + evidenceText + " • " + new Date().toLocaleString("th-TH");
 
-      var evInput = form.querySelector(".evidenceInput");
+      var evInputs = form.querySelectorAll(".evidenceInput");
       var evPreview = form.querySelector(".evidencePreview");
       var evImg = evPreview ? evPreview.querySelector("img") : null;
       var evMeta = form.querySelector(".evidenceMeta");
       form._compressedEvidence = null;
-      if (evInput) evInput.value = "";
+      evInputs.forEach(function(el){ el.value = ""; });
       if (evImg) evImg.removeAttribute("src");
       if (evMeta) evMeta.textContent = "";
       if (evPreview) evPreview.classList.remove("show");
