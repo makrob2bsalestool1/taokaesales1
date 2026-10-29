@@ -15,6 +15,7 @@
  --tap:48px;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai",Tahoma,sans-serif;color:var(--ink);font-size:15px;line-height:1.5}
 .app{max-width:620px;margin:auto;min-height:100vh;padding:18px 16px 56px}
@@ -167,6 +168,19 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .primaryBtn{min-height:var(--tap)}
 :focus-visible{outline:3px solid #F3B4B8;outline-offset:2px}
 
+/* v8: personal login */
+.textInput{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;padding:13px;font-family:inherit;font-size:16px;color:#333;box-sizing:border-box;min-height:48px}
+.pwWrap .textInput{padding-right:56px}
+.textInput:focus{border-color:#9DB6F0;outline:none;box-shadow:0 0 0 3px #E6EEFD}
+.authBtn{margin-top:6px;width:100%;color:#fff;border:none;border-radius:13px;padding:14px;font-size:15px;font-weight:900;min-height:var(--tap);cursor:pointer;font-family:inherit}
+.authBtn:disabled{opacity:.6}
+.linkBtn{display:block;width:100%;background:none;border:none;color:#2A3CA8;font-family:inherit;font-size:13px;font-weight:800;text-decoration:underline;margin-top:14px;padding:8px;cursor:pointer;min-height:40px}
+.pwRules{font-size:12px;color:var(--muted);line-height:1.6;background:#F5F7FD;border-radius:12px;padding:10px 12px;margin:0 0 14px}
+.pwRules li{margin-left:-6px}
+.pwRules li.ok{color:var(--green)}
+.secondaryBtn{display:block;width:100%;background:#fff;border:1px solid var(--line);color:#2A3CA8;border-radius:13px;padding:13px;font-family:inherit;font-size:14px;font-weight:900;min-height:var(--tap);cursor:pointer;margin-top:12px}
+.accountLine b{color:var(--ink)}
+
 
 
 /* Photo evidence */
@@ -271,6 +285,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 
 
 /* ===== Floating bottom navigation with pill-shaped active indicator (v7) ===== */
+/* v8: the number of tabs depends on the role (--tabs) and the pill follows --idx */
 :root{
  --nav-bg:rgba(255,255,255,.92); --nav-ink:#6B5F61; --nav-ink-active:#fff; --nav-pill:var(--red);
  --nav-shadow:0 10px 30px rgba(120,20,30,.16),0 2px 8px rgba(0,0,0,.06); --nav-h:64px;
@@ -280,26 +295,26 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
 .view{animation:viewIn .22s ease-out}
 @keyframes viewIn{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
 .tabBar{
+ --tabs:4; --idx:0;
  position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
  width:min(560px,calc(100% - 24px));height:var(--nav-h);padding:6px;z-index:50;
- display:grid;grid-template-columns:repeat(4,1fr);align-items:stretch;
+ display:grid;grid-template-columns:repeat(var(--tabs),1fr);align-items:stretch;
  background:var(--nav-bg);border:1px solid rgba(197,31,45,.10);border-radius:999px;box-shadow:var(--nav-shadow);
  -webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px)
 }
 .tabPill{
- position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px) / 4);border-radius:999px;
+ position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px) / var(--tabs));border-radius:999px;
  background:linear-gradient(135deg,#B3141F,#D8414C);box-shadow:0 6px 14px rgba(197,31,45,.32);
+ transform:translateX(calc(100% * var(--idx)));
  transition:transform .32s cubic-bezier(.3,1.25,.4,1);z-index:0;pointer-events:none
 }
-.tabBar[data-active="1"] .tabPill{transform:translateX(100%)}
-.tabBar[data-active="2"] .tabPill{transform:translateX(200%)}
-.tabBar[data-active="3"] .tabPill{transform:translateX(300%)}
 .tabBtn{
  position:relative;z-index:1;border:none;background:transparent;border-radius:999px;cursor:pointer;
  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
  color:var(--nav-ink);font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:.2px;
  transition:color .2s ease;-webkit-tap-highlight-color:transparent;min-width:0
 }
+.tabBtn[hidden]{display:none}
 .tabBtn svg{width:22px;height:22px;flex-shrink:0;transition:transform .25s ease}
 .tabBtn[aria-selected="true"]{color:var(--nav-ink-active)}
 .tabBtn[aria-selected="true"] svg{transform:translateY(-1px) scale(1.06)}
@@ -326,7 +341,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
 .logo{background:var(--blue-grad);font-size:20px;font-weight:700;box-shadow:0 5px 16px rgba(35,104,231,.22)}
 .header h1,.header p{font-family:Manrope,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai",Tahoma,sans-serif}
 #loginBox{border:none}
-#loginBtn{background:var(--blue-grad)!important}
+.authBtn{background:var(--blue-grad)!important}
 .welcome,.storeHero{background:var(--hero-grad)}
 .tabPill{background:var(--blue-grad);box-shadow:0 6px 14px rgba(35,104,231,.30)}
 #view-team .viewHead h2{color:#1A0960}
@@ -345,33 +360,95 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
 
   <!-- ============================== LOGIN SCREEN ============================== -->
   <section class="selectorBox" id="loginBox">
-    <h2>เข้าสู่ระบบ</h2>
-    <div class="selectorTip" style="margin-bottom:12px">
-      กรอกรหัสประจำสาขา ระบบจะเปิดเฉพาะข้อมูลของสาขาที่ผูกกับรหัสนั้นโดยอัตโนมัติ
-    </div>
-    <div class="storeField" style="margin-top:12px">
-      <label for="loginCode">รหัสความปลอดภัยของสาขา</label>
-      <div class="pwWrap">
-        <input id="loginCode" type="password" inputmode="numeric" placeholder="กรอกรหัส"
-          style="width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;padding:13px;padding-right:56px;font-family:inherit;font-size:16px;color:#333;box-sizing:border-box;letter-spacing:2px;min-height:48px">
-        <button id="pwToggleBtn" type="button" class="pwToggle">แสดง</button>
+
+    <!-- v8: personal login (Employee ID + password) -->
+    <div id="userLoginForm">
+      <h2>เข้าสู่ระบบ</h2>
+      <div class="selectorTip" style="margin:0 2px 14px">
+        ใช้รหัสพนักงานและรหัสผ่านของคุณเอง ระบบจะเปิดเฉพาะข้อมูลที่บัญชีของคุณมีสิทธิ์เห็น
       </div>
+      <div class="storeField">
+        <label for="loginUser">รหัสพนักงาน</label>
+        <input id="loginUser" class="textInput" type="text" autocomplete="username" autocapitalize="characters"
+          spellcheck="false" placeholder="เช่น 00090582">
+      </div>
+      <div class="storeField">
+        <label for="loginPassword">รหัสผ่าน</label>
+        <div class="pwWrap">
+          <input id="loginPassword" class="textInput" type="password" autocomplete="current-password" placeholder="กรอกรหัสผ่าน">
+          <button type="button" class="pwToggle" data-toggle="loginPassword">แสดง</button>
+        </div>
+      </div>
+      <button id="loginBtn" type="button" class="authBtn">เข้าสู่ระบบ</button>
+      <div class="selectorTip" style="text-align:center">ลืมรหัสผ่านหรือบัญชีถูกล็อก? ติดต่อผู้ดูแลระบบเพื่อขอรหัสผ่านชั่วคราวใหม่</div>
+      <button id="showPinLogin" type="button" class="linkBtn">เข้าสู่ระบบด้วยรหัสสาขา (ใช้ได้เฉพาะช่วงเปลี่ยนระบบ)</button>
     </div>
-    <button id="loginBtn" type="button" class="primaryBtn" style="margin-top:16px;width:100%;background:var(--red);color:#fff;border:none;border-radius:13px;padding:14px;font-size:15px;font-weight:900">เข้าสู่ระบบ</button>
-    <div id="loginStatus" style="font-size:12px;color:var(--red);line-height:1.55;margin-top:10px;text-align:center;font-weight:700"></div>
-    <div class="selectorTip" style="margin-top:12px">รหัสสาขาจะเห็นเฉพาะสาขาที่กำหนดไว้ ส่วนรหัส Admin เท่านั้นที่สามารถเห็นทุกสาขา</div>
+
+    <!-- Store PIN login (transition period only) -->
+    <div id="pinLoginForm" hidden>
+      <h2>เข้าสู่ระบบด้วยรหัสสาขา</h2>
+      <div class="selectorTip" style="margin:0 2px 14px">
+        ใช้ได้เฉพาะช่วงเปลี่ยนมาใช้บัญชีส่วนตัว หลังจากนั้นทุกคนต้องเข้าสู่ระบบด้วยรหัสพนักงาน
+      </div>
+      <div class="storeField">
+        <label for="loginCode">รหัสความปลอดภัยของสาขา</label>
+        <div class="pwWrap">
+          <input id="loginCode" class="textInput" type="password" inputmode="numeric" placeholder="กรอกรหัส" style="letter-spacing:2px">
+          <button type="button" class="pwToggle" data-toggle="loginCode">แสดง</button>
+        </div>
+      </div>
+      <button id="pinLoginBtn" type="button" class="authBtn">เข้าสู่ระบบ</button>
+      <button id="showUserLogin" type="button" class="linkBtn">← กลับไปใช้รหัสพนักงาน</button>
+    </div>
+
+    <!-- First-login / voluntary password change -->
+    <div id="changePwForm" hidden>
+      <h2 id="changePwTitle">ตั้งรหัสผ่านใหม่</h2>
+      <div class="selectorTip" id="changePwIntro" style="margin:0 2px 14px"></div>
+      <ul class="pwRules" id="pwRules">
+        <li data-rule="len">อย่างน้อย 8 ตัวอักษร</li>
+        <li data-rule="mix">มีทั้งตัวอักษรภาษาอังกฤษและตัวเลข</li>
+        <li data-rule="id">ไม่ใช่รหัสพนักงาน และไม่มีช่องว่าง</li>
+        <li data-rule="match">พิมพ์ยืนยันให้ตรงกัน</li>
+      </ul>
+      <div class="storeField" id="cpCurrentWrap" hidden>
+        <label for="cpCurrent">รหัสผ่านปัจจุบัน</label>
+        <div class="pwWrap">
+          <input id="cpCurrent" class="textInput" type="password" autocomplete="current-password">
+          <button type="button" class="pwToggle" data-toggle="cpCurrent">แสดง</button>
+        </div>
+      </div>
+      <div class="storeField">
+        <label for="cpNew">รหัสผ่านใหม่</label>
+        <div class="pwWrap">
+          <input id="cpNew" class="textInput" type="password" autocomplete="new-password">
+          <button type="button" class="pwToggle" data-toggle="cpNew">แสดง</button>
+        </div>
+      </div>
+      <div class="storeField">
+        <label for="cpConfirm">ยืนยันรหัสผ่านใหม่</label>
+        <div class="pwWrap">
+          <input id="cpConfirm" class="textInput" type="password" autocomplete="new-password">
+          <button type="button" class="pwToggle" data-toggle="cpConfirm">แสดง</button>
+        </div>
+      </div>
+      <button id="changePwBtn" type="button" class="authBtn">บันทึกรหัสผ่านใหม่</button>
+      <button id="changePwCancel" type="button" class="linkBtn">ยกเลิก</button>
+    </div>
+
+    <div id="loginStatus" role="status" aria-live="polite" style="font-size:12.5px;color:var(--red);line-height:1.55;margin-top:10px;text-align:center;font-weight:700"></div>
   </section>
 
   <!-- ============================== APP SHELL (hidden until login) ============================== -->
   <div id="appShell" style="display:none">
 
     <!-- v7: four views switched by the floating bottom navigation -->
-    <!-- View 1: store overview (sales drop + this week's visits) -->
+    <!-- View 1: store overview (sales drop + this week's visits) — managers/admins only (v8) -->
     <div class="view" id="view-home" role="tabpanel" aria-labelledby="tab-home">
       <section class="storeDash" id="storeDash"><div id="storeDashMount"></div></section>
     </div>
 
-    <!-- View 2: team follow-up (who has not visited, unvisited Top 10, whole team) -->
+    <!-- View 2: team follow-up (who has not visited, unvisited Top 10, whole team) — managers/admins only (v8) -->
     <div class="view" id="view-team" role="tabpanel" aria-labelledby="tab-team" hidden>
       <div id="teamMount"></div>
     </div>
@@ -399,10 +476,15 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     <div id="dashboardMount"></div>
     </div>
 
-    <!-- View 4: more (problem tracking, admin settings, data note, logout) -->
+    <!-- View 4: more (account, problem tracking, admin settings, data note, logout) -->
     <div class="view" id="view-more" role="tabpanel" aria-labelledby="tab-more" hidden>
-    <div class="viewHead"><div><h2>เพิ่มเติม</h2><small>ข้อมูลระบบและการตั้งค่า</small></div></div>
-    <section class="selectorBox" style="margin-top:0">
+    <div class="viewHead"><div><h2>เพิ่มเติม</h2><small>บัญชี ข้อมูลระบบ และการตั้งค่า</small></div></div>
+    <section class="selectorBox" id="accountBox" style="margin-top:0">
+      <h2>👤 บัญชีของฉัน</h2>
+      <div class="selectorTip accountLine" id="accountInfo" style="margin-top:0"></div>
+      <button id="changePwOpen" type="button" class="secondaryBtn" hidden>🔑 เปลี่ยนรหัสผ่าน</button>
+    </section>
+    <section class="selectorBox" style="margin-top:12px">
       <h2>📌 ติดตามปัญหา</h2>
       <div class="selectorTip">
         เมื่อเชื่อมระบบจริง ข้อมูลที่เซลล์บันทึกจะรวมเป็น Weekly Problem Summary เช่น
@@ -429,12 +511,12 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
       </details>
     </section>
 
-    <div class="footer" id="dataFooter">ข้อมูลจริง ณ 27 ก.ย. 2026 &bull; เปรียบเทียบยอด ส.ค. 2026 กับ ก.ย. 2026 (MTD) &bull; ยอด ส.ค.–ก.ย. 2025 จาก Port Performance และ raw data &bull; หมวดสินค้าจาก Bottom10 Sales by Class &bull; ระบบส่งเฉพาะข้อมูลของสาขาที่เข้าสู่ระบบ</div>
+    <div class="footer" id="dataFooter">ข้อมูลจริง ณ 27 ก.ย. 2026 &bull; เปรียบเทียบยอด ส.ค. 2026 กับ ก.ย. 2026 (MTD) &bull; ยอด ส.ค.–ก.ย. 2025 จาก Port Performance และ raw data &bull; หมวดสินค้าจาก Bottom10 Sales by Class &bull; ระบบส่งเฉพาะข้อมูลที่บัญชีนี้มีสิทธิ์เห็น</div>
 
     <button id="logoutBtn" type="button" style="display:block;width:100%;max-width:260px;margin:16px auto 0;background:#fff;border:1px solid var(--bad);color:var(--bad);border-radius:13px;padding:13px;font-size:14px;font-weight:900;min-height:var(--tap)">🔒 ออกจากระบบ</button>
     </div>
 
-    <!-- Floating bottom navigation: the red pill slides behind the active tab -->
+    <!-- Floating bottom navigation: the pill slides behind the active tab -->
     <nav class="tabBar" id="tabBar" role="tablist" aria-label="เมนูหลัก" data-active="0">
       <span class="tabPill" aria-hidden="true"></span>
       <button class="tabBtn" id="tab-home" role="tab" type="button" data-tab="home" aria-controls="view-home" aria-selected="true">
@@ -465,19 +547,26 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   // ⚠️ หลัง deploy Code.gs เสร็จ ให้เอา URL ที่ได้ (ลงท้าย /exec) มาแทนค่าด้านล่างนี้
   var DEFAULT_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxD4Asizszk93pHMsZAGio04g97IDbUinkZmJhsJA94N3MtukZ_fsbtjsB3jX8WSAe5/exec";
   var ENDPOINT_KEY = "taokae_endpoint_url_v1";
-  var SESSION_KEY = "taokae_session_v3_store_locked";
+  var SESSION_KEY = "taokae_session_v4_personal";
   var DEVICE_KEY = "taokae_device_id_v1";
   var QUEUE_KEY = "taokae_pending_issues_v1";
+  var LAST_USER_KEY = "taokae_last_user_v1";
 
   var STORE_LABELS = { "001": "สโตร์ 001 - ลาดพร้าว", "003": "สโตร์ 003 - ศรีนครินทร์", "005": "สโตร์ 005 - ชลบุรี" };
+  var ROLE_LABELS = { sales: "พนักงานขาย", manager: "ผู้จัดการฝ่ายขาย (Regional)", admin: "ผู้ดูแลระบบ", store: "รหัสสาขา (ช่วงเปลี่ยนระบบ)" };
 
   var state = {
-    role: null,
+    role: null,         // v8: sales | manager | admin | store (PIN, transition) 
+    user: null,         // v8: { id, name } for personal accounts
     dataAsOf: null,     // v5: month labels + days elapsed for the data currently published
     storesData: null,
     currentStoreCode: null,
     currentSE: null
   };
+
+  // v8: role helpers. The server enforces all of this; the app only mirrors it.
+  function canSeeStoreDash(){ return state.role !== "sales"; }
+  function canSwitchStores(){ return state.role === "admin" || state.role === "manager"; }
 
   function getEndpointUrl(){
     try {
@@ -544,10 +633,10 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     }
   }
 
-  // Security improvement: never persist the store PIN/code in localStorage.
-  // Keep only the short-lived token returned by the backend in sessionStorage.
-  function saveSession(store, token, role){
-    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ store: store, token: token, role: role })); } catch(e){}
+  // Security: never persist a password or PIN. Keep only the short-lived
+  // token returned by the backend (plus who it belongs to) in sessionStorage.
+  function saveSession(s){
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ token: s.token, role: s.role, store: s.store, user: s.user || null })); } catch(e){}
   }
   function loadSession(){
     try {
@@ -557,6 +646,13 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   }
   function clearSession(){
     try { sessionStorage.removeItem(SESSION_KEY); } catch(e){}
+  }
+  // Who a queued report belongs to, so a report saved offline by one person is
+  // never sent later under someone else's login on the same phone.
+  function sessionIdentity(s){
+    s = s || loadSession();
+    if (!s) return "";
+    return s.user && s.user.id ? "U:" + String(s.user.id).toUpperCase() : "PIN:" + (s.store || "");
   }
 
   function fmtMoney(n){
@@ -587,7 +683,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     var el = document.getElementById("dataFooter"); if (!el) return;
     var L = dataLabels();
     el.innerHTML = "ข้อมูลจริง ณ " + esc(L.asOf) + " &bull; เปรียบเทียบยอด " + esc(L.lm) + " กับ " + esc(L.cm) + " (MTD) &bull; ยอด " +
-      esc(L.lmly) + " / " + esc(L.ly) + " จาก Port Performance และ raw data &bull; หมวดสินค้าจาก Bottom10 Sales by Class &bull; ระบบส่งเฉพาะข้อมูลของสาขาที่เข้าสู่ระบบ";
+      esc(L.lmly) + " / " + esc(L.ly) + " จาก Port Performance และ raw data &bull; หมวดสินค้าจาก Bottom10 Sales by Class &bull; ระบบส่งเฉพาะข้อมูลที่บัญชีนี้มีสิทธิ์เห็น";
   }
 
   // แปลชื่อหมวดสินค้าจากข้อมูลต้นทางให้แสดงเป็นภาษาไทย
@@ -880,7 +976,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   "CRAB-STD": "ปู (มาตรฐาน)",
   "CUTTING VEGETABLE (STD)": "ผักตัดแต่งพร้อมปรุง (มาตรฐาน)",
   "Canned Meat": "เนื้อสัตว์กระป๋อง",
-  "Chilled Processed Cephalopod (STD)": "หมึกแปรรูปแช่เย็น (มาตรฐาน)",
+  "Chilled Processed Cephalopod (STD)": "หมึกแปรรูปแช่เย็น (มาตรฐาน)",
   "Cutting Fresh Fruit": "ผลไม้ตัดแต่งพร้อมทาน",
   "DESSERT": "ของหวาน",
   "DIFERENCE VALUES NON FOOD": "สินค้าไม่ใช่อาหารมูลค่าต่างๆ",
@@ -974,7 +1070,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   "OTHER FRESH SPICE (WEIGHT)": "เครื่องเทศสดอื่นๆ (ชั่งน้ำหนัก)",
   "OTHER HORECA (STD)": "โฮเรก้าอื่นๆ (มาตรฐาน)",
   "OTHER SEASONAL (WEIGHT)": "ผัก/ผลไม้ตามฤดูกาลอื่นๆ (ชั่งน้ำหนัก)",
-  "OTHER  SEASONAL (STD)": "ผัก/ผลไม้ตามฤดูกาลอื่นๆ (มาตรฐาน)",
+  "OTHER  SEASONAL (STD)": "ผัก/ผลไม้ตามฤดูกาลอื่นๆ (มาตรฐาน)",
   "PAPAYA (STD)": "มะละกอ (มาตรฐาน)",
   "PAPAYA (WEIGHT)": "มะละกอ (ชั่งน้ำหนัก)",
   "PASSION FRUIT (STD)": "เสาวรส (มาตรฐาน)",
@@ -1074,139 +1170,360 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     return raw;
   }
 
+  function sleep(ms){ return new Promise(function(resolve){ setTimeout(resolve, ms); }); }
+
+  // ===================================================================
+  // LOGIN (v8): Employee ID + password, first-login password change,
+  // and the store PIN during the transition period.
+  // ===================================================================
   var loginBox = document.getElementById("loginBox");
   var appShell = document.getElementById("appShell");
   var loginBtn = document.getElementById("loginBtn");
+  var pinLoginBtn = document.getElementById("pinLoginBtn");
+  var changePwBtn = document.getElementById("changePwBtn");
   var loginStatus = document.getElementById("loginStatus");
-
-  var pwToggleBtn = document.getElementById("pwToggleBtn");
+  var loginUserInput = document.getElementById("loginUser");
+  var loginPasswordInput = document.getElementById("loginPassword");
   var loginCodeInput = document.getElementById("loginCode");
-  if (pwToggleBtn && loginCodeInput) {
-    pwToggleBtn.addEventListener("click", function(){
-      var showing = loginCodeInput.type === "text";
-      loginCodeInput.type = showing ? "password" : "text";
-      pwToggleBtn.textContent = showing ? "แสดง" : "ซ่อน";
+  var changeCtx = null;   // { mode: "first" | "voluntary", ticket, uid, name }
+
+  try { var lastUser = localStorage.getItem(LAST_USER_KEY); if (lastUser) loginUserInput.value = lastUser; } catch(e){}
+
+  Array.prototype.forEach.call(document.querySelectorAll(".pwToggle[data-toggle]"), function(btn){
+    btn.addEventListener("click", function(){
+      var input = document.getElementById(btn.getAttribute("data-toggle"));
+      if (!input) return;
+      var showing = input.type === "text";
+      input.type = showing ? "password" : "text";
+      btn.textContent = showing ? "แสดง" : "ซ่อน";
+    });
+  });
+
+  function setStatus(msg, ok){
+    loginStatus.textContent = msg || "";
+    loginStatus.style.color = ok ? "var(--green)" : "var(--red)";
+  }
+
+  function showForm(name){
+    document.getElementById("userLoginForm").hidden = name !== "user";
+    document.getElementById("pinLoginForm").hidden = name !== "pin";
+    document.getElementById("changePwForm").hidden = name !== "change";
+    setStatus("");
+  }
+
+  function setBusy(btn, busy, text){
+    if (!btn) return;
+    if (busy) { btn._label = btn._label || btn.textContent; btn.disabled = true; btn.textContent = text || "กรุณารอสักครู่..."; }
+    else { btn.disabled = false; if (btn._label) btn.textContent = btn._label; }
+  }
+
+  function randomNonce(){
+    var a = new Uint8Array(16);
+    (window.crypto || window.msCrypto).getRandomValues(a);
+    return Array.prototype.map.call(a, function(b){ return ("0" + b.toString(16)).slice(-2); }).join("");
+  }
+
+  // Login / password change go by POST so the password never appears in a
+  // URL; the result is then collected once with a random nonce (JSONP).
+  function authRequest(body){
+    var nonce = randomNonce();
+    var envelope = Object.assign({ nonce: nonce, deviceId: getDeviceId() }, body);
+    var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function(){ ctrl.abort(); }, 45000) : null;
+    return fetch(getEndpointUrl(), {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(envelope),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function(){
+      if (timer) clearTimeout(timer);
+      return pollAuthResult(nonce, 0);
+    }, function(){
+      if (timer) clearTimeout(timer);
+      throw new Error("network error");
     });
   }
 
+  function pollAuthResult(nonce, n){
+    return jsonpRequest({ action: "authResult", nonce: nonce }, 25000).then(function(res){
+      if (res && res.pending) {
+        if (n >= 8) throw new Error("timeout");
+        return sleep(600).then(function(){ return pollAuthResult(nonce, n + 1); });
+      }
+      return res;
+    });
+  }
+
+  function networkMessage(err){
+    return (err && err.message === "timeout")
+      ? "เซิร์ฟเวอร์ตอบสนองช้ากว่าปกติ กรุณาลองใหม่อีกครั้งใน 1 นาที"
+      : "เชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่";
+  }
+
+  // Shows the app for an authorized response {role, store, stores, user, dataAsOf}.
+  function enterApp(res){
+    var codes = Object.keys(res.stores || {});
+    var ok = true;
+    // SECURITY: the response must match the role the server says this is.
+    if (res.role === "store") {
+      ok = codes.length === 1 && codes[0] === res.store;
+    } else if (res.role === "sales") {
+      ok = codes.length === 1 && codes[0] === res.store && Object.keys(res.stores[res.store] || {}).length === 1;
+    } else if (res.role !== "admin" && res.role !== "manager") {
+      ok = false;
+    }
+    if (!ok) {
+      clearSession();
+      appShell.style.display = "none";
+      loginBox.style.display = "block";
+      showForm("user");
+      setStatus("สิทธิ์การเข้าถึงไม่ตรงกัน กรุณาเข้าสู่ระบบใหม่");
+      return false;
+    }
+    state.role = res.role;
+    state.user = res.user || null;
+    state.storesData = res.stores;
+    state.dataAsOf = res.dataAsOf || null;
+    loginBox.style.display = "none";
+    appShell.style.display = "block";
+    setStatus("");
+    initAppShell();
+    return true;
+  }
+
+  function handleAuthResponse(res){
+    if (!res || !res.ok) {
+      setStatus(res && res.message ? res.message : "เข้าสู่ระบบไม่สำเร็จ");
+      if (res && res.expired) { changeCtx = null; showForm("user"); setStatus(res.message); }
+      return;
+    }
+    if (res.mustChange) {
+      openChangeForm({ mode: "first", ticket: res.changeTicket, uid: res.uid, name: res.name });
+      return;
+    }
+    if (!res.token) { setStatus("เซิร์ฟเวอร์ยังไม่รองรับการเข้าสู่ระบบแบบบัญชีส่วนตัว"); return; }
+    saveSession({ token: res.token, role: res.role, store: res.store, user: res.user });
+    loginPasswordInput.value = "";
+    enterApp(res);
+  }
+
+  loginBtn.addEventListener("click", function(){
+    var user = loginUserInput.value.trim();
+    var pw = loginPasswordInput.value;
+    if (!user || !pw) { setStatus("กรุณากรอกรหัสพนักงานและรหัสผ่าน"); return; }
+    try { localStorage.setItem(LAST_USER_KEY, user); } catch(e){}
+    setBusy(loginBtn, true, "กำลังเข้าสู่ระบบ...");
+    setStatus("กำลังตรวจสอบรหัสและโหลดข้อมูล...", true);
+    authRequest({ action: "login", user: user, password: pw }).then(function(res){
+      setBusy(loginBtn, false);
+      handleAuthResponse(res);
+    }, function(err){
+      setBusy(loginBtn, false);
+      setStatus(networkMessage(err));
+    });
+  });
+  [loginUserInput, loginPasswordInput].forEach(function(el){
+    el.addEventListener("keydown", function(e){ if (e.key === "Enter") loginBtn.click(); });
+  });
+
+  document.getElementById("showPinLogin").addEventListener("click", function(){ showForm("pin"); loginCodeInput.focus(); });
+  document.getElementById("showUserLogin").addEventListener("click", function(){ showForm("user"); });
+
+  // ---- password change -------------------------------------------------
+  function pwChecks(pw, confirm, uid){
+    var id = String(uid || "").trim().toUpperCase();
+    var idNum = /^\d+$/.test(id) ? id.replace(/^0+(?=\d)/, "") : id;
+    var up = String(pw || "").toUpperCase();
+    var upNum = /^\d+$/.test(up) ? up.replace(/^0+(?=\d)/, "") : up;
+    return {
+      len: pw.length >= 8 && pw.length <= 64,
+      mix: /[A-Za-z]/.test(pw) && /\d/.test(pw),
+      id: !!pw && !/\s/.test(pw) && !(id && (up.indexOf(id) >= 0 || upNum === idNum)),
+      match: !!pw && pw === confirm
+    };
+  }
+  function updatePwRules(){
+    var c = pwChecks(document.getElementById("cpNew").value, document.getElementById("cpConfirm").value, changeCtx && changeCtx.uid);
+    Array.prototype.forEach.call(document.querySelectorAll("#pwRules li"), function(li){
+      li.classList.toggle("ok", !!c[li.getAttribute("data-rule")]);
+    });
+    return c;
+  }
+  ["cpNew", "cpConfirm"].forEach(function(id){
+    var el = document.getElementById(id);
+    el.addEventListener("input", updatePwRules);
+    el.addEventListener("keydown", function(e){ if (e.key === "Enter") changePwBtn.click(); });
+  });
+
+  function openChangeForm(ctx){
+    changeCtx = ctx;
+    ["cpCurrent", "cpNew", "cpConfirm"].forEach(function(id){ document.getElementById(id).value = ""; });
+    var first = ctx.mode === "first";
+    document.getElementById("changePwTitle").textContent = first ? "ตั้งรหัสผ่านของคุณ" : "เปลี่ยนรหัสผ่าน";
+    document.getElementById("changePwIntro").textContent = first
+      ? "สวัสดี " + (ctx.name || ctx.uid || "") + " — รหัสผ่านที่ได้รับเป็นรหัสชั่วคราว กรุณาตั้งรหัสผ่านของคุณเองก่อนเริ่มใช้งาน (ภายใน 15 นาที)"
+      : "รหัสผ่านใหม่จะใช้แทนรหัสเดิมทันที และอุปกรณ์อื่นที่เข้าสู่ระบบไว้จะต้องเข้าสู่ระบบใหม่";
+    document.getElementById("cpCurrentWrap").hidden = first;
+    document.getElementById("changePwCancel").textContent = first ? "← กลับไปหน้าเข้าสู่ระบบ" : "ยกเลิก กลับไปที่แอป";
+    appShell.style.display = "none";
+    loginBox.style.display = "block";
+    showForm("change");
+    updatePwRules();
+    window.scrollTo(0, 0);
+    (first ? document.getElementById("cpNew") : document.getElementById("cpCurrent")).focus();
+  }
+
+  document.getElementById("changePwCancel").addEventListener("click", function(){
+    var voluntary = changeCtx && changeCtx.mode === "voluntary";
+    changeCtx = null;
+    if (voluntary && state.role) {
+      loginBox.style.display = "none";
+      appShell.style.display = "block";
+      showForm("user");
+    } else {
+      showForm("user");
+      loginPasswordInput.value = "";
+    }
+  });
+
+  changePwBtn.addEventListener("click", function(){
+    if (!changeCtx) { showForm("user"); return; }
+    var pw = document.getElementById("cpNew").value;
+    var c = updatePwRules();
+    if (!c.len || !c.mix || !c.id) { setStatus("รหัสผ่านใหม่ยังไม่ตรงตามเงื่อนไขด้านบน"); return; }
+    if (!c.match) { setStatus("รหัสผ่านใหม่และการยืนยันไม่ตรงกัน"); return; }
+    var body = { action: "changePassword", newPassword: pw };
+    if (changeCtx.mode === "first") {
+      body.changeTicket = changeCtx.ticket;
+    } else {
+      var cur = document.getElementById("cpCurrent").value;
+      if (!cur) { setStatus("กรุณากรอกรหัสผ่านปัจจุบัน"); return; }
+      body.currentPassword = cur;
+      body.token = (loadSession() || {}).token || "";
+    }
+    var mode = changeCtx.mode;
+    setBusy(changePwBtn, true, "กำลังบันทึก...");
+    setStatus("กำลังบันทึกรหัสผ่านใหม่...", true);
+    authRequest(body).then(function(res){
+      setBusy(changePwBtn, false);
+      if (!res || !res.ok) {
+        if (res && (res.expired || res.sessionExpired)) {
+          changeCtx = null;
+          if (res.sessionExpired) clearSession();
+          showForm("user");
+        }
+        setStatus(res && res.message ? res.message : "บันทึกรหัสผ่านไม่สำเร็จ");
+        return;
+      }
+      changeCtx = null;
+      ["cpCurrent", "cpNew", "cpConfirm"].forEach(function(id){ document.getElementById(id).value = ""; });
+      loginPasswordInput.value = "";
+      saveSession({ token: res.token, role: res.role, store: res.store, user: res.user });
+      if (mode === "voluntary") {
+        // Reload so the app starts cleanly on the new session.
+        location.reload();
+        return;
+      }
+      showForm("user");
+      enterApp(res);
+    }, function(err){
+      setBusy(changePwBtn, false);
+      setStatus(networkMessage(err));
+    });
+  });
+
+  // ---- store PIN login (transition period) -------------------------------
   function doLogin(code, isRetry){
-    loginStatus.textContent = isRetry
+    setStatus(isRetry
       ? "เซิร์ฟเวอร์กำลังเริ่มทำงาน กำลังลองอีกครั้ง..."
-      : "กำลังเข้าสู่ระบบและโหลดข้อมูล...";
+      : "กำลังเข้าสู่ระบบและโหลดข้อมูล...", true);
     // Apps Script cold starts (first request after the backend has been idle)
     // can take longer than a typical request. Give login extra time before
     // giving up, since a short timeout here reads to the rep as "no internet"
     // when the backend is actually still starting up.
     return jsonpRequest({ action: "login", code: code }, 30000).then(function(res){
       if (!res || !res.ok) {
-        loginStatus.textContent = res && res.message ? res.message : "เข้าสู่ระบบไม่สำเร็จ";
+        setStatus(res && res.message ? res.message : "เข้าสู่ระบบไม่สำเร็จ");
         return null;
       }
       if (!res.token || !res.store) {
-        loginStatus.textContent = "เซิร์ฟเวอร์ยังไม่รองรับการล็อกอินแบบผูกสาขา";
+        setStatus("เซิร์ฟเวอร์ยังไม่รองรับการล็อกอินแบบผูกสาขา");
         return null;
       }
       // Always persist the store returned by the backend; never trust a client-side selection.
-      saveSession(res.store, res.token, res.role);
+      saveSession({ token: res.token, role: res.role, store: res.store, user: null });
       return res;
     }).catch(function(err){
       var isTimeout = err && err.message === "timeout";
       if (isTimeout && !isRetry) {
         // First attempt likely hit a cold Apps Script container. Retry once
-        // automatically before bothering the rep -- a second attempt against
-        // an already-warm container is usually fast.
+        // automatically before bothering the rep.
         return doLogin(code, true);
       }
-      loginStatus.textContent = isTimeout
-        ? "เซิร์ฟเวอร์ตอบสนองช้ากว่าปกติ กรุณาลองใหม่อีกครั้งใน 1 นาที"
-        : "เชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เนตแล้วลองใหม่";
+      setStatus(networkMessage(err));
       return null;
     });
   }
 
-  function fetchData(store, token){
+  pinLoginBtn.addEventListener("click", function(){
+    var code = loginCodeInput.value.trim();
+    if (!code) { setStatus("กรุณากรอกรหัส"); return; }
+    setBusy(pinLoginBtn, true, "กำลังเข้าสู่ระบบ...");
+    doLogin(code).then(function(res){
+      setBusy(pinLoginBtn, false);
+      if (!res) return;
+      loginCodeInput.value = "";
+      if (res.stores && typeof res.stores === "object") { enterApp(res); return; }
+      bootApp(loadSession());
+    });
+  });
+  loginCodeInput.addEventListener("keydown", function(e){ if (e.key === "Enter") pinLoginBtn.click(); });
+
+  function fetchData(token){
     return jsonpRequest({ action: "data", token: token }, 20000).then(function(res){
-      if (!res || !res.ok) throw new Error(res && res.message ? res.message : "โหลดข้อมูลไม่สำเร็จ");
+      if (!res || !res.ok) {
+        var e = new Error(res && res.message ? res.message : "โหลดข้อมูลไม่สำเร็จ");
+        e.sessionExpired = !!(res && res.sessionExpired);
+        throw e;
+      }
       return res;
     });
   }
 
-  loginBtn.addEventListener("click", function(){
-    var code = document.getElementById("loginCode").value.trim();
-    if (!code) { loginStatus.textContent = "กรุณากรอกรหัส"; return; }
-
-    doLogin(code).then(function(res){
-      if (!res) return;
-
-      // Fast path: new backend returns token + authorized data in ONE request.
-      if (res.stores && typeof res.stores === "object") {
-        state.role = res.role;
-        state.storesData = res.stores;
-        state.dataAsOf = res.dataAsOf || null;
-
-        // SECURITY: normal store PINs must receive exactly one authorized store.
-        var authorizedCodes = Object.keys(state.storesData || {});
-        if (res.role !== "admin") {
-          if (authorizedCodes.length !== 1 || authorizedCodes[0] !== res.store) {
-            clearSession();
-            loginStatus.textContent = "สิทธิ์สาขาไม่ตรงกัน กรุณาเข้าสู่ระบบใหม่";
-            return;
-          }
-        }
-        loginBox.style.display = "none";
-        appShell.style.display = "block";
-        initAppShell();
-        return;
-      }
-
-      // Backward-compatible fallback for an older backend deployment.
-      loginStatus.textContent = "";
-      bootApp(res.store, res.token, res.role);
-    });
-  });
-
-  function bootApp(store, token, role, isRetry){
-    loginStatus.textContent = isRetry
-      ? "เซิร์ฟเวอร์กำลังเริ่มทำงาน กำลังลองอีกครั้ง..."
-      : "กำลังโหลดข้อมูล...";
-    fetchData(store, token).then(function(res){
-      state.role = res.role;
-      state.storesData = res.stores;
-      state.dataAsOf = res.dataAsOf || null;
-
-      // SECURITY: saved sessions are also locked to the store in the server token.
-      var authorizedCodes = Object.keys(state.storesData || {});
-      if (res.role !== "admin") {
-        if (authorizedCodes.length !== 1 || authorizedCodes[0] !== store) {
-          clearSession();
-          throw new Error("สิทธิ์สาขาไม่ตรงกัน กรุณาเข้าสู่ระบบใหม่");
-        }
-      }
-      loginBox.style.display = "none";
-      appShell.style.display = "block";
-      initAppShell();
+  // Re-opens the app from a saved session (page reload / reopen).
+  function bootApp(saved, isRetry){
+    if (!saved || !saved.token) return;
+    setStatus(isRetry ? "เซิร์ฟเวอร์กำลังเริ่มทำงาน กำลังลองอีกครั้ง..." : "กำลังโหลดข้อมูล...", true);
+    fetchData(saved.token).then(function(res){
+      if (res.role !== saved.role) throw new Error("สิทธิ์การเข้าถึงไม่ตรงกัน กรุณาเข้าสู่ระบบใหม่");
+      enterApp(res);
     }).catch(function(err){
       // A cold Apps Script container can make the first request after idle
-      // time out even though the backend is healthy; retry once before
-      // showing an error, since a second attempt is usually fast.
+      // time out even though the backend is healthy; retry once.
       if (err && err.message === "timeout" && !isRetry) {
-        bootApp(store, token, role, true);
+        bootApp(saved, true);
         return;
       }
-      loginStatus.textContent = "โหลดข้อมูลไม่สำเร็จ: " + err.message;
+      if (err && err.sessionExpired) {
+        clearSession();
+        setStatus("เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่");
+        return;
+      }
+      setStatus("โหลดข้อมูลไม่สำเร็จ: " + err.message);
     });
   }
 
   var savedSession = loadSession();
-  if (savedSession && savedSession.store && savedSession.token) {
-    bootApp(savedSession.store, savedSession.token, savedSession.role);
+  if (savedSession && savedSession.token) {
+    bootApp(savedSession);
   }
 
 
   // ===================================================================
-  // STORE DASHBOARD (v4) -- shown after login, before a salesperson is
-  // picked. Activity numbers come live from the backend (action=
-  // storeSummary, scoped to the token's store server-side); the sales
+  // STORE DASHBOARD (v4) -- shown after login to managers/admins (v8:
+  // hidden from salespeople). Activity numbers come live from the backend
+  // (action=storeSummary, scoped to the token server-side); the sales
   // block can be drawn immediately from the data already loaded at login.
   // ===================================================================
   var STORE_DASH_REFRESH_MS = 5 * 60 * 1000;
@@ -1243,6 +1560,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   }
 
   function loadStoreSummary(force){
+    if (!canSeeStoreDash()) return;     // v8: salespeople never request the store dashboard
     var store = state.currentStoreCode;
     var sess = loadSession();
     if (!store || !sess || !sess.token) return;
@@ -1329,6 +1647,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   function renderStoreDashboard(){
     var mount = document.getElementById("storeDashMount");
     if (!mount) return;
+    if (!canSeeStoreDash()) { mount.innerHTML = ""; return; }
     var store = state.currentStoreCode;
     if (!store) { mount.innerHTML = ""; return; }
     var s = (storeDash.summary && storeDash.store === store) ? storeDash.summary : null;
@@ -1336,15 +1655,15 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     var sales = s ? s.sales : local;
     var st = s && s.sales ? s.sales.storeTotal : null;
     var asOf = s && s.dataAsOf ? s.dataAsOf : null;
-    var isAdmin = state.role === "admin";
+    var canSwitch = canSwitchStores();
     var storeCodes = Object.keys(state.storesData || {});
 
     var weekText = s ? "สัปดาห์ " + thDate(s.weekStart) + " – " + thDate(s.weekEnd, true) : "กำลังโหลดข้อมูลการเข้าพบ...";
     var coverage = s && s.priority.total ? s.priority.visitedWeek / s.priority.total : null;
 
     var switcher = "";
-    if (isAdmin && storeCodes.length > 1) {
-      switcher = '<select id="storeDashSwitch" aria-label="เลือกสาขา (โหมดผู้ดูแล)">' + storeCodes.map(function(c){
+    if (canSwitch && storeCodes.length > 1) {
+      switcher = '<select id="storeDashSwitch" aria-label="เลือกสาขา">' + storeCodes.map(function(c){
         return '<option value="' + esc(c) + '"' + (c === store ? " selected" : "") + '>' + esc(STORE_LABELS[c] || c) + '</option>';
       }).join("") + '</select>';
     }
@@ -1471,22 +1790,34 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   }
 
   // ===================================================================
-  // v7: floating bottom navigation. The pill position is pure CSS
-  // (data-active on the nav); this only swaps views and remembers the tab.
+  // v7: floating bottom navigation. v8: a salesperson sees only
+  // แผนขาย + เพิ่มเติม; the pill width and position follow --tabs / --idx.
   // ===================================================================
-  var TABS = ["home", "team", "sales", "more"];
+  var ALL_TABS = ["home", "team", "sales", "more"];
+  var TABS = ALL_TABS.slice();
   var TAB_KEY = "taokae_tab_v1";
   var tabScroll = {};
   var currentTab = "home";
 
+  function configureTabs(){
+    TABS = state.role === "sales" ? ["sales", "more"] : ALL_TABS.slice();
+    var nav = document.getElementById("tabBar");
+    if (nav) nav.style.setProperty("--tabs", String(TABS.length));
+    ALL_TABS.forEach(function(t){
+      var btn = document.getElementById("tab-" + t);
+      if (btn) btn.hidden = TABS.indexOf(t) < 0;
+    });
+  }
+
   function setTab(name, opts){
     opts = opts || {};
-    if (TABS.indexOf(name) < 0) name = "home";
+    if (TABS.indexOf(name) < 0) name = TABS[0];
     if (name !== currentTab) tabScroll[currentTab] = window.scrollY;
     currentTab = name;
+    var idx = TABS.indexOf(name);
     var nav = document.getElementById("tabBar");
-    if (nav) nav.setAttribute("data-active", String(TABS.indexOf(name)));
-    TABS.forEach(function(t){
+    if (nav) { nav.setAttribute("data-active", String(idx)); nav.style.setProperty("--idx", String(idx)); }
+    ALL_TABS.forEach(function(t){
       var btn = document.getElementById("tab-" + t), view = document.getElementById("view-" + t);
       var on = t === name;
       if (btn) { btn.setAttribute("aria-selected", on ? "true" : "false"); btn.tabIndex = on ? 0 : -1; }
@@ -1506,6 +1837,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
 
   function initTabBar(){
     var nav = document.getElementById("tabBar");
+    configureTabs();
     if (!nav || nav._ready) return;
     nav._ready = true;
     document.body.classList.add("hasTabBar");
@@ -1526,7 +1858,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     });
     var saved = null;
     try { saved = sessionStorage.getItem(TAB_KEY); } catch(e){}
-    setTab(saved || "home", { toTop: true });
+    setTab(saved || TABS[0], { toTop: true });
   }
 
   function switchStore(code){
@@ -1545,10 +1877,29 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     if (document.visibilityState === "visible" && appShell.style.display !== "none") loadStoreSummary(false);
   });
 
+  function renderAccountBox(){
+    var info = document.getElementById("accountInfo");
+    var btn = document.getElementById("changePwOpen");
+    if (!info) return;
+    var roleLabel = ROLE_LABELS[state.role] || state.role || "";
+    if (state.user) {
+      var line = '<b>' + esc(state.user.name || state.user.id) + '</b> • รหัสพนักงาน ' + esc(state.user.id) + '<br>' + esc(roleLabel);
+      if (state.role === "sales") line += ' • ' + esc(STORE_LABELS[state.currentStoreCode] || state.currentStoreCode || "");
+      else line += ' • ทุกสาขา';
+      info.innerHTML = line;
+      if (btn) btn.hidden = false;
+    } else {
+      info.innerHTML = '<b>' + esc(roleLabel) + '</b> • ' + esc(state.role === "admin" ? "ทุกสาขา" : (STORE_LABELS[state.currentStoreCode] || "")) +
+        '<br>กรุณาเปลี่ยนมาใช้รหัสพนักงานและรหัสผ่านของคุณเอง รหัสสาขาจะปิดใช้งานหลังช่วงเปลี่ยนระบบ';
+      if (btn) btn.hidden = true;
+    }
+  }
+
   function initAppShell(){
     var tagline = document.getElementById("headerTagline");
-    if (tagline) tagline.textContent = "ภาพรวมยอดขายสาขา";
-    document.getElementById("repPicker").style.display = "block";
+    if (tagline) tagline.textContent = state.user
+      ? "สวัสดี " + (state.user.name || state.user.id)
+      : "ภาพรวมยอดขายสาขา";
     var storeCodes = Object.keys(state.storesData);
     var adminWrap = document.getElementById("adminStoreSwitchWrap");
     var adminSelect = document.getElementById("adminStoreSwitch");
@@ -1556,22 +1907,37 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     var settingsSection = document.getElementById("appSettings");
     if (settingsSection) settingsSection.style.display = (state.role === "admin") ? "block" : "none";
 
-    if (state.role === "admin" && storeCodes.length > 1) {
-      // v4: the admin store switch now lives in the store dashboard header;
+    state.currentStoreCode = storeCodes[0];
+    if (state.role === "sales") {
+      // v8: a salesperson goes straight to their own plan; no picker, no store dashboard.
+      document.getElementById("selector").style.display = "none";
+      document.getElementById("repPicker").style.display = "none";
+      var keys = Object.keys(state.storesData[state.currentStoreCode] || {});
+      state.currentSE = keys[0] || null;
+      renderDataFooter();
+      renderAccountBox();
+      if (state.currentSE) renderDashboard();
+      initTabBar();
+      return;
+    }
+
+    document.getElementById("selector").style.display = "";
+    document.getElementById("repPicker").style.display = "block";
+    if (canSwitchStores() && storeCodes.length > 1) {
+      // v4: the store switch lives in the store dashboard header;
       // this original control stays hidden but in sync (see switchStore).
       adminWrap.style.display = "none";
       adminSelect.innerHTML = storeCodes.map(function(c){
         return '<option value="' + c + '">' + esc(STORE_LABELS[c] || c) + '</option>';
       }).join("");
-      adminSelect.addEventListener("change", function(){
-        switchStore(adminSelect.value);
-      });
-      state.currentStoreCode = storeCodes[0];
-    } else {
-      state.currentStoreCode = storeCodes[0];
+      if (!adminSelect._ready) {
+        adminSelect._ready = true;
+        adminSelect.addEventListener("change", function(){ switchStore(adminSelect.value); });
+      }
     }
     renderRepPicker();
     renderDataFooter();
+    renderAccountBox();
     renderStoreDashboard();
     loadStoreSummary(true);
     initTabBar();
@@ -1781,9 +2147,13 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
       '<div id="cardJumpRow" class="jumpStrip"></div>' +
       '</div>';
 
+    // v8: a salesperson only ever sees their own plan, so there is no "pick someone else" link.
+    var backHtml = state.role === "sales" ? "" :
+      '<a class="back" href="javascript:void(0)" id="backToPicker">\u2190 เลือกเซลล์คนอื่น</a>';
+
     var html = '' +
       '<section class="dashboard" id="dashCurrent">' +
-      '<a class="back" href="javascript:void(0)" id="backToPicker">\u2190 เลือกเซลล์คนอื่น</a>' +
+      backHtml +
       '<div class="welcome"><div style="min-width:0;flex:1">' + '<span>แผนการขายวันนี้</span><h2 style="word-break:break-word">' + esc(displaySalesmanName(state.currentSE)) + '</h2>' +
       '<small>' + esc(STORE_LABELS[state.currentStoreCode] || state.currentStoreCode || "") + '</small></div>' + runrateHtml + '</div>' +
       achieveBarHtml +
@@ -1983,8 +2353,6 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   function getQueue(){ try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]"); } catch(e){ return []; } }
   function setQueue(q){ try { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); } catch(e){} }
 
-  function sleep(ms){ return new Promise(function(resolve){ setTimeout(resolve, ms); }); }
-
   function confirmIssueSaved(issueId, token, attempts, expectEvidence){
     attempts = attempts || 5;
     confirmIssueSaved._expectEvidence = !!expectEvidence;
@@ -2030,9 +2398,13 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   function flushQueue(){
     var q = getQueue();
     if (!q.length) return;
+    var me = sessionIdentity();
+    if (!me) return;
     var remaining = [];
     var chain = Promise.resolve();
     q.forEach(function(item){
+      // v8: only send reports queued under the account that is logged in now.
+      if (item.queuedBy && item.queuedBy !== me) { remaining.push(item); return; }
       chain = chain.then(function(){
         item.submittedAt = new Date().toISOString();
         return sendPayload(item).catch(function(){ remaining.push(item); return false; });
@@ -2088,15 +2460,8 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     var customerId = article ? (article.getAttribute("data-customer-id") || "") : "";
 
     var createdAt = new Date().toISOString();
-    // Read the store directly from app state (the source of truth for which
-    // store is currently open) rather than scraping it back out of rendered
-    // DOM text -- state.currentStoreCode is always a valid "001"/"003"/"005"
-    // once the dashboard is showing, whereas the old DOM-scrape depended on
-    // a label (seData.store) that was never actually present in Data.gs and
-    // always rendered blank, silently failing admin submissions with
-    // "invalid store" (normal store-PIN reps were unaffected because the
-    // backend ignores the client-supplied store for them and uses the PIN's
-    // own token instead).
+    // The store comes from app state; for a salesperson the server ignores it
+    // and uses their own portfolio's store (v8).
     var normalizedStore = extractStoreCode(state.currentStoreCode || "");
     var payload = {
       issueId: makeIssueId(normalizedStore),
@@ -2113,7 +2478,8 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
       issues: issues,
       detail: detail,
       outcome: outcome,
-      nextAction: nextAction
+      nextAction: nextAction,
+      queuedBy: sessionIdentity()
     };
 
     if (form._compressedEvidence && form._compressedEvidence.base64) {
@@ -2146,16 +2512,8 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
       if (evMeta) evMeta.textContent = "";
       if (evPreview) evPreview.classList.remove("show");
 
-      // Clear the rest of the form too, not just the photo. Leaving the
-      // checkboxes/dropdowns/notes filled in after a successful save meant
-      // the button quietly went back to its normal, clickable state a few
-      // seconds later with the exact same answers still sitting in it --
-      // an easy way for a rep to end up submitting the same report twice
-      // (a new Issue ID each time, so the backend's own duplicate-ID guard
-      // never catches it) just by tapping "บันทึกปัญหา" again later, unsure
-      // whether the first tap had actually gone through. Requiring the form
-      // to be filled in again makes an accidental duplicate much less likely
-      // while still allowing a genuine second report for the same customer.
+      // Clear the rest of the form too, so the same answers cannot be
+      // submitted twice by accident (each tap would get a new Issue ID).
       var choiceEls = form.querySelectorAll(".issueChoice input:checked");
       Array.prototype.forEach.call(choiceEls, function(cb){ cb.checked = false; });
       var formSelects = form.querySelectorAll("select");
@@ -2170,10 +2528,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
         ? "ยังส่งไม่ได้ ระบบเก็บข้อมูลและรูปที่ย่อแล้วไว้ในเครื่อง และจะลองส่งเมื่อเชื่อมต่ออีกครั้ง"
         : "ยังไม่มีอินเทอร์เน็ต ระบบจะส่งข้อมูลอัตโนมัติเมื่อเชื่อมต่อได้";
 
-      // The report is already safely queued (payload was captured above), so
-      // clear the form here too -- otherwise a rep unsure whether the queued
-      // save "really" worked could tap the re-enabled button again with the
-      // same answers still filled in and queue a second, duplicate report.
+      // The report is already safely queued, so clear the form here too.
       var choiceEls2 = form.querySelectorAll(".issueChoice input:checked");
       Array.prototype.forEach.call(choiceEls2, function(cb){ cb.checked = false; });
       var formSelects2 = form.querySelectorAll("select");
@@ -2190,6 +2545,32 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
     var testBtn = document.getElementById("testEndpointBtn");
     var status = document.getElementById("endpointStatus");
     var logoutBtn = document.getElementById("logoutBtn");
+    var changePwOpen = document.getElementById("changePwOpen");
+
+    if (changePwOpen) {
+      changePwOpen.addEventListener("click", function(){
+        if (!state.user) return;
+        openChangeForm({ mode: "voluntary", uid: state.user.id, name: state.user.name });
+      });
+    }
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", function(){
+        var s = loadSession();
+        logoutBtn.disabled = true;
+        logoutBtn.textContent = "กำลังออกจากระบบ...";
+        // End the session on the server too, then reload.
+        var done = s && s.token
+          ? Promise.race([jsonpRequest({ action: "logout", token: s.token }, 5000).catch(function(){}), sleep(2000)])
+          : Promise.resolve();
+        done.then(function(){
+          clearSession();
+          try { sessionStorage.removeItem(TAB_KEY); } catch(e){}   // next login starts on the first tab
+          location.reload();
+        });
+      });
+    }
+
     if (!input || !saveBtn || !testBtn) return;
 
     input.value = getEndpointUrl();
@@ -2210,14 +2591,6 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
         .then(function(){ status.textContent = "ส่งคำขอถึงปลายทางสำเร็จ \u2705"; })
         .catch(function(){ status.textContent = "ทดสอบไม่สำเร็จจริง \u274c (ตรวจสอบว่า URL ถูกต้องและมีอินเทอร์เน็ต)"; });
     });
-
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", function(){
-        clearSession();
-        try { sessionStorage.removeItem("taokae_tab_v1"); } catch(e){}   // next login starts on ภาพรวม
-        location.reload();
-      });
-    }
   }
   document.addEventListener("DOMContentLoaded", initSettingsPanel);
 
