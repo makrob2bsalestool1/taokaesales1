@@ -2633,9 +2633,9 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
 })();
 </script>
 <!-- =====================================================================
-  Taokae Sales — เมนูหลัก + แนะนำสินค้าตามกลุ่มร้านค้า (v11)
+  Taokae Sales — เมนูหลัก + แนะนำสินค้าตามกลุ่มร้านค้า (v11.1: several shop groups)
 
-  PASTE INTO index.html: this whole block just before </body>
+  PASTE INTO index.html: this whole block just before the closing body tag
   (after fresh-catalog.html if you have it).
   index.html calls (see setup guide v11, patch C):
       TaokaeHome.start({ apiUrl, token, role, userName, storeLabel,
@@ -2800,7 +2800,9 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   var STORE_NAMES = { '001': 'ลาดพร้าว', '003': 'ศรีนครินทร์', '005': 'ชลบุรี' };
   var TH_M = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
   var GROUP_LABEL = { 1: 'เริ่มจากรายการนี้', 2: 'เสนอเพิ่ม', 3: 'ผักสด / ซื้อน้อย' };
-  var GROUP_SAY = { 1: 'ร้านอาหารตามสั่งส่วนใหญ่ซื้อกับ Makro', 2: 'ร้านบางส่วนซื้อกับเรา', 3: 'ส่วนใหญ่ซื้อตลาดสด — ถามว่าซื้อที่ไหน ราคาเท่าไร' };
+  var GROUP_SAY = { 1: 'ร้าน{g}ส่วนใหญ่ซื้อกับ Makro', 2: 'ร้านบางส่วนซื้อกับเรา', 3: 'ส่วนใหญ่ซื้อตลาดสด — ถามว่าซื้อที่ไหน ราคาเท่าไร' };
+  function groupName() { var d = R.data || {}; return ((d.groups || []).filter(function (g) { return g.id === R.group; })[0] || {}).name || ''; }
+  function say(n) { return GROUP_SAY[n].replace('{g}', groupName()); }
   var PAGE = 30;
 
   // ---------- shared helpers ----------
@@ -2875,7 +2877,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
       '<div class="tkh-t"><b>ลูกค้าโฟกัสยอดตก</b><span>ลูกค้า Top 10 ที่ยอดหาย ควรไปหาใครก่อน</span></div><span class="tkh-go" aria-hidden="true">→</span></div>' + dropTiles + '</button>' +
       '<button type="button" class="tkh-card new" data-go="reco"><div class="tkh-row"><div class="tkh-ic reco">' + ICON_CART + '</div>' +
       '<div class="tkh-t"><b>แนะนำสินค้าตามกลุ่มร้านค้า</b><span>ร้านกลุ่มเดียวกันซื้อ แต่ร้านนี้ยังไม่ซื้อ</span></div><span class="tkh-go" aria-hidden="true">→</span></div>' +
-      '<div class="tkh-tags"><span class="tkr-tag new">ใหม่</span><span class="tkr-tag chip">อาหารตามสั่ง</span></div>' +
+      '<div class="tkh-tags"><span class="tkr-tag new">ใหม่</span>' + ((s && s.groups && s.groups.length ? s.groups : ['อาหารตามสั่ง']).map(function (n) { return '<span class="tkr-tag chip">' + esc(n) + '</span>'; }).join('')) + '</div>' +
       '<div class="tkh-tiles">' + recoTiles + '</div></button>' +
       '<div class="tkh-note">กลับมาหน้านี้ได้จากปุ่ม <b>☰ เมนูหลัก</b> ด้านบน ไม่ต้องเข้าสู่ระบบใหม่</div>' +
       '<div class="tkh-foot"><span>' + esc(s && s.builtAt ? 'ข้อมูลแนะนำสินค้า ' + monthsLabel(s.months) : '') + '</span>' +
@@ -2889,7 +2891,8 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
       if (res && res.sessionExpired) { expired(); return; }
       if (!res || !res.ok) { H.summary = { error: (res && res.message) || 'โหลดข้อมูลไม่สำเร็จ' }; }
       else if (!res.summary) { H.summary = { error: res.message || 'ยังไม่มีร้านในพอร์ตของคุณ' }; }
-      else H.summary = { shops: res.summary.shops, opp: res.summary.opp, mine: res.lockedRep, builtAt: res.builtAt, months: res.months };
+      else H.summary = { shops: res.summary.shops, opp: res.summary.opp, mine: res.lockedRep, builtAt: res.builtAt, months: res.months,
+                         groups: res.summary.groups || (res.groups || []).map(function (g) { return g.name; }) };
       homeRender();
     }).catch(function () {
       if (req !== H.sumReq) return;
@@ -3018,668 +3021,16 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
           return '<button type="button" class="tkr-chip' + (s === R.store ? ' on' : '') + '" data-store="' + esc(s) + '">' + esc(storeLabel(s)) + '</button>';
         }).join('') + '</div>';
       }
-      h += '<div class="tkr-chips" role="group" aria-label="กลุ่มร้านค้า">' + (d.groups || []).map(function (g) {
-        return '<button type="button" class="tkr-chip' + (g.id === R.group ? ' on' : '') + '" data-group="' + esc(g.id) + '">' + esc(g.name) + '</button>';
-      }).join('') + '</div>';
-      if (!d.lockedRep && (d.reps || []).length) {
-        var total = d.reps.reduce(function (s, r) { return s + r.shops; }, 0);
-        h += '<label class="tkr-sr" style="position:absolute;left:-9999px" for="tkrRep">พอร์ตเซลล์</label><select class="tkr-sel" id="tkrRep" data-act="rep">' +
-          '<option value="">ทุกพอร์ตในสาขา (' + total + ' ร้าน)</option>' + d.reps.map(function (r) {
-            var nm = r.type === 'rep' ? r.code + ' ' + r.name : (r.type === 'vacant' ? r.code + ' ตำแหน่งว่าง' : (r.type === 'dummy' ? r.code + ' ยังไม่แจกพอร์ต' : 'ไม่พบในพอร์ต'));
-            return '<option value="' + esc(r.code) + '"' + (r.code === R.rep ? ' selected' : '') + '>' + esc(nm + ' (' + r.shops + ' ร้าน)') + '</option>';
-          }).join('') + '</select>';
-      }
-    }
-    t.innerHTML = h;
-  }
-
-  function renderList() {
-    var d = R.data, box = R.el.querySelector('.tkr-content');
-    if (!d.shops || (!d.shops.length && !d.inactive)) {
-      box.innerHTML = '<div class="tkr-empty">' + esc(d.message || 'ไม่มีร้านในกลุ่มนี้') + '</div>';
-      return;
-    }
-    var shops = d.shops, q = (R.q || '').trim().toLowerCase();
-    var totalGaps1 = shops.reduce(function (s, x) { return s + x.c[0]; }, 0);
-    var opp = shops.reduce(function (s, x) { return s + x.opp; }, 0);
-    var h = '<div class="tkr-hero"><small>' + esc((d.groups.filter(function (g) { return g.id === R.group; })[0] || {}).name || '') +
-      (d.lockedRep ? ' ในพอร์ตของคุณ' : (R.rep ? ' · ' + repLabel(R.rep) : ' · ทั้งสาขา')) + '</small><div class="tkr-kpis">' +
-      '<div><b>' + shops.length + '</b><span>ร้าน Active</span></div>' +
-      '<div><b>' + (shops.length ? (Math.round(totalGaps1 / shops.length * 10) / 10) : 0) + '</b><span>รายการที่ควรเสนอ / ร้าน</span></div>' +
-      '<div><b>' + money(opp) + '</b><span>โอกาส / เดือน</span></div></div></div>';
-    if (d.mine) {
-      h += '<div class="tkr-mine">' + monthTh(d.mine.month) + ' นี้คุณบันทึกผลแล้ว <b>' + d.mine.logged + ' รายการ</b> · ลูกค้าสนใจ <b>' + d.mine.yes + '</b></div>';
-    }
-    // where to start: best shop with an unlogged first-group item
-    var start = null;
-    for (var i = 0; i < shops.length && !start; i++) {
-      var g = topGaps(shops[i], 1, true)[0];
-      if (g && g[1] === 1) start = { s: shops[i], it: d.items[g[0]] };
-    }
-    if (start && !q) {
-      h += '<div class="tkr-callout"><small>วันนี้ควรเริ่มตรงไหน?</small><div>เริ่มจาก <b>' + esc(start.s.n) + '</b> เสนอ <b>' + esc(start.it.k) +
-        '</b> ก่อน · ร้านกลุ่มเดียวกัน ' + pct(d.peer[d.items.indexOf(start.it)][1]) + ' ซื้อกับเรา</div></div>';
-    }
-    h += '<input class="tkr-search" type="search" placeholder="ค้นหาชื่อร้าน หรือรหัสลูกค้า" aria-label="ค้นหาร้าน" value="' + esc(R.q || '') + '" data-act="search">';
-    var list = q ? shops.filter(function (s) { return (s.n + ' ' + s.id).toLowerCase().indexOf(q) >= 0; }) : shops;
-    h += '<div class="tkr-h"><b>ร้านที่ควรเสนอสินค้า</b><span>เรียงตามโอกาสขาย</span></div><div class="tkr-list">';
-    if (!list.length) h += '<div class="tkr-empty" style="margin:16px 0">ไม่พบร้านที่ค้นหา</div>';
-    list.slice(0, R.shown).forEach(function (s) {
-      var rank = shops.indexOf(s) + 1, must = d.mustCount || 1, lc = loggedCount(s);
-      h += '<button type="button" class="tkr-shop" data-shop="' + esc(s.id) + '"><div class="tkr-srow"><span class="tkr-rank">#' + rank + '</span>' +
-        '<div class="tkr-sname"><b>' + esc(s.n) + '</b><span>' + esc(s.id) + (d.lockedRep ? '' : ' · ' + repLabel(s.rep)) +
-        ' · ' + monthTh(d.months[d.months.length - 1]) + ' ' + money(s.m[s.m.length - 1]) + '</span></div>' +
-        '<div class="tkr-opp"><b>' + (s.opp ? money(s.opp) : '—') + '</b><span>โอกาส/เดือน</span></div></div>' +
-        '<div class="tkr-prog"><div><span>ซื้อ Must Have แล้ว ' + s.have + '/' + must + '</span><span style="color:#b91c2b">ควรเสนอ ' + s.c[0] + ' · เพิ่ม ' + s.c[1] + '</span></div>' +
-        '<div class="tkr-track"><div class="tkr-fill" style="width:' + Math.round(s.have / must * 100) + '%"></div></div></div>' +
-        '<div class="tkr-tags">' + topGaps(s, 3, true).map(function (g) { return '<span class="tkr-tag chip">' + esc(d.items[g[0]].k) + '</span>'; }).join('') +
-        (lc ? '<span class="tkr-tag warn">บันทึกแล้ว ' + lc + '</span>' : '') + '</div></button>';
-    });
-    h += '</div>';
-    if (list.length > R.shown) h += '<button type="button" class="tkr-more" data-act="more">ดูอีก ' + (list.length - R.shown) + ' ร้าน</button>';
-    if (d.inactive) h += '<div class="tkr-info">ร้านที่หยุดซื้อ ' + d.inactive + ' ร้าน ไม่อยู่ในรายการนี้ — ติดตามได้ในเมนู <b>ลูกค้าโฟกัสยอดตก</b></div>';
-    h += '<div class="tkr-info">ตัวเลขมาจากยอดซื้อ ' + esc(monthsLabel(d.months)) + ' · “ซื้อแล้ว” นับสินค้าชนิดเดียวกันทุกยี่ห้อและขนาด · ' +
-      'เทียบกับร้านกลุ่มเดียวกันในสาขา ' + d.N + ' ร้าน' + (d.canLog ? '' : ' · บัญชีนี้ดูได้อย่างเดียว') + '</div>';
-    box.innerHTML = h;
-  }
-
-  function actsHtml(shop, i) {
-    if (!R.data.canLog) return '';
-    var l = shop.log && shop.log[i], res = R.data.results;
-    function b(key) {
-      var on = l && l[0] === res[key] ? ' on-' + key : '';
-      return '<button type="button" class="tkr-act' + on + '" data-log="' + key + '" data-i="' + i + '">' + esc(res[key]) + '</button>';
-    }
-    return '<div class="tkr-acts">' + b('yes') + b('no') + b('else') + '</div>' +
-      (l ? '<div class="tkr-last">บันทึกล่าสุด: ' + esc(l[0]) + (l[2] ? ' · ' + esc(l[2]) : '') + ' · ' + esc(dm(l[1])) + '</div>' : '') +
-      '<div class="tkr-err" hidden></div>';
-  }
-
-  function itemCard(shop, g, rank) {
-    var d = R.data, it = d.items[g[0]], p = d.peer[g[0]];
-    return '<div class="tkr-item" data-item="' + g[0] + '"><div class="tkr-irow"><span class="tkr-rank">#' + rank + '</span><div class="tkr-iname">' +
-      '<b>' + esc(it.k) + '</b><div>' + esc(it.name) + '</div><span>รหัส ' + esc(it.code) + (it.price ? ' · ' + baht(it.price) : '') + '</span></div></div>' +
-      '<div class="tkr-prog"><div><span>ร้านกลุ่มเดียวกันที่ซื้อกับ Makro</span><span>' + pct(p[1]) + ' (' + p[0] + '/' + d.N + ')</span></div>' +
-      '<div class="tkr-track"><div class="tkr-fill g" style="width:' + pct(p[1]) + '"></div></div>' +
-      (p[2] ? '<div style="font-size:11.5px;font-weight:700;color:#5b5b5b">ร้านที่ซื้อใช้ประมาณ ' + baht(p[2]) + ' / เดือน</div>' : '') + '</div>' +
-      '<div class="tkr-say g' + g[1] + '">' + esc(GROUP_SAY[g[1]]) + '</div>' + actsHtml(shop, g[0]) + '</div>';
-  }
-
-  function itemRow(shop, g, rank) {
-    var d = R.data, it = d.items[g[0]], p = d.peer[g[0]];
-    return '<div class="tkr-row" data-item="' + g[0] + '"><div class="nm"><b>' + rank + '. ' + esc(it.k) + '</b><span>' + pct(p[1]) + ' ของร้านซื้อ</span></div>' +
-      '<div class="it">' + esc(it.name) + ' · ' + esc(it.code) + (it.price ? ' · ' + baht(it.price) : '') + '</div>' + actsHtml(shop, g[0]) + '</div>';
-  }
-
-  function renderShop() {
-    var d = R.data, s = findShop(R.shopId), box = R.el.querySelector('.tkr-content');
-    if (!s) { R.view = 'list'; render(); return; }
-    var top = d.settings.top, must = d.mustCount;
-    var h = '<div class="tkr-box"><div><h2>' + esc(s.n) + '</h2><div class="sub">รหัส ' + esc(s.id) + ' · ' + esc(repLabel(s.rep)) + '</div></div>' +
-      '<div class="tkr-tiles three">' + d.months.map(function (m, i) {
-        return '<div class="tkr-tile"><small>ยอดซื้อ ' + monthTh(m) + '</small><b>' + money(s.m[i]) + '</b></div>';
-      }).join('') + '</div><div class="tkr-tiles"><div class="tkr-tile"><small>ซื้อ Must Have แล้ว</small><b>' + s.have + '</b><span style="font-size:13px;color:#5b5b5b"> / ' + must + '</span></div>' +
-      '<div class="tkr-tile"><small>โอกาสขายเพิ่ม / เดือน</small><b class="g">' + (s.opp ? money(s.opp) : '—') + '</b></div></div>' +
-      '<div style="font-size:13px;line-height:1.6;color:#4a4a4a">เทียบกับร้านกลุ่มเดียวกัน ' + d.N + ' ร้านใน' + esc(storeLabel(R.store)) + '</div></div>';
-    var gaps = s.gaps || [];
-    if (!gaps.length) {
-      h += '<div class="tkr-empty">ร้านนี้ซื้อครบทุกรายการ Must Have แล้ว 🎉</div>';
-    } else {
-      h += '<div class="tkr-h"><b>ควรเสนอก่อน</b><span>เรียงตาม % ร้านกลุ่มเดียวกันที่ซื้อ</span></div><div class="tkr-list">';
-      gaps.slice(0, top).forEach(function (g, k) { h += itemCard(s, g, k + 1); });
-      h += '</div>';
-      [1, 2, 3].forEach(function (grp) {
-        var rows = [];
-        gaps.forEach(function (g, k) { if (k >= top && g[1] === grp) rows.push(itemRow(s, g, k + 1)); });
-        if (!rows.length) return;
-        h += '<details class="tkr-grp"' + (grp === 1 ? ' open' : '') + '><summary><b>' + esc(GROUP_LABEL[grp]) + '</b><span>' + rows.length + ' รายการ<i aria-hidden="true">⌄</i></span></summary>' +
-          '<div class="tkr-say g' + grp + '" style="margin:0 16px 10px">' + esc(GROUP_SAY[grp]) + '</div>' + rows.join('') + '</details>';
-      });
-    }
-    var gapSet = {};
-    gaps.forEach(function (g) { gapSet[g[0]] = true; });
-    var bought = d.items.filter(function (it, i) { return it.must && !gapSet[i]; });
-    if (bought.length) {
-      h += '<details class="tkr-grp"><summary><b>ซื้อแล้ว</b><span>' + bought.length + ' รายการ<i aria-hidden="true">⌄</i></span></summary><div class="tkr-bought">' +
-        bought.map(function (it) { return '<span>' + esc(it.k) + '</span>'; }).join('') + '</div></details>';
-    }
-    if (!d.canLog) h += '<div class="tkr-info">บัญชีนี้ดูได้อย่างเดียว — เซลล์เจ้าของพอร์ตเป็นคนบันทึกผลการเสนอ</div>';
-    box.innerHTML = h;
-  }
-
-  function render() {
-    if (!R || !R.data) return;
-    renderTop();
-    if (R.view === 'shop') renderShop(); else renderList();
-  }
-
-  // ---- logging ----
-  function openSheet(shop, i, key, btn) {
-    closeSheet();
-    var d = R.data, it = d.items[i], reasons = d.reasons[key] || [];
-    var h = '<div class="tkr-sheet-bg"><div class="tkr-sheet" role="dialog" aria-modal="true" aria-label="บันทึกผล">' +
-      '<h3>' + esc(d.results[key]) + ' — ' + esc(it.k) + '</h3><p>' + esc(shop.n) + '</p>' +
-      '<div style="font-size:12.5px;font-weight:900;color:#444">เพราะอะไร? <span style="color:#c51f2d">*</span></div>' +
-      '<div class="tkr-reasons">' + reasons.map(function (r, k) { return '<button type="button" class="tkr-reason" data-reason="' + k + '">' + esc(r) + '</button>'; }).join('') + '</div>' +
-      '<label style="font-size:12.5px;font-weight:900;color:#444" for="tkrNote">หมายเหตุ (ไม่บังคับ)</label>' +
-      '<textarea id="tkrNote" class="tkr-note" rows="2" maxlength="200" placeholder="เช่น ซื้อตลาดสดกิโลละ 40"></textarea>' +
-      '<div class="tkr-err" hidden></div><button type="button" class="tkr-save" disabled>บันทึก</button><button type="button" class="tkr-cancel">ยกเลิก</button></div></div>';
-    document.body.insertAdjacentHTML('beforeend', h);
-    var bg = document.querySelector('.tkr-sheet-bg'), pick = -1;
-    var save = bg.querySelector('.tkr-save');
-    bg.addEventListener('click', function (e) {
-      if (e.target === bg || e.target.closest('.tkr-cancel')) { closeSheet(); return; }
-      var r = e.target.closest('[data-reason]');
-      if (r) {
-        pick = Number(r.getAttribute('data-reason'));
-        Array.prototype.forEach.call(bg.querySelectorAll('.tkr-reason'), function (x) { x.classList.toggle('on', x === r); });
-        save.disabled = false; return;
-      }
-      if (e.target === save && pick >= 0) {
-        var err = bg.querySelector('.tkr-err');
-        save.disabled = true; save.textContent = 'กำลังบันทึก…'; err.hidden = true;
-        sendLog(shop, i, key, reasons[pick], bg.querySelector('#tkrNote').value).then(function () { closeSheet(); }, function (msg) {
-          save.disabled = false; save.textContent = 'บันทึก'; err.hidden = false; err.textContent = msg;
-        });
-      }
-    });
-  }
-  function closeSheet() { var bg = document.querySelector('.tkr-sheet-bg'); if (bg) bg.parentNode.removeChild(bg); }
-
-  function sendLog(shop, i, key, reason, note) {
-    var d = R.data, it = d.items[i], logId = newLogId(), el = R.el;
-    return jsonp(R.opts.apiUrl, { action: 'recoLog', token: R.opts.token, customerId: shop.id, code: it.code, result: key,
-                                  reason: reason || '', note: (note || '').slice(0, 200), logId: logId, group: R.group, deviceId: deviceId() })
-      .catch(function () {   // one quiet retry with the SAME logId: the server writes one row at most
-        return jsonp(R.opts.apiUrl, { action: 'recoLog', token: R.opts.token, customerId: shop.id, code: it.code, result: key,
-                                      reason: reason || '', note: (note || '').slice(0, 200), logId: logId, group: R.group, deviceId: deviceId() });
-      })
-      .then(function (res) {
-        if (res && res.sessionExpired) { var cb = R.opts.onSessionExpired; Reco.close(true); if (cb) cb(); return; }
-        if (!res || !res.ok) throw new Error((res && res.message) || 'บันทึกไม่สำเร็จ');
-        if (!R || R.el !== el) return;
-        var first = !(shop.log && shop.log[i]);
-        shop.log = shop.log || {};
-        shop.log[i] = [res.result || d.results[key], res.at || '', reason || ''];
-        if (d.mine && first) { d.mine.logged++; if (key === 'yes') d.mine.yes++; }
-        var y = R.el.scrollTop;
-        render(); R.el.scrollTop = y;
-        toast('บันทึกแล้ว ✓ ' + it.k);
-      })
-      .catch(function (e) {
-        throw (e.message === 'timeout' || e.message === 'network') ? 'สัญญาณไม่ดี กรุณากดอีกครั้ง' : e.message;
-      });
-  }
-
-  function onClick(e) {
-    if (!R || !R.data && !e.target.closest('[data-act="retry"],[data-act="back"]')) return;
-    var a = e.target.closest('[data-act]');
-    if (a) {
-      var act = a.getAttribute('data-act');
-      if (act === 'back') {
-        if (R.view === 'shop') { R.view = 'list'; render(); R.el.scrollTop = R.scrollList || 0; }
-        else Reco.close();
-        return;
-      }
-      if (act === 'more') { R.shown += PAGE; render(); return; }
-      if (act === 'retry') { recoLoad({ store: R.store, rep: R.rep, group: R.group }); return; }
-      return;
-    }
-    var st = e.target.closest('[data-store]');
-    if (st) { R.view = 'list'; R.q = ''; recoLoad({ store: st.getAttribute('data-store'), group: R.group }); return; }
-    var gr = e.target.closest('[data-group]');
-    if (gr) { R.view = 'list'; recoLoad({ store: R.store, rep: R.rep, group: gr.getAttribute('data-group') }); return; }
-    var sh = e.target.closest('[data-shop]');
-    if (sh) { R.scrollList = R.el.scrollTop; R.shopId = sh.getAttribute('data-shop'); R.view = 'shop'; render(); R.el.scrollTop = 0; return; }
-    var lg = e.target.closest('[data-log]');
-    if (lg && R.data.canLog) {
-      var shop = findShop(R.shopId), i = Number(lg.getAttribute('data-i')), key = lg.getAttribute('data-log');
-      if (!shop) return;
-      if (key === 'yes') {
-        var wrap = lg.closest('[data-item]'), err = wrap && wrap.querySelector('.tkr-err');
-        Array.prototype.forEach.call(wrap.querySelectorAll('.tkr-act'), function (b) { b.disabled = true; });
-        lg.textContent = 'กำลังบันทึก…';
-        sendLog(shop, i, key, '', '').catch(function (msg) {
-          render();
-          var w = R.el.querySelector('[data-item="' + i + '"] .tkr-err');
-          if (w) { w.hidden = false; w.textContent = msg; }
-        });
-      } else {
-        openSheet(shop, i, key, lg);
-      }
-    }
-  }
-
-  var Reco = {
-    open: function (opts) {
-      if (!opts || !opts.apiUrl || !opts.token) return;
-      Reco.close(true);
-      var el = document.createElement('div');
-      el.className = 'tkr-view';
-      el.innerHTML = '<div class="tkr-inner"><div class="tkr-top"><div class="tkr-bar"><button type="button" class="tkr-back" data-act="back">← เมนูหลัก</button>' +
-        '<div class="tkr-ttl"><b>แนะนำสินค้าตามกลุ่มร้านค้า</b><span>กำลังโหลด…</span></div></div></div><div class="tkr-content"></div></div>';
-      document.body.appendChild(el);
-      document.documentElement.style.overflow = 'hidden';
-      R = { opts: opts, el: el, data: null, view: 'list', q: '', shown: PAGE };
-      setMod('reco');
-      el.addEventListener('click', onClick);
-      el.addEventListener('change', function (e) {
-        if (e.target.getAttribute('data-act') === 'rep') { R.view = 'list'; recoLoad({ store: R.store, rep: e.target.value, group: R.group }); }
-      });
-      el.addEventListener('input', function (e) {
-        if (e.target.getAttribute('data-act') === 'search') {
-          R.q = e.target.value; R.shown = PAGE;
-          var pos = e.target.selectionStart;
-          renderList();
-          var inp = R.el.querySelector('.tkr-search');
-          if (inp) { inp.focus(); try { inp.setSelectionRange(pos, pos); } catch (x) {} }
-        }
-      });
-      return recoLoad({});
-    },
-    // silent = closing because something else takes over (no "back to menu")
-    close: function (silent) {
-      closeSheet();
-      if (!R) return;
-      var cb = R.opts && R.opts.onClose;
-      if (R.el && R.el.parentNode) R.el.parentNode.removeChild(R.el);
-      R = null;
-      document.documentElement.style.overflow = '';
-      if (!silent && cb) cb();
-    },
-    isOpen: function () { return !!R; }
-  };
-
-  window.TaokaeHome = Home;
-  window.TaokaeReco = Reco;
-})();
-</script>
-
-</body>
-  (after fresh-catalog.html if you have it).
-  index.html calls (see setup guide v11, patch C):
-      TaokaeHome.start({ apiUrl, token, role, userName, storeLabel,
-                         drop: { shops, loss }, onSessionExpired, onLogout });
-      TaokaeHome.show();   // header "☰ เมนูหลัก" button
-      TaokaeHome.reset();  // on logout
-  Self-contained: CSS prefixes .tkh- / .tkr-, globals window.TaokaeHome and
-  window.TaokaeReco only.
-===================================================================== -->
-<style>
-  .tkh-view,.tkr-view{position:fixed;inset:0;background:#EAECF5;overflow-y:auto;-webkit-overflow-scrolling:touch;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai",Tahoma,sans-serif;color:#1e1e1e;font-size:15px;line-height:1.5}
-  .tkh-view{z-index:9980}
-  .tkr-view{z-index:9985}
-  .tkh-inner,.tkr-inner{max-width:620px;margin:0 auto;padding:0 0 40px}
-  .tkh-inner{padding:20px 16px 32px;min-height:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px}
-  .tkh-head{display:flex;align-items:center;gap:12px}
-  .tkh-logo{width:54px;height:54px;border-radius:17px;background:linear-gradient(180deg,#2368E7,#28211A);color:#fff;font-weight:700;font-size:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 16px rgba(35,104,231,.22);flex:0 0 54px}
-  .tkh-head h1,.tkh-head p{font-family:Manrope,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai",Tahoma,sans-serif}
-  .tkh-head h1{margin:0;font-size:22px;line-height:1.25;font-weight:700}
-  .tkh-head p{margin:0;font-size:13.5px;color:#5b5b5b}
-  .tkh-store{margin-left:auto;font-size:11px;font-weight:900;background:#fff;border:1px solid #e9e9e9;border-radius:999px;padding:6px 10px;white-space:nowrap}
-  .tkh-card{display:flex;flex-direction:column;gap:12px;width:100%;text-align:left;background:#fff;border:1px solid #e9e9e9;border-radius:20px;padding:18px;
-    box-shadow:0 4px 16px rgba(0,0,0,.03);font:inherit;color:inherit;cursor:pointer}
-  .tkh-card.new{border:2px solid #2368E7}
-  .tkh-card:active{transform:scale(.99)}
-  .tkh-row{display:flex;align-items:center;gap:12px}
-  .tkh-ic{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex:0 0 44px}
-  .tkh-ic.drop{background:#fff0f1;border:1px solid #f3d1d4}
-  .tkh-ic.reco{background:#fff0e3;border:1px solid #f0d6a6}
-  .tkh-t{flex:1;min-width:0}
-  .tkh-t b{display:block;font-size:18px;font-weight:800;line-height:1.35}
-  .tkh-t span{font-size:13px;color:#5b5b5b}
-  .tkh-go{font-size:20px;color:#c51f2d;font-weight:900}
-  .tkh-tags{display:flex;gap:6px;flex-wrap:wrap}
-  .tkh-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .tkh-tile{background:#fafafa;border:1px solid #e9e9e9;border-radius:15px;padding:10px 12px}
-  .tkh-tile small{display:block;font-size:10.5px;font-weight:700;color:#5b5b5b}
-  .tkh-tile b{font-size:16px;font-weight:700}
-  .tkh-note{background:#fff;border:1px solid #e9e9e9;border-radius:15px;padding:12px 14px;font-size:13px;line-height:1.6;color:#4a4a4a}
-  .tkh-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;font-weight:700;color:#5b5b5b}
-  .tkh-out{border:0;background:none;color:#b91c2b;font:inherit;font-size:13px;font-weight:800;min-height:44px;cursor:pointer}
-
-  .tkr-tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:900;line-height:1.2}
-  .tkr-tag.new{background:#c51f2d;color:#fff}
-  .tkr-tag.chip{background:#fff0e3;color:#7a4212;font-size:12px;font-weight:800}
-  .tkr-tag.soft{background:#fafafa;border:1px solid #e9e9e9;color:#5b5b5b;font-weight:700}
-  .tkr-tag.ok{background:#eaf5ef;color:#1e6b4c}
-  .tkr-tag.warn{background:#fff4e4;border:1px solid #f0d6a6;color:#9c6413}
-  .tkr-top{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #e9e9e9}
-  .tkr-bar{display:flex;align-items:center;gap:10px;padding:10px 12px}
-  .tkr-back{min-width:44px;height:44px;border:0;border-radius:11px;background:none;color:#371791;font:inherit;font-size:14px;font-weight:900;cursor:pointer;padding:0 6px;white-space:nowrap}
-  .tkr-ttl{flex:1;min-width:0}
-  .tkr-ttl b{display:block;font-size:17px;font-weight:900;line-height:1.3}
-  .tkr-ttl span{font-size:11.5px;font-weight:700;color:#5b5b5b}
-  .tkr-chips{display:flex;gap:8px;overflow-x:auto;padding:0 12px 10px;scrollbar-width:none}
-  .tkr-chips::-webkit-scrollbar{display:none}
-  .tkr-chip{flex:0 0 auto;height:42px;padding:0 14px;border-radius:11px;border:1px solid #e9e9e9;background:#fff;color:#444;font:inherit;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap}
-  .tkr-chip.on{background:linear-gradient(180deg,#2368E7,#28211A);border-color:#2368E7;color:#fff;font-weight:900}
-  .tkr-sel{display:block;margin:0 12px 10px;width:calc(100% - 24px);box-sizing:border-box;height:46px;border:1px solid #e9e9e9;border-radius:13px;padding:0 12px;font:inherit;font-size:16px;font-weight:800;background:#fff;color:#1e1e1e}
-  .tkr-pad{padding:0 16px}
-  .tkr-hero{margin:12px 16px 0;background:linear-gradient(135deg,#2368E7,#750303);border-radius:23px;padding:18px;color:#fff;display:flex;flex-direction:column;gap:12px}
-  .tkr-hero small{font-size:13px;font-weight:700}
-  .tkr-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-  .tkr-kpis b{display:block;font-size:24px;font-weight:900;line-height:1.1}
-  .tkr-kpis span{font-size:11.5px;font-weight:700}
-  .tkr-mine{margin:10px 16px 0;padding:10px 14px;border-radius:15px;background:#fff;border:1px solid #e9e9e9;font-size:13px;color:#444}
-  .tkr-mine b{color:#1e1e1e}
-  .tkr-callout{margin:10px 16px 0;padding:14px;border-radius:17px;background:#DEF2FF;border:1px solid #c7e3f7;display:flex;flex-direction:column;gap:4px}
-  .tkr-callout small{font-size:12.5px;font-weight:900;color:#13096A}
-  .tkr-callout div{font-size:15px;line-height:1.65;color:#1e1e3a}
-  .tkr-search{display:block;margin:12px 16px 0;width:calc(100% - 32px);box-sizing:border-box;height:44px;border:1px solid #e9e9e9;border-radius:11px;padding:0 12px;font:inherit;font-size:16px;background:#fff}
-  .tkr-h{margin:22px 16px 8px;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-  .tkr-h b{font-size:17px;font-weight:800}
-  .tkr-h span{font-size:11.5px;font-weight:700;color:#5b5b5b}
-  .tkr-list{display:flex;flex-direction:column;gap:10px;padding:0 16px}
-  .tkr-shop{display:flex;flex-direction:column;gap:10px;width:100%;text-align:left;background:#fff;border:1px solid #e9e9e9;border-radius:20px;padding:16px;
-    box-shadow:0 3px 12px rgba(0,0,0,.025);font:inherit;color:inherit;cursor:pointer}
-  .tkr-srow{display:flex;gap:12px;align-items:flex-start}
-  .tkr-rank{width:36px;height:36px;flex:0 0 36px;border-radius:10px;background:#c51f2d;color:#fff;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center}
-  .tkr-sname{flex:1;min-width:0}
-  .tkr-sname b{display:block;font-size:17px;font-weight:900;line-height:1.35}
-  .tkr-sname span{font-size:11.5px;font-weight:700;color:#5b5b5b}
-  .tkr-opp{text-align:right;flex:0 0 auto}
-  .tkr-opp b{display:block;font-size:18px;font-weight:900;color:#1e6b4c}
-  .tkr-opp span{font-size:10.5px;font-weight:700;color:#5b5b5b}
-  .tkr-prog{display:flex;flex-direction:column;gap:4px}
-  .tkr-prog div:first-child{display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;color:#444}
-  .tkr-track{height:8px;background:#e9e9e9;border-radius:999px;overflow:hidden}
-  .tkr-fill{height:8px;background:#c51f2d;border-radius:999px}
-  .tkr-fill.g{background:#1e6b4c}
-  .tkr-tags{display:flex;gap:6px;flex-wrap:wrap}
-  .tkr-more{display:block;margin:12px auto 0;min-height:44px;padding:0 18px;border-radius:11px;border:1px solid #e9e9e9;background:#fff;color:#c51f2d;font:inherit;font-size:14px;font-weight:800;cursor:pointer}
-  .tkr-empty{margin:32px 16px;text-align:center;color:#5b5b5b;font-size:14px;line-height:1.6}
-  .tkr-info{margin:14px 16px 0;padding:12px 14px;border-radius:15px;background:#fff;border:1px solid #e9e9e9;font-size:13px;line-height:1.6;color:#4a4a4a}
-
-  .tkr-box{margin:12px 16px 0;padding:16px;border-radius:20px;background:#fff;border:1px solid #e9e9e9;display:flex;flex-direction:column;gap:12px}
-  .tkr-box h2{margin:0;font-size:20px;font-weight:900;line-height:1.3}
-  .tkr-box .sub{font-size:11.5px;font-weight:700;color:#5b5b5b}
-  .tkr-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .tkr-tiles.three{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .tkr-tile{background:#fafafa;border:1px solid #e9e9e9;border-radius:11px;padding:10px 12px}
-  .tkr-tile small{display:block;font-size:10.5px;font-weight:700;color:#5b5b5b}
-  .tkr-tile b{font-size:17px;font-weight:900}
-  .tkr-tile b.g{color:#1e6b4c}
-  .tkr-item{background:#fff;border:1px solid #e9e9e9;border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 3px 12px rgba(0,0,0,.025)}
-  .tkr-irow{display:flex;gap:12px;align-items:flex-start}
-  .tkr-iname{flex:1;min-width:0}
-  .tkr-iname b{display:block;font-size:19px;font-weight:800;color:#8a251e;line-height:1.3}
-  .tkr-iname div{font-size:13px;color:#4a4a4a;line-height:1.5}
-  .tkr-iname span{font-size:11.5px;font-weight:700;color:#5b5b5b}
-  .tkr-say{font-size:12.5px;font-weight:700;padding:8px 10px;border-radius:11px}
-  .tkr-say.g1{background:#eaf5ef;color:#1e6b4c}
-  .tkr-say.g2{background:#fff4e4;color:#7a4212}
-  .tkr-say.g3{background:#fafafa;color:#444;border:1px solid #e9e9e9}
-  .tkr-acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-  .tkr-act{min-height:44px;border-radius:11px;border:1px solid #e9e9e9;background:#fff;color:#444;font:inherit;font-size:13px;font-weight:800;cursor:pointer;padding:4px}
-  .tkr-act.on-yes{background:#eaf5ef;border:2px solid #1e6b4c;color:#1e6b4c}
-  .tkr-act.on-no{background:#fff0f1;border:2px solid #c51f2d;color:#b91c2b}
-  .tkr-act.on-else{background:#fff4e4;border:2px solid #9c6413;color:#9c6413}
-  .tkr-act[disabled]{opacity:.55;cursor:default}
-  .tkr-last{font-size:12px;font-weight:700;color:#5b5b5b}
-  .tkr-err{font-size:12.5px;color:#b91c2b}
-  .tkr-grp{margin:12px 16px 0;background:#fff;border:1px solid #e9e9e9;border-radius:20px;overflow:hidden}
-  .tkr-grp summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:48px;box-sizing:border-box}
-  .tkr-grp summary::-webkit-details-marker{display:none}
-  .tkr-grp summary b{font-size:15px;font-weight:900}
-  .tkr-grp summary span{font-size:12px;font-weight:700;color:#5b5b5b}
-  .tkr-grp summary i{font-style:normal;color:#c51f2d;font-weight:900;margin-left:6px}
-  .tkr-grp[open] summary i{transform:rotate(180deg);display:inline-block}
-  .tkr-row{padding:12px 16px;border-top:1px solid #e9e9e9;display:flex;flex-direction:column;gap:8px}
-  .tkr-row .nm{display:flex;justify-content:space-between;gap:8px}
-  .tkr-row .nm b{font-size:15px;font-weight:800}
-  .tkr-row .nm span{font-size:12px;font-weight:700;color:#5b5b5b;white-space:nowrap}
-  .tkr-row .it{font-size:12px;color:#5b5b5b}
-  .tkr-bought{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 14px}
-  .tkr-bought span{font-size:12px;font-weight:700;color:#1e6b4c;background:#eaf5ef;border-radius:999px;padding:4px 10px}
-
-  .tkr-sheet-bg{position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
-  .tkr-sheet{background:#fff;width:100%;max-width:620px;max-height:90vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom));
-    display:flex;flex-direction:column;gap:12px;animation:tkrUp .2s ease-out;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai",Tahoma,sans-serif;color:#1e1e1e}
-  @keyframes tkrUp{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
-  .tkr-sheet h3{margin:0;font-size:17px;font-weight:900}
-  .tkr-sheet p{margin:0;font-size:13px;color:#5b5b5b}
-  .tkr-reasons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-  .tkr-reason{min-height:44px;border-radius:11px;border:1px solid #e9e9e9;background:#fff;color:#444;font:inherit;font-size:13px;font-weight:800;cursor:pointer;padding:6px 8px}
-  .tkr-reason.on{background:#fff0f1;border:2px solid #c51f2d;color:#a81220}
-  .tkr-note{width:100%;box-sizing:border-box;font:inherit;font-size:16px;border:1px solid #e9e9e9;border-radius:11px;padding:10px 12px;resize:none}
-  .tkr-save{min-height:48px;border:0;border-radius:13px;background:linear-gradient(180deg,#2368E7,#28211A);color:#fff;font:inherit;font-size:15px;font-weight:900;cursor:pointer}
-  .tkr-save[disabled]{opacity:.5}
-  .tkr-cancel{min-height:44px;border:0;background:none;color:#5b5b5b;font:inherit;font-size:14px;font-weight:800;cursor:pointer}
-  .tkr-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:9999;background:#1e1e1e;color:#fff;border-radius:999px;padding:10px 18px;font-size:14px;font-weight:800;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai",Tahoma,sans-serif;max-width:90vw;text-align:center}
-  .tkr-load{margin:60px 16px;text-align:center;color:#5b5b5b}
-</style>
-
-<script>
-(function () {
-  'use strict';
-  var TIMEOUT = 25000;
-  var MOD_KEY = 'taokae_module_v1';
-  var STORE_NAMES = { '001': 'ลาดพร้าว', '003': 'ศรีนครินทร์', '005': 'ชลบุรี' };
-  var TH_M = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-  var GROUP_LABEL = { 1: 'เริ่มจากรายการนี้', 2: 'เสนอเพิ่ม', 3: 'ผักสด / ซื้อน้อย' };
-  var GROUP_SAY = { 1: 'ร้านอาหารตามสั่งส่วนใหญ่ซื้อกับ Makro', 2: 'ร้านบางส่วนซื้อกับเรา', 3: 'ส่วนใหญ่ซื้อตลาดสด — ถามว่าซื้อที่ไหน ราคาเท่าไร' };
-  var PAGE = 30;
-
-  // ---------- shared helpers ----------
-  function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-    });
-  }
-  function jsonp(url, params) {
-    return new Promise(function (resolve, reject) {
-      var cb = '__tkr_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-      var q = Object.keys(params).filter(function (k) { return params[k] !== undefined && params[k] !== null; })
-        .map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]); }).join('&');
-      var s = document.createElement('script');
-      var t = setTimeout(function () { done(); reject(new Error('timeout')); }, TIMEOUT);
-      function done() { clearTimeout(t); try { delete window[cb]; } catch (e) { window[cb] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
-      window[cb] = function (res) { done(); resolve(res); };
-      s.onerror = function () { done(); reject(new Error('network')); };
-      s.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + q + '&callback=' + cb;
-      document.head.appendChild(s);
-    });
-  }
-  function deviceId() {
-    try { var v = localStorage.getItem('taokae_device_id_v1'); if (v) return v; } catch (e) {}
-    return '';
-  }
-  function money(n) {
-    n = Math.abs(Number(n) || 0);
-    if (n >= 1000000) return '฿' + (n / 1e6).toFixed(2) + 'M';
-    if (n >= 1000) return '฿' + (n >= 10000 ? Math.round(n / 1000) : (Math.round(n / 100) / 10)) + 'K';
-    return '฿' + Math.round(n).toLocaleString('en-US');
-  }
-  function baht(n) { return '฿' + (Math.round(Number(n) || 0)).toLocaleString('en-US'); }
-  function pct(p) { return Math.round((Number(p) || 0) * 100) + '%'; }
-  function monthTh(k) { var m = /^(\d{4})-(\d{2})$/.exec(k || ''); return m ? TH_M[Number(m[2]) - 1] : (k || ''); }
-  function monthsLabel(ms) { return (ms && ms.length) ? monthTh(ms[0]) + '–' + monthTh(ms[ms.length - 1]) + ' ' + ms[ms.length - 1].slice(0, 4) : ''; }
-  function dm(t) { return t && t.length >= 16 ? Number(t.slice(8, 10)) + ' ' + TH_M[Number(t.slice(5, 7)) - 1] + ' ' + t.slice(11, 16) : (t || ''); }
-  function storeLabel(s) { return s ? 'สาขา ' + s + (STORE_NAMES[s] ? ' ' + STORE_NAMES[s] : '') : ''; }
-  function setMod(m) { try { if (m) sessionStorage.setItem(MOD_KEY, m); else sessionStorage.removeItem(MOD_KEY); } catch (e) {} }
-  function getMod() { try { return sessionStorage.getItem(MOD_KEY) || ''; } catch (e) { return ''; } }
-  function toast(msg) {
-    var el = document.createElement('div');
-    el.className = 'tkr-toast'; el.setAttribute('role', 'status'); el.textContent = msg;
-    document.body.appendChild(el);
-    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 2200);
-  }
-  function newLogId() { return 'R' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10); }
-
-  var ICON_DROP = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b91c2b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6 6 4-4 8 8"/><path d="M15 16h6v-6"/></svg>';
-  var ICON_CART = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7a4212" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 8H6.2"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>';
-
-  // =====================================================================
-  // HOME MENU
-  // =====================================================================
-  var H = { opts: null, el: null, summary: null, sumReq: 0 };
-
-  function homeRender() {
-    if (!H.el || !H.opts) return;
-    var o = H.opts, d = o.drop || {}, s = H.summary;
-    var dropTiles = '<div class="tkh-tiles"><div class="tkh-tile"><small>' + esc(d.label1 || 'ลูกค้า Top 10 ที่ต้องตาม') + '</small><b style="color:#b91c2b">' +
-      (d.shops != null ? esc(d.shops) + ' ราย' : '—') + '</b></div><div class="tkh-tile"><small>' + esc(d.label2 || 'ยอดที่หาย') + '</small><b style="color:#b91c2b">' +
-      (d.loss != null ? '-' + money(d.loss) : '—') + '</b></div></div>';
-    var recoTiles;
-    if (s && s.error) recoTiles = '<div class="tkh-tile" style="grid-column:1/-1"><small>' + esc(s.error) + '</small></div>';
-    else recoTiles = '<div class="tkh-tile"><small>' + (s && s.mine ? 'ร้านในพอร์ตของคุณ' : 'ร้านที่ควรเสนอ') + '</small><b>' + (s ? esc(s.shops) + ' ร้าน' : '…') + '</b></div>' +
-      '<div class="tkh-tile"><small>โอกาสขายเพิ่ม / เดือน</small><b style="color:#1e6b4c">' + (s ? '+' + money(s.opp) : '…') + '</b></div>';
-    H.el.innerHTML = '<div class="tkh-inner" role="dialog" aria-modal="true" aria-label="เมนูหลัก">' +
-      '<div class="tkh-head"><div class="tkh-logo" aria-hidden="true">B2B</div><div><h1>Taokae Sales</h1><p>' +
-      esc(o.userName ? 'สวัสดี ' + o.userName : 'วันนี้อยากทำงานไหน') + '</p></div>' +
-      (o.storeLabel ? '<span class="tkh-store">' + esc(o.storeLabel) + '</span>' : '') + '</div>' +
-      '<button type="button" class="tkh-card" data-go="drop"><div class="tkh-row"><div class="tkh-ic drop">' + ICON_DROP + '</div>' +
-      '<div class="tkh-t"><b>ลูกค้าโฟกัสยอดตก</b><span>ลูกค้า Top 10 ที่ยอดหาย ควรไปหาใครก่อน</span></div><span class="tkh-go" aria-hidden="true">→</span></div>' + dropTiles + '</button>' +
-      '<button type="button" class="tkh-card new" data-go="reco"><div class="tkh-row"><div class="tkh-ic reco">' + ICON_CART + '</div>' +
-      '<div class="tkh-t"><b>แนะนำสินค้าตามกลุ่มร้านค้า</b><span>ร้านกลุ่มเดียวกันซื้อ แต่ร้านนี้ยังไม่ซื้อ</span></div><span class="tkh-go" aria-hidden="true">→</span></div>' +
-      '<div class="tkh-tags"><span class="tkr-tag new">ใหม่</span><span class="tkr-tag chip">อาหารตามสั่ง</span></div>' +
-      '<div class="tkh-tiles">' + recoTiles + '</div></button>' +
-      '<div class="tkh-note">กลับมาหน้านี้ได้จากปุ่ม <b>☰ เมนูหลัก</b> ด้านบน ไม่ต้องเข้าสู่ระบบใหม่</div>' +
-      '<div class="tkh-foot"><span>' + esc(s && s.builtAt ? 'ข้อมูลแนะนำสินค้า ' + monthsLabel(s.months) : '') + '</span>' +
-      (o.onLogout ? '<button type="button" class="tkh-out" data-go="logout">ออกจากระบบ</button>' : '') + '</div></div>';
-  }
-
-  function homeLoadSummary() {
-    var o = H.opts, req = ++H.sumReq;
-    jsonp(o.apiUrl, { action: 'recoData', token: o.token, summary: 1 }).then(function (res) {
-      if (req !== H.sumReq || !H.opts) return;
-      if (res && res.sessionExpired) { expired(); return; }
-      if (!res || !res.ok) { H.summary = { error: (res && res.message) || 'โหลดข้อมูลไม่สำเร็จ' }; }
-      else if (!res.summary) { H.summary = { error: res.message || 'ยังไม่มีร้านในพอร์ตของคุณ' }; }
-      else H.summary = { shops: res.summary.shops, opp: res.summary.opp, mine: res.lockedRep, builtAt: res.builtAt, months: res.months };
-      homeRender();
-    }).catch(function () {
-      if (req !== H.sumReq) return;
-      H.summary = { error: 'สัญญาณไม่ดี — แตะเพื่อเปิดดู' }; homeRender();
-    });
-  }
-
-  function expired() {
-    var cb = H.opts && H.opts.onSessionExpired;
-    Home.reset();
-    if (cb) cb();
-  }
-
-  var Home = {
-    // Right after login / session restore. Reopens the module the person was
-    // in (same browser tab), otherwise shows the menu.
-    start: function (opts) {
-      if (!opts || !opts.apiUrl || !opts.token) return;
-      H.opts = opts; H.summary = null;
-      var m = getMod();
-      if (m === 'drop') { Home.hide(); return; }
-      if (m === 'reco') { Home.hide(); Reco.open(recoOpts()); return; }
-      Home.show();
-    },
-    show: function () {
-      if (!H.opts) return;
-      Reco.close(true);
-      setMod('');
-      if (!H.el) {
-        H.el = document.createElement('div');
-        H.el.className = 'tkh-view';
-        document.body.appendChild(H.el);
-        H.el.addEventListener('click', function (e) {
-          var b = e.target.closest('[data-go]');
-          if (!b) return;
-          var go = b.getAttribute('data-go');
-          if (go === 'drop') { setMod('drop'); Home.hide(); if (H.opts.onDrop) H.opts.onDrop(); }
-          else if (go === 'reco') { setMod('reco'); Home.hide(); Reco.open(recoOpts()); }
-          else if (go === 'logout' && H.opts.onLogout) { H.opts.onLogout(); }
-        });
-      }
-      H.el.hidden = false;
-      document.documentElement.style.overflow = 'hidden';
-      homeRender();
-      H.el.scrollTop = 0;
-      homeLoadSummary();
-    },
-    hide: function () {
-      if (H.el) H.el.hidden = true;
-      document.documentElement.style.overflow = '';
-    },
-    update: function (patch) { if (H.opts) { for (var k in patch) H.opts[k] = patch[k]; homeRender(); } },
-    reset: function () {
-      Reco.close(true);
-      if (H.el && H.el.parentNode) H.el.parentNode.removeChild(H.el);
-      H.el = null; H.opts = null; H.summary = null; H.sumReq++;
-      setMod('');
-      document.documentElement.style.overflow = '';
-    }
-  };
-  function recoOpts() {
-    return { apiUrl: H.opts.apiUrl, token: H.opts.token, onClose: function () { Home.show(); },
-             onSessionExpired: expired };
-  }
-
-  // =====================================================================
-  // RECO MODULE
-  // =====================================================================
-  var R = null; // { opts, el, data, store, rep, group, q, shown, view:'list'|'shop', shopId, scrollList }
-
-  function recoLoad(params) {
-    var el = R.el, req = (R.req = (R.req || 0) + 1);
-    R.el.querySelector('.tkr-content').innerHTML = '<div class="tkr-load">กำลังโหลด…</div>';
-    var p = { action: 'recoData', token: R.opts.token };
-    if (params.store) p.store = params.store;
-    if (params.rep) p.rep = params.rep;
-    if (params.group) p.group = params.group;
-    return jsonp(R.opts.apiUrl, p).then(function (res) {
-      if (!R || R.el !== el || req !== R.req) return;
-      if (res && res.sessionExpired) { var cb = R.opts.onSessionExpired; Reco.close(true); if (cb) cb(); return; }
-      if (!res || !res.ok) throw new Error((res && res.message) || 'โหลดไม่สำเร็จ');
-      R.data = res; R.store = res.store; R.rep = res.rep || ''; R.group = res.group; R.shown = PAGE;
-      if (R.view === 'shop' && !findShop(R.shopId)) R.view = 'list';
-      render();
-    }).catch(function (e) {
-      if (!R || R.el !== el || req !== R.req) return;
-      R.el.querySelector('.tkr-content').innerHTML = '<div class="tkr-load">' + esc(e.message === 'timeout' || e.message === 'network' ? 'สัญญาณไม่ดี โหลดไม่สำเร็จ' : e.message) +
-        '<br><br><button type="button" class="tkr-chip on" data-act="retry">ลองอีกครั้ง</button></div>';
-    });
-  }
-
-  function findShop(id) {
-    var s = null;
-    (R.data && R.data.shops || []).forEach(function (x) { if (x.id === id) s = x; });
-    return s;
-  }
-  function repLabel(code) {
-    if (!code || code === '-') return 'ไม่พบในพอร์ต';
-    var r = null;
-    (R.data.reps || []).forEach(function (x) { if (x.code === code) r = x; });
-    if (r && r.type === 'dummy') return code + ' (ยังไม่แจกพอร์ต)';
-    if (r && r.type === 'vacant') return code + ' (ตำแหน่งว่าง)';
-    return r && r.name ? r.name : code;
-  }
-  function topGaps(shop, n, onlyOpen) {
-    var out = [];
-    (shop.gaps || []).forEach(function (g) {
-      if (out.length >= n) return;
-      if (onlyOpen && shop.log && shop.log[g[0]]) return;
-      out.push(g);
-    });
-    return out;
-  }
-  function loggedCount(shop) { return shop.log ? Object.keys(shop.log).length : 0; }
-
-  function renderTop() {
-    var d = R.data, t = R.el.querySelector('.tkr-top');
-    var title = R.view === 'shop' ? (findShop(R.shopId) || {}).n || '' : 'แนะนำสินค้าตามกลุ่มร้านค้า';
-    var sub = R.view === 'shop' ? storeLabel(R.store) : [storeLabel(R.store), monthsLabel(d.months) ? 'ข้อมูล ' + monthsLabel(d.months) : ''].filter(Boolean).join(' · ');
-    var h = '<div class="tkr-bar"><button type="button" class="tkr-back" data-act="back">' + (R.view === 'shop' ? '← รายชื่อร้าน' : '← เมนูหลัก') + '</button>' +
-      '<div class="tkr-ttl"><b>' + esc(title) + '</b><span>' + esc(sub) + '</span></div></div>';
-    if (R.view === 'list') {
-      if ((d.stores || []).length > 1) {
-        h += '<div class="tkr-chips" role="group" aria-label="สาขา">' + d.stores.map(function (s) {
-          return '<button type="button" class="tkr-chip' + (s === R.store ? ' on' : '') + '" data-store="' + esc(s) + '">' + esc(storeLabel(s)) + '</button>';
+      var gs = d.groupShops || {};
+      var gl = (d.groups || []).filter(function (g) { return g.id === R.group || !d.groupShops || gs[g.id] > 0; });
+      if (gl.length > 1 || (d.groups || []).length > 1) {
+        h += '<div class="tkr-chips" role="group" aria-label="กลุ่มร้านค้า">' + gl.map(function (g) {
+          return '<button type="button" class="tkr-chip' + (g.id === R.group ? ' on' : '') + '" data-group="' + esc(g.id) + '">' + esc(g.name) +
+            (gs[g.id] != null ? ' (' + gs[g.id] + ')' : '') + '</button>';
         }).join('') + '</div>';
+      } else if (gl.length) {
+        h += '<div class="tkr-chips" role="group" aria-label="กลุ่มร้านค้า"><span class="tkr-chip on">' + esc(gl[0].name) + '</span></div>';
       }
-      h += '<div class="tkr-chips" role="group" aria-label="กลุ่มร้านค้า">' + (d.groups || []).map(function (g) {
-        return '<button type="button" class="tkr-chip' + (g.id === R.group ? ' on' : '') + '" data-group="' + esc(g.id) + '">' + esc(g.name) + '</button>';
-      }).join('') + '</div>';
       if (!d.lockedRep && (d.reps || []).length) {
         var total = d.reps.reduce(function (s, r) { return s + r.shops; }, 0);
         h += '<label class="tkr-sr" style="position:absolute;left:-9999px" for="tkrRep">พอร์ตเซลล์</label><select class="tkr-sel" id="tkrRep" data-act="rep">' +
@@ -3761,7 +3112,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
       '<div class="tkr-prog"><div><span>ร้านกลุ่มเดียวกันที่ซื้อกับ Makro</span><span>' + pct(p[1]) + ' (' + p[0] + '/' + d.N + ')</span></div>' +
       '<div class="tkr-track"><div class="tkr-fill g" style="width:' + pct(p[1]) + '"></div></div>' +
       (p[2] ? '<div style="font-size:11.5px;font-weight:700;color:#5b5b5b">ร้านที่ซื้อใช้ประมาณ ' + baht(p[2]) + ' / เดือน</div>' : '') + '</div>' +
-      '<div class="tkr-say g' + g[1] + '">' + esc(GROUP_SAY[g[1]]) + '</div>' + actsHtml(shop, g[0]) + '</div>';
+      '<div class="tkr-say g' + g[1] + '">' + esc(say(g[1])) + '</div>' + actsHtml(shop, g[0]) + '</div>';
   }
 
   function itemRow(shop, g, rank) {
@@ -3792,7 +3143,7 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
         gaps.forEach(function (g, k) { if (k >= top && g[1] === grp) rows.push(itemRow(s, g, k + 1)); });
         if (!rows.length) return;
         h += '<details class="tkr-grp"' + (grp === 1 ? ' open' : '') + '><summary><b>' + esc(GROUP_LABEL[grp]) + '</b><span>' + rows.length + ' รายการ<i aria-hidden="true">⌄</i></span></summary>' +
-          '<div class="tkr-say g' + grp + '" style="margin:0 16px 10px">' + esc(GROUP_SAY[grp]) + '</div>' + rows.join('') + '</details>';
+          '<div class="tkr-say g' + grp + '" style="margin:0 16px 10px">' + esc(say(grp)) + '</div>' + rows.join('') + '</details>';
       });
     }
     var gapSet = {};
@@ -3953,6 +3304,5 @@ body.hasTabBar .app{padding-bottom:calc(var(--nav-h) + 40px + env(safe-area-inse
   window.TaokaeReco = Reco;
 })();
 </script>
-
 </body>
 </html>
